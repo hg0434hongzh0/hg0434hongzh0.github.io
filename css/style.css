@@ -732,7 +732,7 @@ body {
   padding: 0;
   color: var(--default-text-color);
   background: var(--background-color);
-  font-family: Geist Variable, Noto Sans SC, -apple-system, system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial;
+  font-family: Geist Variable, Noto Sans SC, "筑紫A丸", sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.5;
@@ -762,6 +762,12 @@ body::-webkit-scrollbar-thumb:hover {
   border-radius: 18px;
   background-clip: content-box;
   border: 3px solid transparent;
+}
+@font-face {
+  font-family: "筑紫A丸";
+  src: url("../fonts/chikushi-a-round/chikushi-a-round.ttc") format("truetype-collection");
+  font-weight: normal;
+  font-style: normal;
 }
 @media (max-width: 768px) {
   html,
