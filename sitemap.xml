@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://hg0434hongzh0.github.io/2024/11/08/CNVD-2024-00980/</loc>
+    
+    <lastmod>2024-11-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://hg0434hongzh0.github.io/2024/11/08/CNVD-2024-13639/</loc>
+    
+    <lastmod>2024-11-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://hg0434hongzh0.github.io/2024/11/08/qiangwangbei2024/</loc>
     
     <lastmod>2024-11-08</lastmod>
@@ -46,6 +64,13 @@
   
   <url>
     <loc>https://hg0434hongzh0.github.io/tags/%E7%AB%9E%E8%B5%9B%E5%A4%8D%E7%9B%98/</loc>
+    <lastmod>2024-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://hg0434hongzh0.github.io/tags/day/</loc>
     <lastmod>2024-11-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

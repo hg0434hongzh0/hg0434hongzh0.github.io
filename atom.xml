@@ -6,7 +6,7 @@
   <link href="https://hg0434hongzh0.github.io/atom.xml" rel="self"/>
   
   <link href="https://hg0434hongzh0.github.io/"/>
-  <updated>2024-11-08T02:44:29.579Z</updated>
+  <updated>2024-11-08T03:15:18.650Z</updated>
   <id>https://hg0434hongzh0.github.io/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CNVD-2024-00980</title>
+    <link href="https://hg0434hongzh0.github.io/2024/11/08/CNVD-2024-00980/"/>
+    <id>https://hg0434hongzh0.github.io/2024/11/08/CNVD-2024-00980/</id>
+    <published>2024-11-08T03:11:24.383Z</published>
+    <updated>2024-11-08T03:15:18.650Z</updated>
+    
+    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="759713451caa0553424037eddd634d9327f25e116a526ce55978836240bc8cdd">4b3ecdb6537e7115dee2acf67d9afff9009043d9ff2ae132b1ee3d617aaf8a1ddb5338a8ebd15cff35116550d93243bf13f5116ac6fca5f320bafc0fec905bf7f6d9421b270cbd357bf11670997496f47db331e6be8b830c08a7e50b62167297efdfe38b1fc23008264615e9686e72b294f873ec1d1ac9e264523d69ad982f5c8df6ae26ff42860fd730cc23b1366ca0bea5c2795c7c07e797fab8e185a65ce22c9e0726f689387ca2ce7b348e661dfce9a98ee9a566c1cfdaf8cc1785d28b4e66a89724c86d62fb7c3ee1dd4f82b7040aeb2c48e025049888497509a595c736b10b51619d450b76446f85deb11016f420010ec05f552ba463b8dff89704dfc5d19dd6b8765f430d750fe70edb971c103d0e476dba04c24c39257c2331cf46d69d6718d75b12a5101011e261f93f404586ec846a3fee3f7d04b6aadbac76cef0e46b6aeb301a97c269f75c507d7bb98e1421596a8e3a00c5132e5342fd3321216a09868b44205d7e8916423db8025522d10d486e8858f7e0a90ef368ce3127ce6c6891eb993a2992a26170ca5905d48b8524de7779ad3882d197348d8bf9abc3544b3ebe2e513bcca8f9222aa842b8d670fffd60441081b5c99c07ce7a812f29572b084277abaea884a291db82fbe08cf869e2479e705fa1c9a469d63e5f97c481f0094f6e0636da1671654ec43b8176fb5a1ab05ca447ed09f5c5c65e83c14e0da6b7ddcdcd2644901ecfb097b074782a05c79c4dc0dbe219de87b2095cfced95e6ce86931308a3346fd4eea4661d62dd2e95beab0581cbb4c26166f9bb8add3cd43e5e48058337cbc640cc89f25bf04af18e73118743fbdcdf9d6ff07a138654ff2f19878bfadd737a63345d697ed0b268801aab9b3fc6364e3d58a5fb84692a53e29253266793be69795981a49b6a0631c4230512893586dbc95837164625676190fcaaf37d5af6fe89048a2bc9387c89fd5efd45ce87e0da882927455ee050f962abb7acc0ad4d92c4bf101f12bca125de8f4f84e7f664e7ecca7fc9f7f1e29569b7fb10ba2f6fdc67935a88fe50d52a66afac2639839fec22a2cd64a3721a929eaa37c1473a0aa5d4fd9705fa4cbfcac0f128c7c0783f9f9293e26731d3b6a99c3009a47479d5a0ed4e533c1b12335acd82a5c5050a5136c9b58d4470098e64e901f4a7de85f2a44f1af6803cf4c62828a9119453be07e77b7948d4398c1ae6d9af47cea7d6deed7e5e8ca91d82c814ac8b7c93b78185768c956a6db62c4d6e03d9d9f786af127a306970b74fe67906aac3ecb15c08922ea400cf8e162675d77ea78194324c7e30f7f115a1ea96c4b67a373d1828c83df6fc68ecfc612246934141c732ada67dd716587d05265d45757cfecb7ca86e693caef9b743ac3dbab54d6764a8569bfd1f95bd0113ab6abda561ba3ed315a2f5aef908e46a058bb197b2c97945c3062bd485b344d1eecabfde5d5536ab67146d6ffc8c977a7241a8c907040a860faababf638acd88aa2549c2fc1456d8513c81599dc6c1cadcf14a301d2e96c9632878355d2752c3f5f0bcbbf7c1363caa79a82ae559444d7f4c3938677f22c08a6b068ab5f2efa4879b6717c41ef67b71b346d55ca1448aed0a6b148be1e6ff52c28490fe7f72850f3423c041b214142cde07c88ca1736c903f3dfc298df0329705a26310f4cdc3523e43b05d03178fa7829f001d3cf975360dbbbb515a4291ff9f83446fe053ba7481</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>      </label>    </div>  </div></div><link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script><script data-swup-reload-script type="module">import {initHBE} from "/js/plugins/hbe.js";  console.log("hexo-blog-encrypt: loaded.");    initHBE();</script>]]></content>
+    
+    
+    <summary type="html">Here&#39;s something encrypted, password is required to continue reading.</summary>
+    
+    
+    
+    
+    <category term="day" scheme="https://hg0434hongzh0.github.io/tags/day/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>CNVD-2024-13639</title>
+    <link href="https://hg0434hongzh0.github.io/2024/11/08/CNVD-2024-13639/"/>
+    <id>https://hg0434hongzh0.github.io/2024/11/08/CNVD-2024-13639/</id>
+    <published>2024-11-08T02:59:56.859Z</published>
+    <updated>2024-11-08T03:10:17.158Z</updated>
+    
+    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="788170681298c565d2aa106eb9adb5f81d42c340a703ea7a574f0ed2f5a06160">711009fc8ce7d12d708ecc49639eba1a854ee23c300c70549eb674c6b20dbb1c30a9bd0c883d1da0f9d0f7deb48e90a554a8d9be87a1cee9932f8579489c00b295e3f40d1ca3291a48b1b9d73e27152242d55d49f63d6d1d7b107d5f6fad0d68e00de2d586c1c65b3d730660e2feb9bb3d4239cdae3eb19519a59c737d55c2a56d11e6bdd0a345f65fae755a8fe1199829ee197954e6b8592ea68d3ab5801cb3f4ce32e912443512a770e6eb115476d56cabf33b2e5d31dea4c7e6a0e0ce63d5c342de3d2ce35e632f872718d4871447e58091dd05fd7b222a8e2c25aff7d5243e991c5cabd81fb536fd7906ee8a42beeb9555154b1a4bb45e9071ec2740094cf91e8eae3e79ce95c25719d3fae8e5b437b5b5c293f48dbfd1624d6bcbeb81a471d237ee0fdb452e4e2f748be30e969e8a0be37b8756d27d4d3a1b4436475a09a28577db6b511fa67921960773ef4a248fe6b488d22e6be311fe7491fa9d77cea4e3aced6e1eff49d8ff3b1fc9e0e9edc6360029c22212d9f80c8a6fb09d88c70da9f4dbdfad7de60bab0186fd5434d3a386e8dad45ce8ce39788a1c411b764d0548ae07a68dae8e284d11ff8f987b390b59c23935112b6b050c62142723522af3b614ce880da853775bf894325706aacf795d8b5f02df61ff6fa13d24fc833d661ab359d4c7d8cd2cb94ad60c55925b529340baec48d2dac013ff8717f62275998e2f80c845d9b14d76bec9b56d3174268d17699f4f0d8e6cc386eb01d37ce9a61236f4fd93997ca2b38eb2797b714131f27a95bde00ed9876c811afe5f6f253a0493c6ee1c2f7b12b3202ceec13475a38c9f4196324d9bb463d1d54b9d29a4be70054208457c7fc87b90da3305c931db8acd02ebbf7725fde7ca80b9387d225da056fce3d9218994bdfb56c0281bbb19cca677f04db7fc6c86b99be45406c593fa314f3d42c1bf8069747ecf5678535fb390b1423235cd935ce29d1dab3377120fee356bfc437873cfbd567dd18ba046ad2119bbff1f3766333f7eaf630ab1868700f5f784541214a3797545026a7d4ee139b7bc3b15eef46ab6887203c14e17b8aaf6f21739ceca292d7f1c9968e808838b3fd02cc466777b5f1ce331cccf3b21a172cfafa2ad78ec16dd2da669588ac92ccf266ad6330b0db0095c3fe41c293ed0b73030126d37f2b7fb92cdca49</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>      </label>    </div>  </div></div><link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script><script data-swup-reload-script type="module">import {initHBE} from "/js/plugins/hbe.js";  console.log("hexo-blog-encrypt: loaded.");    initHBE();</script>]]></content>
+    
+    
+    <summary type="html">Here&#39;s something encrypted, password is required to continue reading.</summary>
+    
+    
+    
+    
+    <category term="day" scheme="https://hg0434hongzh0.github.io/tags/day/"/>
+    
+  </entry>
   
   <entry>
     <title>强网杯2024-PyBlockly</title>
