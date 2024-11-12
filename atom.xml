@@ -6,7 +6,7 @@
   <link href="https://hg0434hongzh0.github.io/atom.xml" rel="self"/>
   
   <link href="https://hg0434hongzh0.github.io/"/>
-  <updated>2024-11-12T16:33:52.452Z</updated>
+  <updated>2024-11-12T16:36:31.524Z</updated>
   <id>https://hg0434hongzh0.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://hg0434hongzh0.github.io/2024/11/13/dedecms_CVE-2024-9076/"/>
     <id>https://hg0434hongzh0.github.io/2024/11/13/dedecms_CVE-2024-9076/</id>
     <published>2024-11-12T16:04:48.836Z</published>
-    <updated>2024-11-12T16:33:52.452Z</updated>
+    <updated>2024-11-12T16:36:31.524Z</updated>
     
     <content type="html"><![CDATA[<blockquote><p>首先我的评价是，这也能拿CVE，真离谱。</p></blockquote><p>晚上闲着没事，看看CNVD漏洞通报，忽然看到</p><p><img                      lazyload                     src="/images/loading.svg"                     data-src="https://pic.imgdb.cn/item/67338096d29ded1a8cc15c22.png"                                      ></p><p>命令注入才给中危？我看看怎么个事。</p><p>找了半天才找到v5.7.115的源码，根据通报的路径<code>article_string_mix.php</code>审计：</p><p><img                      lazyload                     src="/images/loading.svg"                     data-src="https://pic.imgdb.cn/item/673380cbd29ded1a8cc18a23.png"                                      ></p><p>很明显的任意文件写入，看起来过滤了一堆东西，随便找个免杀马，最终文件写入到/uploads/data/downmix.data.php</p><p><img                      lazyload                     src="/images/loading.svg"                     data-src="https://pic.imgdb.cn/item/673380ddd29ded1a8cc19a54.png"                                      ></p><p>真抽象，没啥写的</p><p><img                      lazyload                     src="/images/loading.svg"                     data-src="https://pic.imgdb.cn/item/673380f2d29ded1a8cc1ab71.png"                                      ></p><p>还需要有管理员权限，真他妈鸡肋，给中危都给多了</p>]]></content>
     
