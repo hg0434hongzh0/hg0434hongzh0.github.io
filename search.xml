@@ -454,30 +454,6 @@ alt="image.png"
       </tags>
   </entry>
   <entry>
-    <title>Yue zi ERP SQL inject</title>
-    <url>/2024/11/08/wuhanjintongfangyuezihuisuoerpsql/</url>
-    <content><![CDATA[<h2 id="漏洞描述">漏洞描述</h2>
-<p>月子会ERP管理云平台是由武汉金同方科技有限公司研发团队结合行业月子中心相关企业需求开发的一套综合性管理软件，管控月子中心经营过程中各个环节。武汉金同方科技月子会ERP管理云平台存在SQL注入漏洞，攻击者可利用该漏洞获取数据库全部敏感信息。
-该系统GraphicManagementEdit.aspx文件的id参数存在SQL注入</p>
-<h2 id="漏洞位置">漏洞位置：</h2>
-<p>/Page/BasicInfo/GraphicManagementEdit.aspx?id=1</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d8bf6d29ded1a8ce3f0fb.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>直接跑sqlmap</p>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>红队信息搜集思路</title>
     <url>/2024/11/12/red%20team%20information%20search/</url>
     <content><![CDATA[<h3 id="方针">方针</h3>
@@ -564,6 +540,30 @@ alt="img"
 ]]></content>
       <tags>
         <tag>RT</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Yue zi ERP SQL inject</title>
+    <url>/2024/11/08/wuhanjintongfangyuezihuisuoerpsql/</url>
+    <content><![CDATA[<h2 id="漏洞描述">漏洞描述</h2>
+<p>月子会ERP管理云平台是由武汉金同方科技有限公司研发团队结合行业月子中心相关企业需求开发的一套综合性管理软件，管控月子中心经营过程中各个环节。武汉金同方科技月子会ERP管理云平台存在SQL注入漏洞，攻击者可利用该漏洞获取数据库全部敏感信息。
+该系统GraphicManagementEdit.aspx文件的id参数存在SQL注入</p>
+<h2 id="漏洞位置">漏洞位置：</h2>
+<p>/Page/BasicInfo/GraphicManagementEdit.aspx?id=1</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d8bf6d29ded1a8ce3f0fb.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>直接跑sqlmap</p>
+]]></content>
+      <tags>
+        <tag>day</tag>
       </tags>
   </entry>
 </search>
