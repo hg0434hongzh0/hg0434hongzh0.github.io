@@ -2,9 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://hg0434hongzh0.github.io/2024/11/12/red%20team%20information%20search/</loc>
+    
+    <lastmod>2024-11-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://hg0434hongzh0.github.io/2024/11/09/pcb2024-python-calc/</loc>
     
-    <lastmod>2024-11-09</lastmod>
+    <lastmod>2024-11-12</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -130,7 +139,7 @@
 
   <url>
     <loc>https://hg0434hongzh0.github.io/</loc>
-    <lastmod>2024-11-09</lastmod>
+    <lastmod>2024-11-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -138,21 +147,28 @@
   
   <url>
     <loc>https://hg0434hongzh0.github.io/tags/day/</loc>
-    <lastmod>2024-11-09</lastmod>
+    <lastmod>2024-11-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://hg0434hongzh0.github.io/tags/JS%E9%80%86%E5%90%91/</loc>
-    <lastmod>2024-11-09</lastmod>
+    <lastmod>2024-11-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://hg0434hongzh0.github.io/tags/%E7%AB%9E%E8%B5%9B%E5%A4%8D%E7%9B%98/</loc>
-    <lastmod>2024-11-09</lastmod>
+    <lastmod>2024-11-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://hg0434hongzh0.github.io/tags/RT/</loc>
+    <lastmod>2024-11-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

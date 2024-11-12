@@ -1,3 +1,4 @@
+https://hg0434hongzh0.github.io/2024/11/12/red%20team%20information%20search/
 https://hg0434hongzh0.github.io/2024/11/09/pcb2024-python-calc/
 https://hg0434hongzh0.github.io/2024/11/08/beijignyakongkeyijifazhanyouxiangongsi/
 https://hg0434hongzh0.github.io/2024/11/08/wuhanjintongfangyuezihuisuoerpsql/
@@ -16,3 +17,4 @@ https://hg0434hongzh0.github.io/
 https://hg0434hongzh0.github.io/tags/day/
 https://hg0434hongzh0.github.io/tags/JS%E9%80%86%E5%90%91/
 https://hg0434hongzh0.github.io/tags/%E7%AB%9E%E8%B5%9B%E5%A4%8D%E7%9B%98/
+https://hg0434hongzh0.github.io/tags/RT/

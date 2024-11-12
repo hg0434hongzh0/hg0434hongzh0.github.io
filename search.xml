@@ -261,7 +261,7 @@ alt="image.png"
       </tags>
   </entry>
   <entry>
-    <title>鹏城杯2024-python口算+notadmin</title>
+    <title>鹏城杯2024-python口算</title>
     <url>/2024/11/09/pcb2024-python-calc/</url>
     <content><![CDATA[<p>队友yeepie师傅做出来的，队友yeepie师傅做出来的，队友yeepie师傅做出来的</p>
 <p>我是搬运我是搬运我是搬运</p>
@@ -406,6 +406,95 @@ alt="image.png"
 ]]></content>
       <tags>
         <tag>竞赛复盘</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>红队信息搜集思路</title>
+    <url>/2024/11/12/red%20team%20information%20search/</url>
+    <content><![CDATA[<h3 id="方针">方针</h3>
+<p>在做信息搜集时，不能以完成任务的角度去盲目搜集端口、子域名、企业信息、CDN之类，而是应从如何将shell落在DMZ区更方便考虑</p>
+<p>信息搜集目的的本质就是为shell落点做铺垫，是为打点做服务的，在做搜集时应想清楚收集这一条信息能为打点提供什么帮助。</p>
+<ul>
+<li><strong>边界DMZ区：漏洞、VPN登录、云桌面登录</strong></li>
+<li><strong>边界办公区：钓鱼、水坑、投毒</strong></li>
+<li>公有云区：漏洞、钓鱼、水坑</li>
+<li>边界外联区：漏洞、钓鱼、水坑</li>
+<li>边界无线区：近源</li>
+</ul>
+<h3 id="边界战术">边界战术</h3>
+<h4 id="目的">目的</h4>
+<ol type="1">
+<li>获取应用服务器权限</li>
+<li>获取内部员工数据</li>
+<li>寻找应用沟通交流功能</li>
+<li>获取应用代码/供应商</li>
+<li>获取内网网络访问权限</li>
+<li>获取办公终端电脑权限</li>
+</ol>
+<h5 id="打公有云的目的">打公有云的目的</h5>
+<p>获取内部员工数据</p>
+<p>获取应用服务器权限</p>
+<p>滥用应用沟通交流功能</p>
+<h5 id="打边界外联区的目的">打边界外联区的目的</h5>
+<p>回归集团网络</p>
+<h5 id="内网横向目的">内网横向目的</h5>
+<p>获取域控</p>
+<p>获取靶标</p>
+<p>获取堡垒机</p>
+<p>获取虚拟化平台</p>
+<p>获取服务器管控系统</p>
+<p>获取终端管控系统</p>
+<h4 id="打法">打法</h4>
+<h5 id="dmz区">DMZ区</h5>
+<ol type="1">
+<li>nday</li>
+<li>0day</li>
+<li>移动端</li>
+<li>供应链：控股子公司梳理、下属单位梳理</li>
+</ol>
+<h5 id="边界办公区">边界办公区</h5>
+<ol type="1">
+<li>邮件钓鱼</li>
+<li>社工钓鱼</li>
+<li>水坑攻击</li>
+<li>投毒攻击</li>
+<li>VPN登录</li>
+</ol>
+<h5 id="内网横向战术">内网横向战术：</h5>
+<p>漏洞攻击</p>
+<p>横向移动</p>
+<p>域渗透</p>
+<p>内网钓鱼</p>
+<p>内网水坑</p>
+<p>设备功能滥用</p>
+<h3 id="近源战术">近源战术</h3>
+<h4 id="目的-1">目的</h4>
+<ol type="1">
+<li>获取办公终端电脑权限</li>
+<li>获取内网网络访问权限</li>
+<li>获取内网服务器权限</li>
+</ol>
+<h4 id="打法-1">打法</h4>
+<ol type="1">
+<li>U盘投递</li>
+<li>办公电脑控制</li>
+<li>WIFI攻击(打金融或者是类似公司业务之类的目标可以直接找前台要wifi密码)</li>
+<li>WIFI仿冒</li>
+</ol>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/6733033cd29ded1a8c4acd40.png"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h3 id="section"></h3>
+]]></content>
+      <tags>
+        <tag>RT</tag>
       </tags>
   </entry>
   <entry>
