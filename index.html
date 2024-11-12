@@ -477,7 +477,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">15</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">16</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -533,7 +533,7 @@
                 <div class="author flex flex-col justify-center my-2.5 mx-0">
     <div class="name">hongzh0</div>
     
-        <div class="label">Lv2</div>
+        <div class="label">Lv3</div>
     
 </div>
                 <div class="statistics flex justify-around my-2.5">
@@ -546,7 +546,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">15</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">16</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -563,6 +563,70 @@
                 
                     <div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2024/11/13/dedecms_CVE-2024-9076/">
+                            CVE-2024-9076 dedecms命令注入漏洞复现
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            
+首先我的评价是，这也能拿CVE，真离谱。
+
+晚上闲着没事，看看CNVD漏洞通报，忽然看到
+
+命令注入才给中危？我看看怎么个事。
+找了半天才找到v5.7.115的源码，根据通报的路径article_string_mix.php审计：
+
+很明显的任意文件写入，看起来过滤了一堆东西，随便找个免杀马，最终文件写入到/uploads/data/downmix.data.php
+
+真抽象，没啥写的
+
+...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Wed Nov 13 2024 00:04:48 GMT+0800">
+                
+                    2024-11-13
+                
+            </span>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/day/">day</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2024/11/13/dedecms_CVE-2024-9076/">Read more<span class="seo-reader-text">CVE-2024-9076 dedecms命令注入漏洞复现</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1073,59 +1137,6 @@ image.png
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2024/11/08/CNVD-2024-21112/">
-                            An Mei Shi ji hotel Sql Inject
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            <p>Here's something encrypted, password is required to continue
-reading.</p>
-
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Fri Nov 08 2024 11:51:24 GMT+0800">
-                
-                    2024-11-08
-                
-            </span>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/day/">day</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2024/11/08/CNVD-2024-21112/">Read more<span class="seo-reader-text">An Mei Shi ji hotel Sql Inject</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1160,7 +1171,7 @@ reading.</p>
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        15 posts in total
+                        16 posts in total
                     </span>
                     
                 </p>
