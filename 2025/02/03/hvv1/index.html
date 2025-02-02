@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>hvv面经 | HG0434</title>
+    
+    
+        <meta property="og:site_name" content="HG0434">
+    
+    
+        <meta property="article:author" content="hongzh0">
+    
+    
+        <link rel="icon" href="/img/favicon.ico">
+    
+    
+<link rel="stylesheet" href="/css/minireset.min.css">
+
+    
+<link rel="stylesheet" href="/css/all.min.css">
+
+    
+<link rel="stylesheet" href="/css/csshake.min.css">
+
+    
+<link rel="stylesheet" href="/css/hljs/lioshi.css">
+
+    
+<link rel="stylesheet" href="/css/jquery.fancybox.min.css">
+
+    
+<link rel="stylesheet" href="/styl/main.css">
+
+    
+<script src="/js/jquery.min.js"></script>
+
+    
+<script src="/js/highlight.min.js"></script>
+
+    
+<script src="/js/jquery.fancybox.min.js"></script>
+
+    
+<script src="/js/clipboard.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body>
+    <header>
+  <div class="outer">
+    <div class="inner">
+      <h1 class="logo-wrap">
+        <a>HG0434<b><sup></sup></b></a>
+      </h1>
+    </div>
+    <div class="inner">
+      <nav class="main-nav">
+        
+          <a href="/">首页</a>
+        
+          <a href="/archives">归档</a>
+        
+          <a href="/chigua">网安圈</a>
+        
+          <a href="/about">简历</a>
+        
+      </nav>
+    </div>
+  </div>
+</header>
+    <div class="content">
+        <section class="outer">
+    <article>
+        <div class="article-title">
+    <h2><a href="/2025/02/03/hvv1/" class="shake shake-little" title="hvv面经">hvv面经</a></h2>
+    <div class="meta_box">
+    
+        
+        
+            
+        
+            
+        
+        
+        <div class="meta meta_auth">
+            <img src="/img/hongzh0.png" alt="head" />
+            <p>hongzh0</p>
+        </div>
+    
+        
+        
+        <div class="meta meta_date">
+            <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+            <p>发布于：2025年02月03日</p>
+        </div>
+    
+        <div class="meta meta_update">
+            <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+            <p>更新于：2025年02月03日</p>
+        </div>
+    </div>
+    
+  <div class="post_tags">
+    <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/hvv/" rel="tag"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>hvv</a></li></ul>
+  </div>
+
+
+</div>
+
+        <hr>
+        <div class="article-entry">
+            
+            
+            
+            <h3 id="WAF的一般原理"><a href="#WAF的一般原理" class="headerlink" title="WAF的一般原理"></a>WAF的一般原理</h3><ul>
+<li>监控和过滤传入流量</li>
+<li>WAF使用预定义的规则集以及正则匹配来判断流量</li>
+<li>高级WAF能够进行行为分析，检测异常活动，如用户请求频率、请求头、UA等</li>
+<li>拦截恶意流量</li>
+<li>一些现代的 WAF 具有学习功能，能够自适应地调整其规则以适应新的攻击模式</li>
+<li>WAF 通常会记录所有传入流量的活动，并生成报告</li>
+<li>WAF 的一般原理是通过监视、分析和过滤传入的网络流量，以识别和阻止各种类型的网络攻击，从而保护 Web 应用程序的安全性</li>
+</ul>
+<h3 id="HTTP头部的server字段的值有哪些信息"><a href="#HTTP头部的server字段的值有哪些信息" class="headerlink" title="HTTP头部的server字段的值有哪些信息"></a>HTTP头部的server字段的值有哪些信息</h3><ul>
+<li>一般包括服务器软件的相关信息——服务器名称+版本号</li>
+<li>可能出现Apache&#x2F;IIS&#x2F;Nginx 以及版本 以及操作系统</li>
+<li>这项字段一般隐藏，否则不安全</li>
+</ul>
+<h3 id="Log4j2反序列化原理"><a href="#Log4j2反序列化原理" class="headerlink" title="Log4j2反序列化原理"></a>Log4j2反序列化原理</h3><ul>
+<li>log4j2是一个底层日志组件，它的lookup接口会造成通过JNDI引用命名服务</li>
+<li>log4j2记录日志的时候，碰到<code>$&#123;xxx&#125;</code>这样的文字没有一比一地记录下来，而是去解析</li>
+<li>可以通过JNDI接口引用到DNS&#x2F;RMI&#x2F;LDAP协议接口</li>
+<li>攻击者可以自启一个服务器，通过<code>$&#123;&#125;</code>传入精心构造的payload让目标服务器去请求攻击者构造的LDAP服务器，以及攻击者自定义的内容</li>
+<li>攻击者的服务器就会自动生成恶意的Java类，然后通过HTTP端口下发给目标服务器</li>
+<li>目标服务器收到之后直接加载到内存中执行，造成RCE</li>
+</ul>
+<h3 id="未授权访问原理"><a href="#未授权访问原理" class="headerlink" title="未授权访问原理"></a>未授权访问原理</h3><ul>
+<li>需要身份认证的网站应用&#x2F;目录或是服务器组件等在未经身份认证的情况下就被成功访问</li>
+<li>服务器可能缺乏访问控制，文件权限&#x2F;ACL&#x2F;数据库权限错误配置</li>
+<li>系统、服务或资源本身存在安全漏洞</li>
+</ul>
+<h3 id="XXE漏洞原理"><a href="#XXE漏洞原理" class="headerlink" title="XXE漏洞原理"></a>XXE漏洞原理</h3><ul>
+<li>XXE就是服务器对XML解析时没有禁掉外部实体的引用与解析</li>
+<li>攻击者构造的DTD声明外部实体的XML文档可以成功传入服务器并被解析</li>
+<li>可能造成文件读取、信息泄露、RCE等</li>
+</ul>
+<h3 id="Weblogic-SSRF漏洞（CVE-2014-4210）利用过程"><a href="#Weblogic-SSRF漏洞（CVE-2014-4210）利用过程" class="headerlink" title="Weblogic SSRF漏洞（CVE-2014-4210）利用过程"></a>Weblogic SSRF漏洞（CVE-2014-4210）利用过程</h3><ol>
+<li>问题出在<code>SearchPublicRegistries.jsp</code>下的<code>operator</code>参数，其参数值可以请求服务器内部资源</li>
+<li>SSRF探测内网<code>ip:6379</code>确定Redis存在</li>
+<li>SSRF利用Gopher协议操纵Redis，写入计划任务，执行恶意代码</li>
+<li>需要结合Weblogic的特性，使用CRLF（<code>%0a%0d</code>）注入换行符，确保命令执行</li>
+</ol>
+<h3 id="IIS中间件PUT文件写入的修复建议"><a href="#IIS中间件PUT文件写入的修复建议" class="headerlink" title="IIS中间件PUT文件写入的修复建议"></a>IIS中间件PUT文件写入的修复建议</h3><ul>
+<li>禁用PUT方法</li>
+<li>使用PUT方法时，对身份进行验证</li>
+<li>通过ACL禁止未授权用户写入</li>
+<li>对文件名和内容进行输入验证</li>
+<li>隔离上传目录，不返回路径</li>
+<li>采用文件扩展名白名单</li>
+</ul>
+<h3 id="Struts2攻击特征"><a href="#Struts2攻击特征" class="headerlink" title="Struts2攻击特征"></a>Struts2攻击特征</h3><ul>
+<li>RCE试图传入命令及执行结果</li>
+<li>伪造参数，尝试OGNL表达式</li>
+<li>典型URL后缀：<code>.do</code>、<code>.action</code>、<code>.jsp</code></li>
+<li>能够处理OGNL表达式</li>
+</ul>
+<h3 id="Fastjson原理"><a href="#Fastjson原理" class="headerlink" title="Fastjson原理"></a>Fastjson原理</h3><ul>
+<li>服务器解析JSON时未对<code>@type</code>过滤，导致攻击者可构造恶意类<code>TemplateImpl</code></li>
+<li>该类的<code>_bytecodes</code>字段可控，实例化时导致RCE</li>
+</ul>
+<h6 id="Fastjson版本变化"><a href="#Fastjson版本变化" class="headerlink" title="Fastjson版本变化"></a>Fastjson版本变化</h6><ul>
+<li><code>1.2.25</code>：<code>@type</code>黑名单，需使用<code>Lcom.sun.rowset.JdbcRowSetImpl;</code></li>
+<li><code>1.2.42</code>：更严格黑名单检测，需使用<code>LLcom.sun.rowset.JdbcRowSetImpl;;</code></li>
+</ul>
+<h6 id="Fastjson组件判断"><a href="#Fastjson组件判断" class="headerlink" title="Fastjson组件判断"></a>Fastjson组件判断</h6><ul>
+<li>请求是否以JSON格式传值，且内容包含<code>@type</code></li>
+<li>通过提交特殊字符获取错误信息，判断是否调用了JSON解析</li>
+</ul>
+<h3 id="Shiro特征与漏洞"><a href="#Shiro特征与漏洞" class="headerlink" title="Shiro特征与漏洞"></a>Shiro特征与漏洞</h3><ul>
+<li><code>rememberMe</code>字段存在于Cookie中</li>
+<li>登录失败返回<code>rememberMe=deleteMe</code></li>
+<li><strong>Shiro550 vs Shiro721</strong><ul>
+<li><code>550</code>可直接跑默认key</li>
+<li><code>721</code>默认key无效，需获取有效cookie</li>
+<li><strong>利用方式</strong><ol>
+<li><code>rememberMe</code>字段被AES加密+Base64编码</li>
+<li>服务器解密并反序列化</li>
+<li>若密钥可控，可利用<code>ysoserial</code>发送恶意payload，通过CC链执行命令</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="WAF-天眼联动导致IP变化"><a href="#WAF-天眼联动导致IP变化" class="headerlink" title="WAF &amp; 天眼联动导致IP变化"></a>WAF &amp; 天眼联动导致IP变化</h3><ul>
+<li>WAF先拦截和过滤请求，天眼再分析</li>
+<li>因此天眼看到的源IP是WAF，而非真实攻击者IP</li>
+</ul>
+<h3 id="DNS设备出现木马告警的可能性"><a href="#DNS设备出现木马告警的可能性" class="headerlink" title="DNS设备出现木马告警的可能性"></a>DNS设备出现木马告警的可能性</h3><ul>
+<li>设备被木马感染</li>
+<li>设备被攻击者利用（如DNS劫持）</li>
+<li>误报</li>
+<li>需要检查DNS设备日志、流量数据，确保安全</li>
+</ul>
+<h3 id="命令执行告警的误报判断"><a href="#命令执行告警的误报判断" class="headerlink" title="命令执行告警的误报判断"></a>命令执行告警的误报判断</h3><ul>
+<li>返回包是否有命令执行结果</li>
+<li>核实命令来源，是否是正常业务</li>
+<li>命令内容是否包含危险指令</li>
+</ul>
+<h3 id="负载均衡环境下如何找源IP"><a href="#负载均衡环境下如何找源IP" class="headerlink" title="负载均衡环境下如何找源IP"></a>负载均衡环境下如何找源IP</h3><ul>
+<li>代理头（XFF&#x2F;X-Real-IP）</li>
+<li>负载均衡日志</li>
+<li>Wireshark分析流量</li>
+</ul>
+<h3 id="Windows疑似被挖矿的排查思路"><a href="#Windows疑似被挖矿的排查思路" class="headerlink" title="Windows疑似被挖矿的排查思路"></a>Windows疑似被挖矿的排查思路</h3><ul>
+<li>检查系统资源、CPU占用</li>
+<li><code>netstat -anp</code>查找异常端口进程</li>
+<li><code>wmic</code>分析进程参数</li>
+<li>检查启动项、自启脚本</li>
+<li>扫描恶意软件</li>
+<li>分析网络流量，检查是否有连接挖矿池</li>
+<li>审查系统日志</li>
+<li>检查防火墙规则</li>
+<li>直接查找挖矿程序</li>
+</ul>
+<h3 id="Linux查看计划任务"><a href="#Linux查看计划任务" class="headerlink" title="Linux查看计划任务"></a>Linux查看计划任务</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crontab -l</span><br></pre></td></tr></table></figure>
+<h3 id="组织使用蜜罐的目的"><a href="#组织使用蜜罐的目的" class="headerlink" title="组织使用蜜罐的目的"></a>组织使用蜜罐的目的</h3><ul>
+<li>识别攻击方式</li>
+<li>收集威胁情报（攻击IP、载荷、目标）</li>
+<li>降低真实业务风险</li>
+<li>迷惑攻击者，消耗其精力</li>
+<li>捕捉0day漏洞</li>
+</ul>
+<h3 id="使用天眼查看日志的方法"><a href="#使用天眼查看日志的方法" class="headerlink" title="使用天眼查看日志的方法"></a>使用天眼查看日志的方法</h3><p>登录系统，进入日志查看功能<br>选择日志源，进行筛选<br>详细信息包括时间戳、日志级别、来源IP、事件类型等</p>
+<h3 id="ThinkPHP框架漏洞"><a href="#ThinkPHP框架漏洞" class="headerlink" title="ThinkPHP框架漏洞"></a>ThinkPHP框架漏洞</h3><p>a. 文件包含<br>b. SQL注入<br>c. RCE<br>d. 敏感信息泄露<br>e. 文件上传</p>
+<h1 id="Webshell管理工具流量特征分析"><a href="#Webshell管理工具流量特征分析" class="headerlink" title="Webshell管理工具流量特征分析"></a>Webshell管理工具流量特征分析</h1><h2 id="1-菜刀"><a href="#1-菜刀" class="headerlink" title="1. 菜刀"></a>1. 菜刀</h2><ul>
+<li>采用一句话木马</li>
+<li>payload 明文传输，使用 URL + base64</li>
+<li>payload 包含 <code>eval</code> &#x2F; <code>assert</code> &#x2F; <code>base64_decode</code></li>
+<li>payload 默认固定 <code>&amp;z0=QGluaV9zZXQ</code> 开头，base64 解密后可见代码</li>
+</ul>
+<h2 id="2-蚁剑"><a href="#2-蚁剑" class="headerlink" title="2. 蚁剑"></a>2. 蚁剑</h2><ul>
+<li>使用 <code>assert</code> &#x2F; <code>eval</code>，带有 base64 编解码</li>
+<li>请求体开头特征：<code>@ini_set(&quot;display_errors&quot;,&quot;0&quot;);@set_time_limit(0);</code></li>
+<li>payload 经过混淆后仍可解码，格式：随机数 + 结果 + 随机数</li>
+<li>参数名 <code>_0x</code> 开头，例如 <code>_0x...=</code></li>
+</ul>
+<h2 id="3-冰蝎"><a href="#3-冰蝎" class="headerlink" title="3. 冰蝎"></a>3. 冰蝎</h2><ul>
+<li><strong>冰蝎2.0</strong>：AES + base64，动态密钥，UA 头频繁切换</li>
+<li><strong>冰蝎3.0</strong>：AES + base64，固定密钥，UA 头频繁切换<ul>
+<li><code>Content-Type=application/octet-stream</code></li>
+<li>关键特征密钥：<code>e45e329feb5d925b</code></li>
+</ul>
+</li>
+<li><strong>冰蝎4.0</strong><ul>
+<li>UA 头频繁切换</li>
+<li>请求使用 <code>Connection: Keep-Alive</code></li>
+<li>特定端口，如 <code>49700</code></li>
+<li>特定请求&#x2F;响应头：<ul>
+<li>请求字节头：<code>dFAXQV1LORcHRQtLRlwMAhwFTAg/M</code></li>
+<li>响应字节头：<code>TxcWR1NNExZAD0ZaAWMIPAZjH1BFBFtHThcJSlUXWEd</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-哥斯拉"><a href="#4-哥斯拉" class="headerlink" title="4. 哥斯拉"></a>4. 哥斯拉</h2><ul>
+<li>webshell 动态生成</li>
+<li>JSP 中出现 <code>xc</code> &#x2F; <code>pass</code> 字符、Java 反射 (<code>ClassLoader</code>)</li>
+<li>base64 编解码</li>
+<li>UA、Accept 字段较弱（可修改）</li>
+<li>Cookie 末尾带 <code>;</code></li>
+<li>响应体特征：<ul>
+<li>32 位 MD5 拆分：<code>md5前16位 + base64 + md5后16位</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="应急响应"><a href="#应急响应" class="headerlink" title="应急响应"></a>应急响应</h1><h2 id="EDR-发现大量内网扫描"><a href="#EDR-发现大量内网扫描" class="headerlink" title="EDR 发现大量内网扫描"></a><strong>EDR 发现大量内网扫描</strong></h2><ul>
+<li>判断扫描源头：<code>DMZ</code> 还是 <code>钓鱼</code></li>
+<li>DMZ 排查：<ul>
+<li><code>webshell</code></li>
+<li><code>隧道</code></li>
+<li><code>横向移动</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="域控被攻陷"><a href="#域控被攻陷" class="headerlink" title="域控被攻陷"></a><strong>域控被攻陷</strong></h2><ul>
+<li><code>krbtgt hash</code> 变更，防止黄金票据</li>
+<li><code>ACL</code> 策略修复</li>
+<li>检查 <code>域控伪造</code></li>
+<li><code>SSP</code> 注入</li>
+<li><code>DCSync</code> 高权限用户攻击</li>
+<li>检查：<ul>
+<li>约束性委派</li>
+<li>非约束性委派</li>
+<li>基于资源的委派</li>
+</ul>
+</li>
+</ul>
+<h2 id="192-168-3-4-被-Cobalt-Strike-上线"><a href="#192-168-3-4-被-Cobalt-Strike-上线" class="headerlink" title="192.168.3.4 被 Cobalt Strike 上线"></a><strong>192.168.3.4 被 Cobalt Strike 上线</strong></h2><ul>
+<li>确认 <code>192.168.1.2</code> 是否能直通 <code>3.4</code></li>
+<li>若不通，检查 <code>多网卡跳板</code></li>
+</ul>
+<hr>
+<h1 id="常见安全知识"><a href="#常见安全知识" class="headerlink" title="常见安全知识"></a>常见安全知识</h1><h2 id="TCP-三次握手"><a href="#TCP-三次握手" class="headerlink" title="TCP 三次握手"></a><strong>TCP 三次握手</strong></h2><ol>
+<li><code>SYN</code> 发送连接请求</li>
+<li><code>SYN-ACK</code> 服务器确认</li>
+<li><code>ACK</code> 客户端确认</li>
+</ol>
+<h2 id="X-Forwarded-For-XFF"><a href="#X-Forwarded-For-XFF" class="headerlink" title="X-Forwarded-For (XFF)"></a><strong>X-Forwarded-For (XFF)</strong></h2><ul>
+<li>获取用户真实 IP</li>
+</ul>
+<h2 id="HTTP-状态码"><a href="#HTTP-状态码" class="headerlink" title="HTTP 状态码"></a><strong>HTTP 状态码</strong></h2><ul>
+<li><code>401</code> 认证失败</li>
+<li><code>403</code> 中间件拒绝</li>
+<li><code>301</code> 永久重定向</li>
+<li><code>500</code> 服务器错误</li>
+</ul>
+<h2 id="SQL-注入"><a href="#SQL-注入" class="headerlink" title="SQL 注入"></a><strong>SQL 注入</strong></h2><ul>
+<li><strong>二次注入</strong>：数据存入数据库，后续利用</li>
+<li><strong>堆叠注入</strong>：<code>;</code> 执行多个 SQL 语句</li>
+<li><strong>读写条件</strong>：<ul>
+<li><code>secure_file_priv=&#39;&#39;</code>（空或 NULL）</li>
+</ul>
+</li>
+</ul>
+<h2 id="SQL-注入防御"><a href="#SQL-注入防御" class="headerlink" title="SQL 注入防御"></a><strong>SQL 注入防御</strong></h2><ul>
+<li>预编译</li>
+<li>PDO</li>
+<li>WAF 过滤</li>
+</ul>
+<h2 id="XSS-vs-CSRF"><a href="#XSS-vs-CSRF" class="headerlink" title="XSS vs CSRF"></a><strong>XSS vs CSRF</strong></h2><ul>
+<li><code>XSS</code>：跨站脚本，攻击用户</li>
+<li><code>CSRF</code>：跨站请求伪造，攻击服务器</li>
+</ul>
+<h2 id="XXE-盲注"><a href="#XXE-盲注" class="headerlink" title="XXE 盲注"></a><strong>XXE 盲注</strong></h2><ul>
+<li>外带数据回显</li>
+</ul>
+<hr>
+<h1 id="渗透测试常见工具-漏洞"><a href="#渗透测试常见工具-漏洞" class="headerlink" title="渗透测试常见工具 &amp; 漏洞"></a>渗透测试常见工具 &amp; 漏洞</h1><h2 id="已知漏洞"><a href="#已知漏洞" class="headerlink" title="已知漏洞"></a><strong>已知漏洞</strong></h2><ul>
+<li><strong>AWVS 10</strong> 远程代码执行</li>
+<li><strong>冰蝎 2.0</strong> RCE</li>
+<li><strong>Cobalt Strike 4.7</strong> XSS &#x2F; RCE</li>
+<li><strong>Goby</strong> 老版本 RCE</li>
+<li><strong>蜜罐</strong> 诱捕攻击者</li>
+</ul>
+<h2 id="中间件框架漏洞"><a href="#中间件框架漏洞" class="headerlink" title="中间件框架漏洞"></a><strong>中间件框架漏洞</strong></h2><ul>
+<li><code>Tomcat</code></li>
+<li><code>Nginx</code></li>
+<li><code>WebLogic</code></li>
+<li><code>Spring</code></li>
+</ul>
+<h2 id="PHP-反序列化"><a href="#PHP-反序列化" class="headerlink" title="PHP 反序列化"></a><strong>PHP 反序列化</strong></h2><ul>
+<li><code>PHAR</code> 伪协议</li>
+</ul>
+<h2 id="DNS-外连判断"><a href="#DNS-外连判断" class="headerlink" title="DNS 外连判断"></a><strong>DNS 外连判断</strong></h2><ul>
+<li>设备异常告警</li>
+<li>提取外连 IP，微步查威胁情报</li>
+</ul>
+<h2 id="正向代理-vs-反向代理"><a href="#正向代理-vs-反向代理" class="headerlink" title="正向代理 vs 反向代理"></a><strong>正向代理 vs 反向代理</strong></h2><ul>
+<li><strong>正向代理</strong>：客户端访问代理，代理再访问目标</li>
+<li><strong>反向代理</strong>：如 Nginx，隐藏真实服务器</li>
+</ul>
+<h2 id="内网提权"><a href="#内网提权" class="headerlink" title="内网提权"></a><strong>内网提权</strong></h2><ul>
+<li><code>MS14-068</code></li>
+<li><code>补丁漏洞</code></li>
+<li><code>土豆家族</code></li>
+<li><code>计划任务</code></li>
+</ul>
+<hr>
+<h1 id="流量分析"><a href="#流量分析" class="headerlink" title="流量分析"></a><strong>流量分析</strong></h1><h2 id="识别-Cobalt-Strike"><a href="#识别-Cobalt-Strike" class="headerlink" title="识别 Cobalt Strike"></a><strong>识别 Cobalt Strike</strong></h2><ul>
+<li><code>HTTP</code> 请求 URL <code>Checksum8</code> 解密</li>
+<li><code>HTTPS</code> 证书特征：<ul>
+<li><code>Get /cx</code></li>
+<li><code>POST /q.cgi</code></li>
+</ul>
+</li>
+<li><code>JA3</code> 指纹分析</li>
+<li><code>Server Hello</code> 包 <code>JA3S</code></li>
+</ul>
+<h2 id="哥斯拉-冰蝎"><a href="#哥斯拉-冰蝎" class="headerlink" title="哥斯拉 &amp; 冰蝎"></a><strong>哥斯拉 &amp; 冰蝎</strong></h2><ul>
+<li><strong>冰蝎</strong><ul>
+<li><code>2.0</code></li>
+<li><code>3.0</code></li>
+<li><code>4.0</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="内存马"><a href="#内存马" class="headerlink" title="内存马"></a><strong>内存马</strong></h1><ul>
+<li>直接加载 JVM 运行时，不写磁盘</li>
+<li>关机后失效</li>
+<li>适用于无外网环境</li>
+</ul>
+<hr>
+<h1 id="钓鱼邮件"><a href="#钓鱼邮件" class="headerlink" title="钓鱼邮件"></a><strong>钓鱼邮件</strong></h1><ul>
+<li>不能钓到我 😎</li>
+</ul>
+<hr>
+<h1 id="职业问题"><a href="#职业问题" class="headerlink" title="职业问题"></a><strong>职业问题</strong></h1><h2 id="客户问技术问题，不会怎么办？"><a href="#客户问技术问题，不会怎么办？" class="headerlink" title="客户问技术问题，不会怎么办？"></a><strong>客户问技术问题，不会怎么办？</strong></h2><ul>
+<li><strong>查</strong>，然后补充知识</li>
+<li><strong>请教同事</strong></li>
+<li><strong>直接告诉客户：稍后回复，查完资料后解答</strong></li>
+</ul>
+<h2 id="任务冲突：客户-vs-经理"><a href="#任务冲突：客户-vs-经理" class="headerlink" title="任务冲突：客户 vs 经理"></a><strong>任务冲突：客户 vs 经理</strong></h2><ul>
+<li><strong>听项目经理的</strong></li>
+</ul>
+
+        </div>
+        <div class="article-copyright">
+            
+    <blockquote>
+        <p>
+            版权声明：本文由「hongzh0」原创，博客内容受知识共享协议（CC BY-NC-SA）保护，允许在署名的前提下进行非商业性使用，并以相同方式共享。本文永久链接地址：http://hongzh0.wiki/2025/02/03/hvv1/
+        </p>
+    </blockquote>
+
+
+        </div>
+    </article>
+    
+
+    <section id="toc-div" >
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#WAF%E7%9A%84%E4%B8%80%E8%88%AC%E5%8E%9F%E7%90%86"><span class="toc-text">WAF的一般原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP%E5%A4%B4%E9%83%A8%E7%9A%84server%E5%AD%97%E6%AE%B5%E7%9A%84%E5%80%BC%E6%9C%89%E5%93%AA%E4%BA%9B%E4%BF%A1%E6%81%AF"><span class="toc-text">HTTP头部的server字段的值有哪些信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Log4j2%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%8E%9F%E7%90%86"><span class="toc-text">Log4j2反序列化原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%8E%9F%E7%90%86"><span class="toc-text">未授权访问原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XXE%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="toc-text">XXE漏洞原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Weblogic-SSRF%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2014-4210%EF%BC%89%E5%88%A9%E7%94%A8%E8%BF%87%E7%A8%8B"><span class="toc-text">Weblogic SSRF漏洞（CVE-2014-4210）利用过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IIS%E4%B8%AD%E9%97%B4%E4%BB%B6PUT%E6%96%87%E4%BB%B6%E5%86%99%E5%85%A5%E7%9A%84%E4%BF%AE%E5%A4%8D%E5%BB%BA%E8%AE%AE"><span class="toc-text">IIS中间件PUT文件写入的修复建议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Struts2%E6%94%BB%E5%87%BB%E7%89%B9%E5%BE%81"><span class="toc-text">Struts2攻击特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson%E5%8E%9F%E7%90%86"><span class="toc-text">Fastjson原理</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#Fastjson%E7%89%88%E6%9C%AC%E5%8F%98%E5%8C%96"><span class="toc-text">Fastjson版本变化</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#Fastjson%E7%BB%84%E4%BB%B6%E5%88%A4%E6%96%AD"><span class="toc-text">Fastjson组件判断</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Shiro%E7%89%B9%E5%BE%81%E4%B8%8E%E6%BC%8F%E6%B4%9E"><span class="toc-text">Shiro特征与漏洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WAF-%E5%A4%A9%E7%9C%BC%E8%81%94%E5%8A%A8%E5%AF%BC%E8%87%B4IP%E5%8F%98%E5%8C%96"><span class="toc-text">WAF &amp; 天眼联动导致IP变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DNS%E8%AE%BE%E5%A4%87%E5%87%BA%E7%8E%B0%E6%9C%A8%E9%A9%AC%E5%91%8A%E8%AD%A6%E7%9A%84%E5%8F%AF%E8%83%BD%E6%80%A7"><span class="toc-text">DNS设备出现木马告警的可能性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%91%8A%E8%AD%A6%E7%9A%84%E8%AF%AF%E6%8A%A5%E5%88%A4%E6%96%AD"><span class="toc-text">命令执行告警的误报判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%A6%82%E4%BD%95%E6%89%BE%E6%BA%90IP"><span class="toc-text">负载均衡环境下如何找源IP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Windows%E7%96%91%E4%BC%BC%E8%A2%AB%E6%8C%96%E7%9F%BF%E7%9A%84%E6%8E%92%E6%9F%A5%E6%80%9D%E8%B7%AF"><span class="toc-text">Windows疑似被挖矿的排查思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux%E6%9F%A5%E7%9C%8B%E8%AE%A1%E5%88%92%E4%BB%BB%E5%8A%A1"><span class="toc-text">Linux查看计划任务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%84%E7%BB%87%E4%BD%BF%E7%94%A8%E8%9C%9C%E7%BD%90%E7%9A%84%E7%9B%AE%E7%9A%84"><span class="toc-text">组织使用蜜罐的目的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%A9%E7%9C%BC%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-text">使用天眼查看日志的方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ThinkPHP%E6%A1%86%E6%9E%B6%E6%BC%8F%E6%B4%9E"><span class="toc-text">ThinkPHP框架漏洞</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Webshell%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%B5%81%E9%87%8F%E7%89%B9%E5%BE%81%E5%88%86%E6%9E%90"><span class="toc-text">Webshell管理工具流量特征分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%8F%9C%E5%88%80"><span class="toc-text">1. 菜刀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%9A%81%E5%89%91"><span class="toc-text">2. 蚁剑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%86%B0%E8%9D%8E"><span class="toc-text">3. 冰蝎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%93%A5%E6%96%AF%E6%8B%89"><span class="toc-text">4. 哥斯拉</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94"><span class="toc-text">应急响应</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#EDR-%E5%8F%91%E7%8E%B0%E5%A4%A7%E9%87%8F%E5%86%85%E7%BD%91%E6%89%AB%E6%8F%8F"><span class="toc-text">EDR 发现大量内网扫描</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E6%8E%A7%E8%A2%AB%E6%94%BB%E9%99%B7"><span class="toc-text">域控被攻陷</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#192-168-3-4-%E8%A2%AB-Cobalt-Strike-%E4%B8%8A%E7%BA%BF"><span class="toc-text">192.168.3.4 被 Cobalt Strike 上线</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E5%AE%89%E5%85%A8%E7%9F%A5%E8%AF%86"><span class="toc-text">常见安全知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-text">TCP 三次握手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#X-Forwarded-For-XFF"><span class="toc-text">X-Forwarded-For (XFF)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-%E7%8A%B6%E6%80%81%E7%A0%81"><span class="toc-text">HTTP 状态码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL-%E6%B3%A8%E5%85%A5"><span class="toc-text">SQL 注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SQL-%E6%B3%A8%E5%85%A5%E9%98%B2%E5%BE%A1"><span class="toc-text">SQL 注入防御</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS-vs-CSRF"><span class="toc-text">XSS vs CSRF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XXE-%E7%9B%B2%E6%B3%A8"><span class="toc-text">XXE 盲注</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B8%B8%E8%A7%81%E5%B7%A5%E5%85%B7-%E6%BC%8F%E6%B4%9E"><span class="toc-text">渗透测试常见工具 &amp; 漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5%E6%BC%8F%E6%B4%9E"><span class="toc-text">已知漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%A1%86%E6%9E%B6%E6%BC%8F%E6%B4%9E"><span class="toc-text">中间件框架漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PHP-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-text">PHP 反序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DNS-%E5%A4%96%E8%BF%9E%E5%88%A4%E6%96%AD"><span class="toc-text">DNS 外连判断</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86-vs-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">正向代理 vs 反向代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E6%8F%90%E6%9D%83"><span class="toc-text">内网提权</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-text">流量分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%86%E5%88%AB-Cobalt-Strike"><span class="toc-text">识别 Cobalt Strike</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%A5%E6%96%AF%E6%8B%89-%E5%86%B0%E8%9D%8E"><span class="toc-text">哥斯拉 &amp; 冰蝎</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-text">内存马</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%92%93%E9%B1%BC%E9%82%AE%E4%BB%B6"><span class="toc-text">钓鱼邮件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%81%8C%E4%B8%9A%E9%97%AE%E9%A2%98"><span class="toc-text">职业问题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E9%97%AE%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98%EF%BC%8C%E4%B8%8D%E4%BC%9A%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">客户问技术问题，不会怎么办？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E5%86%B2%E7%AA%81%EF%BC%9A%E5%AE%A2%E6%88%B7-vs-%E7%BB%8F%E7%90%86"><span class="toc-text">任务冲突：客户 vs 经理</span></a>
+    </section>
+    <section id="gohome" style="display: none;"><a>顶</a></section>
+
+    <script>
+        function get_top_by_link(link){
+            var hnid = "#" + $(link).attr("data");
+            if ($(hnid).length > 0){
+                return $(hnid).offset().top;
+            }else{
+                return 0;
+            }
+        }
+        //go to hn
+        function gotohn(link){
+            $("html,body").animate({scrollTop: get_top_by_link(link) }, 300);
+        }
+        //页面滚动
+        function update(){
+            var scrollH = $(window).scrollTop();
+            if($(".toc-link")){
+                $(".toc-link").each(function(i,link){
+                    var mdHeight = get_top_by_link(link);
+                    if(mdHeight < scrollH + 50){
+                        //高亮导航菜单
+                        $('.toc-link').removeClass('on');
+                        $(link).addClass('on');
+                    }
+                });
+            }
+            if(scrollH < 200){
+                $("#gohome").css("display","none");
+            }else{
+                $("#gohome").css("display","block");
+            }
+        }
+        $(function(){
+            //修复部分锚点从属关系
+            if($("#toc-div >li").length > 0){
+                $("#toc-div >li").appendTo($("#toc-div >ol:first"));
+            }
+            //返回顶部
+            $('#gohome').click(function(){
+                $("html,body").animate({scrollTop: 0}, 300);
+                return false;
+            })
+            //遍历锚点
+            $(".toc-link").each(function(i,link){
+                $(link).attr("data",$(link).attr('href').substring(1));
+                $(link).attr("href","javascript:void(0);");
+                $(link).attr("onclick","gotohn(this);");
+            })
+            //绑定滚动事件
+            $(window).bind('scroll', update);
+            //初始化toc
+            var first_toc = $(".toc-link")[0];
+            var first_scroll = get_top_by_link(first_toc);
+            var window_scroll = $(window).scrollTop();
+            if(window_scroll <= first_scroll){
+                $(first_toc).addClass('on');
+            }
+        })
+    </script>
+
+</section>
+    </div>
+    <footer>
+    <div class="outer">
+        <div class="inner">
+            Powered by <a href="http://prowiki.demopage.icu/" target="_blank">ProWiki</a>
+            &copy;2025 hongzh0<br>
+            <a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/"></a>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/custom.js"></script>
+
+
+    <script>onload_content();</script>
+
+</body>
+</html>
