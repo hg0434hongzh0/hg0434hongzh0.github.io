@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
     
-    <title>shiro漏洞 | HG0434</title>
+    <title>shiro漏洞 | 网安圈史官</title>
     
     
-        <meta property="og:site_name" content="HG0434">
+        <meta property="og:site_name" content="网安圈史官">
     
     
         <meta property="article:author" content="hongzh0">
@@ -50,7 +50,7 @@
   <div class="outer">
     <div class="inner">
       <h1 class="logo-wrap">
-        <a>HG0434<b><sup></sup></b></a>
+        <a>网安圈史官<b><sup></sup></b></a>
       </h1>
     </div>
     <div class="inner">
@@ -76,8 +76,6 @@
     <div class="meta_box">
     
         
-        
-            
         
             
         
@@ -112,7 +110,15 @@
             
             
             
-            <h1 id="Post-title"><a href="#Post-title" class="headerlink" title="Post title"></a>Post title</h1><p>Post body</p>
+            <h3 id="shiro-550"><a href="#shiro-550" class="headerlink" title="shiro-550"></a>shiro-550</h3><h4 id="RCE流程"><a href="#RCE流程" class="headerlink" title="RCE流程"></a>RCE流程</h4><p>提取cookie-&gt;Base64解码-&gt;AES解密-》反序列化</p>
+<p>漏洞点就在于这个AES的key，如果用的是默认key或者是弱密码，可以直接利用或者是爆破出来</p>
+<p>如何判断爆破成功没有呢，看返回包的cookie，如果出现Remember-Me&#x3D;Delete-Me,就是爆破失败，反之成功</p>
+<h3 id="shiro-721"><a href="#shiro-721" class="headerlink" title="shiro-721"></a>shiro-721</h3><p>shiro721中，密钥的生成方式变为了动态生成，前后对比源码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public AbstractRememberMeManager() &#123;</span><br><span class="line">        this.serializer = new DefaultSerializer&lt;PrincipalCollection&gt;();</span><br><span class="line">        this.cipherService = new AesCipherService();</span><br><span class="line">        setCipherKey(**DEFAULT_CIPHER_KEY_BYTES**);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public AbstractRememberMeManager() &#123;</span><br><span class="line">        this.serializer = new DefaultSerializer&lt;PrincipalCollection&gt;();</span><br><span class="line">        AesCipherService cipherService = new AesCipherService();</span><br><span class="line">        this.cipherService = cipherService;</span><br><span class="line">        setCipherKey(cipherService.generateNewKey().getEncoded());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="RCE流程-1"><a href="#RCE流程-1" class="headerlink" title="RCE流程"></a>RCE流程</h4><p>输入正确账号密码登录，勾选Remember，并从cookie中拿到Remember-Me的值</p>
 
         </div>
         <div class="article-copyright">
@@ -129,7 +135,7 @@
     
 
     <section id="toc-div" >
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Post-title"><span class="toc-text">Post title</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro-550"><span class="toc-number">1.</span> <span class="toc-text">shiro-550</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RCE%E6%B5%81%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">RCE流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro-721"><span class="toc-number">2.</span> <span class="toc-text">shiro-721</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RCE%E6%B5%81%E7%A8%8B-1"><span class="toc-number">2.1.</span> <span class="toc-text">RCE流程</span></a></li></ol></li></ol>
     </section>
     <section id="gohome" style="display: none;"><a>顶</a></section>
 
