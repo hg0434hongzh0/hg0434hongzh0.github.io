@@ -110,7 +110,7 @@
             
             
             
-            <h3 id="shiro-550"><a href="#shiro-550" class="headerlink" title="shiro-550"></a>shiro-550</h3><h4 id="RCE流程"><a href="#RCE流程" class="headerlink" title="RCE流程"></a>RCE流程</h4><p>提取cookie-&gt;Base64解码-&gt;AES解密-》反序列化</p>
+            <h3 id="shiro-550"><a href="#shiro-550" class="headerlink" title="shiro-550"></a>shiro-550</h3><h4 id="RCE流程"><a href="#RCE流程" class="headerlink" title="RCE流程"></a>RCE流程</h4><p>提取cookie-&gt;Base64解码-&gt;AES解密-&gt;反序列化</p>
 <p>漏洞点就在于这个AES的key，如果用的是默认key或者是弱密码，可以直接利用或者是爆破出来</p>
 <p>如何判断爆破成功没有呢，看返回包的cookie，如果出现Remember-Me&#x3D;Delete-Me,就是爆破失败，反之成功</p>
 <p>但其实Remember-Me这玩意不一定非得叫Remember-Me，可以改的，在ShiroConfiguration.java文件里可以改动的</p>
