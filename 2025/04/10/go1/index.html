@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     
-    <title>心蟠实验室</title>
+    <title>GO语言一 | 心蟠实验室</title>
     
     
         <meta property="og:site_name" content="心蟠实验室">
@@ -72,13 +72,13 @@
         <section class="outer">
     <article>
         <div class="article-title">
-    <h2><a href="/2025/04/10/go1/" class="shake shake-little" title=""></a></h2>
+    <h2><a href="/2025/04/10/go1/" class="shake shake-little" title="GO语言一">GO语言一</a></h2>
     <div class="meta_box">
     
         
         
             
-                
+        
         
         <div class="meta meta_auth">
             <img src="/img/hongzh0.png" alt="head" />
@@ -98,6 +98,10 @@
         </div>
     </div>
     
+  <div class="post_tags">
+    <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>go</a></li></ul>
+  </div>
+
 
 </div>
 
@@ -106,26 +110,18 @@
             
             
             
-            <h3 id="GO语言一"><a href="#GO语言一" class="headerlink" title="GO语言一"></a>GO语言一</h3><h4 id="hello-world"><a href="#hello-world" class="headerlink" title="hello world"></a>hello world</h4><p>go 个人感觉可能是仅次于python来说最简单的一门语言了，学起来感觉很轻松</p>
-<p>还是第一个hello world吧</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">  fmt.Println(&quot;hello world&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="fmt"><a href="#fmt" class="headerlink" title="fmt"></a>fmt</h4><p>fmt提供了几个输出的相关函数</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Print()</span><br><span class="line">Printf()</span><br><span class="line">Println()</span><br></pre></td></tr></table></figure>
-
-<p>感觉看名字就能看出来都是做啥的了，Print()最基本的输出、Printf()格式化输出、Println()输出后换行</p>
-<p>举个例子吧</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	fmt.Print(&quot;直接打印出该信息并且输出后不换行也不转换格式符%d&quot;)</span><br><span class="line">	num := 123</span><br><span class="line">	fmt.Printf(&quot;转化格式符%d&quot;, num)</span><br><span class="line">	fmt.Println(&quot;输出后换行&quot;)</span><br><span class="line">	fmt.Print(&quot;验证上一个是输出后换行而不是单独输出行&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>输出结果如下</p>
-<p><img src="https://pic1.imgdb.cn/item/67f75bbc88c538a9b5c8495e.png"></p>
-<p>关于这个库先简单说这些</p>
-<p>然后是关于go的数据类型、逻辑控制、运算符</p>
-<p>运算符加减乘除与或非异或左移右移大于小于大于等于小于等于，栓条狗都会，不写</p>
-<p>逻辑控制if else，不说了吧emmm</p>
-<p>做道ctf</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line">import &quot;os&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    fmt.Println(&quot;给我一个负数&quot;)</span><br><span class="line">    var x int16</span><br><span class="line">    fmt.Scanln(&amp;x)</span><br><span class="line">    if x &lt;= 0 &#123;</span><br><span class="line">       println(&quot;hacker!&quot;)</span><br><span class="line">       fmt.Scanln()</span><br><span class="line">       os.Exit(-1)</span><br><span class="line">    &#125;</span><br><span class="line">    if x+1 &gt;= 0 &#123;</span><br><span class="line">       println(&quot;hacker!&quot;)</span><br><span class="line">       fmt.Scanln()</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">       println(&quot;flag&#123;Congratulation!&#125;&quot;)</span><br><span class="line">       fmt.Scanln()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
+            <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="宁就是白嫖怪？" data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="ff7d245f1fcb87bb2475ee60f84a667a0cb62ba5066f265708f79f528ff42049">42592b4e3a3eaa2ea9c24f3ea1e3d27c225d5924a7a8753f73cfe0a0be07396a581205ea7af1bfc16cfe9cd1b998e9dd3fb70b92bfe11fe8d3a0902c8d537ca884cb2b79e435f1450725b53023c1fb18609555e44e1c213ddde07c5e3ad30666b5baa024065b02b796f1d6ee924c45b78dedced7c094dc764b40c6f37291690bdb2a6de215abd24fdce2bd8b31da7631db6596ecba2074605f361218a6d640d032d493120860bebf1521364a214ecacefbd48289313b40975c135756c11f1baf5ffcba52d72d661bbf6b82701023eb152d3ac9020a215bfad8ffecdff47072708efb3ac9f07857764d5d53649359a469f480f8d1a1840028b05e0cc68dacd9ac0e946baf4f2706fc95fc5d91910d47663d6ffa6afa2b1e2c2670bf8f7afde78dd614061ecab39a6473809d1fb7f8792348cf805987d35142af2389aa4d748f66bec9803bf85e9c329e9706ec72b6db306cdd6791e214a8e4386c697a9a8be64df8f2db72c99e7b882072ec30d59deebdd891529bfbfd3df707d5197162431ad6c8a38b0e3a790d13a0b8e9a66f84173057de12149986fafbab23e9bb8e675ed8aefeb78b42b5827e2686637785a6337c57504a890464d3ea7dc580ae39c4d7ee5f113e1e54de29520170d0d0b630ee4d8e82dc79825380df9218ebd87afa9575cef23fc702407321d32ab386748eaa5ac0703270731e36b0d02b8f7e60d9987c1915f0f99c066b98c3a9204f45f5f9541438b4f8c9fee8cedc4732fdf2bff28d5e5e8052dcdac6b729b0592f022aab23e4ad3a5cbef0211eb3c4130cba9b5f23db088cdd1894e181af8d63ab4f2f4efaacc2ed5da8659ee3ba9a1f7bf2272dddcea06ebed240a678965428ffe1b6d45836e749e3c2019303d6cef53bf07009d0be9394a502656be920f6d9d3acc828386190108d2b0d7a058f768b1a8a56fb12153e6398e280028b5d1a85cb50ca056df7106de1423002e9ddf84c8de24c0996a0bbe6c78b614b3afa865d632b871973bee4c30ac6df6c776a937671d261f9f1947abaa31b65ec20a7f1d60c83f1476d69ce2ad079df8dbb3d8a938404ac381f96de82e858d4ed651e5daeff26c0eb56f0b90d13dd67c910cc51fc9dfe66789ef541c2c160c4368442919e1afcafe4bfded319502138d940b74b40bfdfed8ef816af7373b2cbca830e9aa893dbb4c7bcfcb79a7048b778fdfb9a5befbbbe4795241cadac150876b02952fa21dd9751ccc0f45de6962171480ac0c50616d7402aa23145ef563023a99fca0c5e9702a444f84cca0625585afce069d13e22bdf4b2b5423545337cba3648fa917b2410852463ffe9a9ed9aa85447575f497dcab790705a38a4a9265dbe0cc25673f147f5a203145521bc6d4edbb4d8a3605155bbfde5781783a3891afad628056862b59dfddec0b01bcc0bcaf4b67de6677907b4dd0db0fa939d5d6f59be408541dbc6bb6881320539bdbe4554fcca1543a4366b89b7496d547e59f05181adc11a38175b529ce15e5c236c7061c6082114d90582fed956ad2e8979781a1fc56392e25dd45b584eeedeb60bdc08d08eeb01f65634e4fd07de02debed28caba8a041837d7d3356baf95a063f1faba00e0076689113239491a38b13ea725c59575a0d8525fc897a912ee84bb5f5f853be30fa0bdec37d9a36ef11c36ff711da0abdcb519b54140bf44feafba47128b621d32c0f524d5682e401d1eb2c72af50d6692582ca4a10bec1c7e6efbce0d5e05284a03d2c32f7c3378bcabd657b79a94af30630d0d8d98c94a6ea7ba6dd405226b15fb2958a45e27f097824999c0f00a654106b23bbba83249a45e56c52f43c2f9177a3586ead70c23df40a3cecfd3fc70283ad190f5cf65eeeb470d536e92b9c3f352167f92ae6b46200a1dc58c25d07143194eae012b81c3eb35ce48364ab2da4dd86dc0f8611a5863c8f67c4dd0d341809599f038f9ce58e6ac25bfac464967703bff57ce3d18574fe719e0f32063989442e4da01b8c1ffa6b1e68c74a25aaa035d8cbd783f7ca584815b7d01924d1624547cd34fe62fee54b6647889ddc09570abf5be12b3b349a11709a97d49110d6ccc31fcae0a9ba3e51c3955e1472d44402429a644780555546b33614e52bf2d32a33cdc7bb13c3d181f8d3c397f06c8cfb279f9eff8efde9966683f1e07f43509ce238e2958609b416b37b8eb4e4460dbbf6803ed55c8d3b3fcd8f1f3f2df4bfd58eacee82672f3dd92f9ed5d32e18d475914f8ffe0a3697fee94e4c4e8806febb4e4c92509a18c2c1761680b6ca6cea77b9779e58f2bb5d95386d3b78e5a60567f2d4498dcb99e2d0a63330277ca559fc9490bf64ddd5fed1baef39baa7a3d416271e51d93e4f822c2fab7fab84513e5d50d152ab8bf9b23aed121f03f3b30241c69faacd944ec3511ada0c870b436511d2f4c138dad7b20ef322cb034c9ca08089ba70a6eb324f63cc48245d361f48e63fe5568d1fd9dfe083c0e3b082a2424f0a12be42e7e20e538015ebde398ca7c0dfecfc2dc0b665e691cda59e979706adaf4081b626fb2b1e024526a5b0b3b4494a382255de382dddc8780ef521ee75248a7a7a4cfa04cdddb0204722e9c4042a5c184386a0a1af7c7fc3e1f8f146178b248797956658cebd080c81c53e8a57c41e5a8fad2979dc3d23caf10a92e01e290b4efdc3867f64a206310686689b52cf4579e26772251e96e6f69089d27dbc468c1a2e17df3ee99741d8a1e978bd22b5f9aae2041fd055f49502acc6c502672198221e08a50a9e96aae2a1cd5e89726670ef91484e330da5d60ef20cfd4ce5e665c5b15d3f6cf45e1ece997ad135a9be8401b90b87df4154cfadb2cb9f723df663760456744866061b91e5f8ee6039113fe4a2979e735a5ee39d72172ad9021fa5a47bca5b8fe8d8bfa47097f72a506996a74dd43133e4228dca34c639d8bdd117982c7160367e5e3dc33a182d42b3cefb85f3e32780bb969337aea9a693c7ec39ef5e0d3dae49f203dc7dcffb693d382c307e5f7ef2df220ddbe76be8ee67cacca87bf8e0bf7f56235e1ac7ffbfb61039b51beff482f0dce23b289676574aa7aea61010f2d7bb05b2055003759d43ce0ce4b94987e03c1b42ec8dc48f81e9e9bfd96928138ed2d6a06687306b054a8a792e5b12ab8bfd33bd8a0507f35f8ca33acab60512dd268039f384d0b2b2e0110ccf0db974e0995728ec48a0d33729a4eca002b8cf21000e1d83d1bc31c1187864be22bc6cabd407f11be1b48267fdd5aa3a5a60bdde034b4ab08d5a62947c2dc69fdee925524eb7cd11759689da421828cad0c06bcc70ca07599ec155c03c10b8e672a8c74de687b26709055630367ec1a077ac89d359df4ac3d6ec12d13c08d0a6e022a8eb0c4460d2e51c17ce5984838d53214df67ea8487dd2bdd32e43ca3b1bc7e7176d32dceb24f758d800d09fb380c6b85bfe5b22573924ee82c44a74203720b7aaff03e75b446852601aebf3b10290a2291e5549d2aae5938e75701bc8e9c078ce21aec108c5144fd538687c7f71fafa752cdb166ee6df69bdcb0b1819dfc264bd86c30cc8bd4ebf4c3b8f7ea423e1258a3c511b5cfaec9f6e04faffaf684362329bdb0290f387c61299e7bdd8fbc44e2d4b698aaba150e5738c02cf61907de859f37484d6eb8cd6450d74d305c12e771051a2616cd7488852c738b9f25e7dba2827f30a76bc87c86fb888515e22e0ccf211c39c2ba4d12b4b486805e8852bc3779ebf29b67fea63217107b8885ecc841453efeea9ed3e806fe365507500b7130d0a9271706b1cde9e744a9667cad65360de0676bbec289606f808a46d5c430c10414103263164e26d8df6b6c26cbb306434a66ba37e1cbaa1ed247ff4e0e722eb1e1dd66f72566d7572b05649a9ad45bbcceb49f72c5f27fda0caac64585661dc10db617539c33e39a35ba0ff58307f147d58c0b5960ec7ff85b714805d7e5b4a4c116c7dc4605fe7f56f492d5b0dbadfa25656b31cbc6084a7bce424bc4c2b070deed579747ddb470fa5c403dc4a9e6ca4ff08cd87cb3876c271cbb09bbdd729416c2f016283545b35c71304adc49232cf07c71b7d816e194e0337c12543b2456c7550ede4dc92f0d4fde581200055a4e32d7932953c88099b693beaf98759817b16ad068f43671bfd946e8cf45d736b47ee1520bafb4321c71f814fb76af75e7d98ab5ce723b53a02de48420523ad5bf1c57ece9a59bea2ba14175539baa7f2d907469bc36c844b0fd00d56b4864f92a31319c7c13867a3c82de726476ed06231c0ffa019fa9b8c68a0c586729fe8a5e457a99a92eef2c48294c4dd485686abf5a8cddf0b4cdb8ae6ca9c7532e78769ca3fb64b96d308219cc0bb008bacc21d54f45f2764135b7564604ff12b3cca418a5a841bbd8d90395722564c74b7d5cc5728c75f0242bcca4c1b1b1a7b2d9c031b7b1c2f07df614855f1b70d5157fe3b1aae67a390eff316c6013183a0dac94be91c08bb7bd245db899e41e5a9afaeb7a388aaaab89af7ff4d281abc33260e9b0afafa3cc9f7e7f1c63cda9c9ca332c1ce0eb1c13ae767e00b5a113db1a7f94b01ea01b4c240cd4742b38cd1d7b000bdd5ae9d0fb77d29d3b179d4613ac7ff22d54f1221cce3ba727c9f2967aeccf23ff83dc4667cf79186b4c7becbf07d62f2d95ef27f0534f21eb517d22a8fdc0c9506a4ae74cba8640bbad2c39d4b17260d9fd5fd9b6bc7c2385cbfc00a2a34e3f51ed7958f3ed7905f7c929809329316fadaa0b1d65815e54533c2346270c0d0fe016b798817180a33bfdf86952b615c940c9f5b0d440e8d9948b3faec6ff300d62797f95eeed3acbd0bb4f021626e651f49ed48770a1952043d441c9f750228bf5a7bc0093b4cbb2080c736af09db7f50065074c056b331f7a8f86a5679d68c46d335236283d44ea6bedb4d817686a98a76213fae6bd8b42e4e6a2f6eded54dd45f79c3c399b4f708f24217b5f46719fc70dfd37a16039ffe5717e30860132c5e5db668fb4772825a0bfb5c4af718909312788add7c5c360c8c15c9d0447dd1c313887a3919c11480404d1fe816ebdf9b567b5638b9de5f1d8fe1b144bc76a6d8316be41482deb986506c643ee0cce647909c1d5168d70cb73ef917d7f0082944342b4efff8f68a04b9f47c43d6ac8a1765018d8bf9342585705853d5e311e6aa8fd9e410bd9860fdf6e63ba605966aa0bfde35dbd1e09656a4614a390e86e5158db504e6f78ad78159f2eb555fc944b2c67ada22b3972f12d9996b4cf6cd0c352b26ab0f94cb30297e9be903bd4fa1ac4f28d86086cf3fa5700f0775c79dd3a0e0d0b3bbfa7cfe7d02592fed2876a8aad4acea9cc5cf6e18de3127dcf42406cf928cb12c0a81eeff0b9aed36ef1589061b04e0ae3a70be40629c102dddd5f4fccf43000e02371b039cab904473448533781a315a86c3360472dd304320b5f674a2fcded04979038d62ddfb030d50508aeb96d665f5feed5788fe870dca198c5607406692e9d1ccbc984ec3a5995f68bac95bd0c15c1dae829db8f511418f3a372b3a27abac2693b1b785f0cb9d67e9357276820d2b9a2aca5a0281b47932247142acb8a655cb0f5265f9eb5b9bd277f8e7db05ac8da8381b1bb8b73e80df75f5895389b5f62ada3b991431e96eaf798baf75383ff5d0d432203b4b517cb497241d6ff278ea994be724e30cc1b43d48f389292f06cc9e626c5a1f189e1e7c94dc401a79fd3cc4a936eb498d331f10dd8c5d878cfe977d16db4a672e80d7582a0ceb5ac93037feb5d6c2bdad0c40b3c4e8ff06821e3d353c24e8fde48d8cf7e14c21da64908ea4908e9006eed299a7ac46cabd2518bd5db052bb622d2a8559d83d62bdd2c5f7d7026982c1cff350971c75e7b6969d714a020c8758b28ce43fd03c123796d50395c78350f35e1450415fb27e0ee186e2fb2511e20a7a1fb000313c3842dfd621984fcbfc5e70ea4ce9565be999aba817bab18a81bc12c155a94d71963d994d25c81837613ff9d971f11475073cbae915c7bfa2c4bdd749fe122d09571df4018a7ed1098ba212d6a7dc6a96cb22ee260b2f8739f47577981afd6f10213e6e6fe2681ad7adc4c5aceffd2d65547c85c427441c27ce382ac1bcaee320a1e695bd741f56abbc9558a769ec120b75a4be2a5b4a0a2fd5d090c3b7d1998cc457c30bd2baa8811b102e11eedbc4a59a8f49e7a69ad1b6a567fa37be8adf08f04e2b3920322d985ecc983b10c70f012ce5c8e397db1cae5d05cbc9309004226d91f31416ca8292c1f43da9dd51bacfffec97351fda8f988d65841a039eeb2c2e41b9e133884eef50fd84758ac3b5b7e5a4ef21a22f83b5763b81127a7de2a583531ab463ea7b5aaa0b3a65b7408ca853a6ee14668f452b5e42031dbdcc28b8980401418890df70fb98918faca5620f961663245673061fa738d8272a069700b530f296e9f0b606cdfabed5b18ee6b0f474fb09628512381932e4166b18da108eb677cd57bd6a93050e47bd36423de9c66a42ad36acc5e58c96d4ccb6696032a105ae1666554508c2f86d87e9fd242e3b8f4ed738c63e427c500c9706dceaebcc5e0adaf2366a5e2766daffbd3fee9bd44354b43501964d452e80b7f590acdb710e1f97d5c2053dda6af74e644a76bd36a79a8f4f7c3a28dfbd2c4e15b70b6e0da01bc5f8c755fc59e266b5fd9b836a589aa44f54ac06c3b0853cfd4bf0be6b7ae98993779b767affbd14754fa401263317f3bc25c9edc4aeebdb14dfd63071bc531cef443e4d334262decaf2615d9a4fc2f5b0994bb8187757ff1c45b424768ab9e326b5ba2a0bd8b5229198da1ba07e782d7525199a3f603750d428dafa254787498601899424fbd70da4f08f056a9fb33d1cdb758711208c2e02160af8461fc716749166a2478b15b9e0cbd3f6d60ac1e7decf3ccd6ab41fdef934fe6aa7264a7a8badfe41566debd4fb177611079d094599ccfeac79948e6469b24f0c827ee0811c3b2e8469357e9c035a6475801e9ddc7cafdd019e1b8b1a326f25047d8888fb0d2d7b8057f77d9b73bdb20f9049437a5d60b2eba55ef9aaa9c2ada07d413832bff54d6aeb6db8e63140c76d04e1c6694a5cbb87172910b324128c313a585ce7c9b9ff299d5a78a6115218a058f03ebf7b55b4cc8da74f3c135727cf0e90a542427ca3ac4d4dde35fe9061f526ac1aadee4a4e5dd24c43d1b743cb5a34a45d34170a17663d81dd6b83170d371d0b3e5ea4fb0f05b40e6a3507001ffbabe16e6c2215e75704cdba712bca0f1c</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">你想看要不先转我点？</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
         </div>
         <div class="article-copyright">
             
@@ -140,8 +136,8 @@
     </article>
     
 
-    <section id="toc-div" >
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#GO%E8%AF%AD%E8%A8%80%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">GO语言一</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#hello-world"><span class="toc-number">1.1.</span> <span class="toc-text">hello world</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fmt"><span class="toc-number">1.2.</span> <span class="toc-text">fmt</span></a></li></ol></li></ol>
+    <section id="toc-div" style="display: none;" >
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#hello-world"><span class="toc-number">1.</span> <span class="toc-text">hello world</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fmt"><span class="toc-number">2.</span> <span class="toc-text">fmt</span></a></li></ol>
     </section>
     <section id="gohome" style="display: none;"><a>顶</a></section>
 
@@ -220,7 +216,16 @@
 <script src="/js/custom.js"></script>
 
 
-    <script>onload_content();</script>
+    <script>
+        function listen_content(){
+            if($(".hbe-button").length > 0){
+                onload_content();
+            }else{
+                setTimeout(listen_content, 100);
+            }
+        }
+        setTimeout(listen_content, 100);
+    </script>
 
 </body>
 </html>
