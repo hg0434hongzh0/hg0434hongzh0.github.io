@@ -52,6 +52,19 @@ try {
 
   const posts = loadPosts(root, 'content/posts');
   assert.deepEqual(posts.map(post => post.slug), ['newest-post', 'older-post']);
+
+  const sameDayRoot = fixture();
+  writePost(sameDayRoot, 'first.md', { title: '当天先发布', date: '2026-01-05', publishedAt: '2026-01-05T09:00:00+08:00', slug: 'same-day-first' });
+  writePost(sameDayRoot, 'last.md', { title: '当天后发布', date: '2026-01-05', publishedAt: '2026-01-05T21:00:00+08:00', slug: 'same-day-last' });
+  const sameDayPosts = loadPosts(sameDayRoot, 'content/posts');
+  assert.deepEqual(sameDayPosts.map(post => post.slug), ['same-day-last', 'same-day-first']);
+  const sameDayResult = buildSite(sameDayRoot, { baseUrl: 'https://hongzh0.wiki/' });
+  assert.equal(sameDayResult.posts[0].slug, 'same-day-last');
+  const sameDayIndex = fs.readFileSync(path.join(sameDayRoot, 'dist', 'index.html'), 'utf8');
+  const sameDayFeatured = sameDayIndex.slice(sameDayIndex.indexOf('BLOG_FEATURED_START'), sameDayIndex.indexOf('BLOG_FEATURED_END'));
+  assert.match(sameDayFeatured, /当天后发布/);
+  assert.doesNotMatch(sameDayFeatured, /当天先发布/);
+
   const result = buildSite(root, { baseUrl: 'https://hongzh0.wiki/' });
   assert.equal(result.posts.length, 2);
   assert.equal(path.basename(result.outputDirectory), 'dist');
@@ -110,6 +123,11 @@ try {
   writePost(invalidDateRoot, 'invalid.md', { date: '2026-02-30' });
   assert.throws(() => buildSite(invalidDateRoot), /有效的 YYYY-MM-DD/);
   assert.ok(!fs.existsSync(path.join(invalidDateRoot, 'dist')));
+
+  const invalidPublishedAtRoot = fixture();
+  writePost(invalidPublishedAtRoot, 'invalid-published-at.md', { publishedAt: '2026-01-02 12:00:00' });
+  assert.throws(() => buildSite(invalidPublishedAtRoot), /publishedAt 必须是带时区的 ISO 8601 时间/);
+  assert.ok(!fs.existsSync(path.join(invalidPublishedAtRoot, 'dist')));
 
   const missingRoot = fixture();
   writePost(missingRoot, 'missing.md', { summary: undefined });

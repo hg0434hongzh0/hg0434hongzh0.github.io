@@ -109,6 +109,21 @@ function parsePublished(value) {
   throw new Error('front matter published 必须是 true 或 false');
 }
 
+function parsePublishedAt(value, date) {
+  if (value === undefined || value === null || String(value).trim() === '') {
+    return new Date(`${date}T00:00:00Z`).toISOString();
+  }
+  const publishedAt = String(value).trim();
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(publishedAt)) {
+    throw new Error('front matter publishedAt 必须是带时区的 ISO 8601 时间');
+  }
+  const timestamp = Date.parse(publishedAt);
+  if (!Number.isFinite(timestamp)) {
+    throw new Error('front matter publishedAt 必须是有效时间');
+  }
+  return new Date(timestamp).toISOString();
+}
+
 function parsePost(fullPath) {
   const source = fs.readFileSync(fullPath, 'utf8');
   const parsed = matter(source, {
@@ -135,6 +150,7 @@ function parsePost(fullPath) {
   if (!validateDate(date)) {
     throw new Error('front matter date 必须是有效的 YYYY-MM-DD 日期');
   }
+  const publishedAt = parsePublishedAt(data.publishedAt, date);
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     throw new Error('front matter slug 只能包含小写字母、数字和连字符');
   }
@@ -155,6 +171,7 @@ function parsePost(fullPath) {
     sourcePath: fullPath,
     title,
     date,
+    publishedAt,
     category,
     summary,
     slug,
@@ -203,7 +220,7 @@ function loadPosts(root, postsDirectory = 'content/posts') {
 
   return posts
     .filter(post => post.published)
-    .sort((left, right) => right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug));
+    .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt) || right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug));
 }
 
 function renderMarkdown(markdown) {
@@ -255,8 +272,8 @@ function articlePage(post, options = {}) {
     headline: post.title,
     description: post.summary,
     image: OG_IMAGE,
-    datePublished: post.date,
-    dateModified: post.date,
+    datePublished: post.publishedAt,
+    dateModified: post.publishedAt,
     inLanguage: 'zh-CN',
     mainEntityOfPage: canonical,
     url: canonical,
@@ -317,9 +334,9 @@ function feedXml(posts, baseUrl = DEFAULT_BASE_URL) {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
   const items = posts.slice(0, 20).map(post => {
     const url = absoluteUrl(normalizedBaseUrl, `posts/${post.slug}.html`);
-    return `<item><title>${escapeXml(post.title)}</title><link>${escapeXml(url)}</link><guid isPermaLink="true">${escapeXml(url)}</guid><pubDate>${new Date(`${post.date}T00:00:00Z`).toUTCString()}</pubDate><category>${escapeXml(post.category)}</category><description>${escapeXml(post.summary)}</description></item>`;
+    return `<item><title>${escapeXml(post.title)}</title><link>${escapeXml(url)}</link><guid isPermaLink="true">${escapeXml(url)}</guid><pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate><category>${escapeXml(post.category)}</category><description>${escapeXml(post.summary)}</description></item>`;
   }).join('');
-  const buildDate = new Date(`${posts[0].date}T00:00:00Z`).toUTCString();
+  const buildDate = new Date(posts[0].publishedAt).toUTCString();
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hongzh0's Blog</title><link>${escapeXml(normalizedBaseUrl)}</link><description>安全研究、漏洞分析与攻防实践</description><language>zh-cn</language><lastBuildDate>${buildDate}</lastBuildDate><atom:link href="${escapeXml(absoluteUrl(normalizedBaseUrl, 'feed.xml'))}" rel="self" type="application/rss+xml"/>${items}</channel></rss>\n`;
 }
 
