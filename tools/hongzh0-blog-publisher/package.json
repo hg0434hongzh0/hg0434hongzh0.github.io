@@ -1,0 +1,112 @@
+{
+  "name": "hongzh0-blog-publisher",
+  "displayName": "hongzh0 Blog Publisher",
+  "description": "为 hongzh0's Blog 提供 Markdown 写作、PicGo 图床上传和 GitHub Pages 一键发布。",
+  "version": "0.1.0",
+  "publisher": "hongzh0",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "blog",
+    "markdown",
+    "picgo",
+    "github-pages"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onCommand:hongzh0Blog.newPost",
+    "onCommand:hongzh0Blog.uploadImage",
+    "onCommand:hongzh0Blog.build",
+    "onCommand:hongzh0Blog.publish"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "hongzh0Blog.newPost",
+        "title": "Blog: 新建文章",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "hongzh0Blog.uploadImage",
+        "title": "Blog: 使用 PicGo 上传图片",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "hongzh0Blog.build",
+        "title": "Blog: 生成静态页面",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "hongzh0Blog.publish",
+        "title": "Blog: 发布到 GitHub Pages",
+        "icon": "$(rocket)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "hongzh0Blog.uploadImage",
+          "when": "editorLangId == markdown",
+          "group": "hongzh0Blog@1"
+        },
+        {
+          "command": "hongzh0Blog.build",
+          "when": "editorLangId == markdown",
+          "group": "hongzh0Blog@2"
+        },
+        {
+          "command": "hongzh0Blog.publish",
+          "when": "editorLangId == markdown",
+          "group": "hongzh0Blog@3"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "hongzh0Blog.publish",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "hongzh0 Blog Publisher",
+      "properties": {
+        "hongzh0Blog.picgoServer": {
+          "type": "string",
+          "default": "http://127.0.0.1:36677",
+          "description": "PicGo Server 地址"
+        },
+        "hongzh0Blog.postsDirectory": {
+          "type": "string",
+          "default": "content/posts",
+          "description": "Markdown 文章目录（相对于博客根目录）"
+        },
+        "hongzh0Blog.autoPush": {
+          "type": "boolean",
+          "default": true,
+          "description": "发布时自动 git push"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "test": "node test/publisher.test.js",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "marked": "^15.0.12"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hg0434hongzh0/hg0434hongzh0.github.io.git"
+  }
+}
