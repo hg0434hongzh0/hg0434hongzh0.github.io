@@ -1,0 +1,23 @@
+const assert = require('assert');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { buildSite, loadPosts } = require('../lib/publisher');
+
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'hongzh0-blog-test-'));
+fs.mkdirSync(path.join(root, 'content/posts'), { recursive: true });
+fs.writeFileSync(path.join(root, 'index.html'), '<!-- BLOG_FEATURED_START -->old<!-- BLOG_FEATURED_END --><!-- BLOG_RECENT_START -->old<!-- BLOG_RECENT_END -->');
+fs.writeFileSync(path.join(root, 'archive.html'), '<!-- BLOG_ARCHIVE_START -->old<!-- BLOG_ARCHIVE_END -->');
+fs.writeFileSync(path.join(root, 'content/posts/2026-01-02-test.md'), `---\ntitle: 测试文章\ndate: 2026-01-02\ncategory: 漏洞分析\nsummary: 测试摘要\nslug: test-post\ncoverText: 测\npublished: true\n---\n\n正文。\n\n## 分析过程\n\n\`\`\`java\nSystem.out.println("test");\n\`\`\`\n`);
+const posts = loadPosts(root, 'content/posts');
+assert.equal(posts.length, 1);
+assert.equal(posts[0].slug, 'test-post');
+const result = buildSite(root, { postsDirectory: 'content/posts', baseUrl: 'https://hongzh0.wiki/' });
+assert.equal(result.posts.length, 1);
+assert.ok(fs.existsSync(path.join(root, 'posts/test-post.html')));
+assert.match(fs.readFileSync(path.join(root, 'posts/test-post.html'), 'utf8'), /分析过程/);
+assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /测试文章/);
+assert.match(fs.readFileSync(path.join(root, 'archive.html'), 'utf8'), /漏洞分析/);
+assert.match(fs.readFileSync(path.join(root, 'feed.xml'), 'utf8'), /https:\/\/hongzh0\.wiki\/posts\/test-post\.html/);
+fs.rmSync(root, { recursive: true, force: true });
+console.log('publisher tests passed');

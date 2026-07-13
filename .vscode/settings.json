@@ -1,0 +1,5 @@
+{
+  "hongzh0Blog.picgoServer": "http://127.0.0.1:36677",
+  "hongzh0Blog.postsDirectory": "content/posts",
+  "hongzh0Blog.autoPush": true
+}

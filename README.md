@@ -52,3 +52,54 @@ git push -u origin main
 
 复制 `posts/security-research-workflow.html`，修改标题、日期、摘要和正文，再分别在 `index.html` 与 `archive.html` 添加入口即可。
 
+
+## 使用 VS Code 写博客
+
+博客的 Markdown 源文件统一放在：
+
+```text
+content/posts/
+```
+
+不要直接编辑 `posts/*.html`、首页文章列表或归档列表；这些文件由插件自动生成。
+
+已为本项目制作并安装 `hongzh0 Blog Publisher` 插件。在 VS Code 中按 `Ctrl+Shift+P`，可以使用：
+
+- `Blog: 新建文章`
+- `Blog: 使用 PicGo 上传图片`
+- `Blog: 生成静态页面`
+- `Blog: 发布到 GitHub Pages`
+
+发布命令会依次生成文章 HTML、更新首页、归档和 RSS，然后执行 Git 提交与推送。
+
+### 文章格式
+
+```markdown
+---
+title: 文章标题
+date: 2026-07-13
+category: 漏洞分析
+summary: 用于首页和搜索引擎的文章摘要
+slug: article-url
+coverText: 漏
+published: true
+---
+
+这里开始写正文。
+```
+
+### PicGo 图床
+
+插件使用本机 PicGo Server：
+
+```text
+http://127.0.0.1:36677
+```
+
+PicGo Desktop 必须保持运行，并启用 Gitee 上传器。打开 Markdown 后执行 `Blog: 使用 PicGo 上传图片`，插件会上传图片并自动插入 Markdown 链接。
+
+插件源码和安装包构建目录位于：
+
+```text
+tools/hongzh0-blog-publisher/
+```
