@@ -187,6 +187,27 @@ async function uploadImage() {
   });
 }
 
+function stampMissingPublishedAt(root) {
+  const directory = path.join(root, config().get('postsDirectory', 'content/posts'));
+  if (!fs.existsSync(directory)) return [];
+  const stamped = [];
+  for (const name of fs.readdirSync(directory).filter(file => file.toLowerCase().endsWith('.md'))) {
+    const fullPath = path.join(directory, name);
+    const source = fs.readFileSync(fullPath, 'utf8');
+    const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (!match) continue;
+    const frontMatter = match[1];
+    if (!/^published:\s*(?:true|['\"]true['\"])\s*$/mi.test(frontMatter) || /^publishedAt:/mi.test(frontMatter)) continue;
+    const timestamp = fs.statSync(fullPath).mtime.toISOString();
+    const updatedFrontMatter = frontMatter.replace(/^(date:\s*.+)$/mi, `$1\npublishedAt: ${timestamp}`);
+    if (updatedFrontMatter === frontMatter) continue;
+    const updated = source.slice(0, match.index) + match[0].replace(frontMatter, updatedFrontMatter) + source.slice(match.index + match[0].length);
+    fs.writeFileSync(fullPath, updated, 'utf8');
+    stamped.push(path.relative(root, fullPath).replaceAll('\\', '/'));
+  }
+  return stamped;
+}
+
 async function build() {
   const root = getRoot();
   await vscode.workspace.saveAll();
@@ -201,6 +222,10 @@ async function publish() {
   const root = getRoot();
   await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: '正在生成并发布博客…', cancellable: false }, async progress => {
     await vscode.workspace.saveAll();
+    const stamped = stampMissingPublishedAt(root);
+    if (stamped.length) {
+      output.appendLine(`已补充首次发布时间：${stamped.join(', ')}`);
+    }
     progress.report({ message: '运行发布器测试' });
     await runPublisherTests(root);
     progress.report({ message: '构建隔离部署产物' });
