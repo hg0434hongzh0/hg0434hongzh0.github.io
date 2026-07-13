@@ -88,7 +88,7 @@ try {
   assert.match(article, /class="article-nav"/);
   assert.match(article, /id="section-/);
   assert.match(article, /mailto:hongzh0@foxmail\.com/);
-  assert.doesNotMatch(article, /fonts\.googleapis\.com/);
+  assert.match(article, /fonts\.googleapis\.com/);
 
   const sitemap = fs.readFileSync(path.join(root, 'dist', 'sitemap.xml'), 'utf8');
   assert.match(sitemap, /https:\/\/hongzh0\.wiki\/posts\/newest-post\.html/);
