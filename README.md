@@ -45,7 +45,7 @@ git push -u origin main
 - 全局搜索替换 `hello@example.com` 和 GitHub 地址
 - 修改首页和归档中的示例文章
 - 把 `about.html` 里的照片占位区域替换为你的照片
-- 将 `feed.xml` 中的 `YOUR_USERNAME` 替换成 GitHub 用户名
+- 将 `feed.xml` 中的 `hg0434hongzh0` 替换成 GitHub 用户名
 - 若使用自定义域名，在根目录增加 `CNAME` 文件，内容只写域名
 
 ## 添加文章
