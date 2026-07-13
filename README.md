@@ -1,59 +1,41 @@
 # hongzh0's Blog · GitHub Pages
 
-一个无需构建工具、上传即可部署的个人安全研究博客。界面强调中文排版、清晰层级、温和配色和克制动效。
+一个以 Markdown 写作、静态构建并部署到 GitHub Pages 的个人安全研究博客。界面强调中文排版、清晰层级、克制动效与可靠的移动端体验。
 
 ## 已包含
 
 - 响应式首页、文章归档、关于页、文章详情页和 404 页面
 - 深色 / 浅色主题，自动记忆用户选择
-- 移动端导航
+- 同源页面转场、滚动揭示、阅读进度与移动端导航
 - 文章分类筛选
-- RSS 示例文件
-- 无框架、无构建依赖，适合 GitHub Pages
-- 基础无障碍支持与 `prefers-reduced-motion`
+- RSS、Sitemap、robots.txt 与文章结构化数据
+- 无前端框架，构建结果为纯静态文件
+- 键盘导航、焦点管理与 `prefers-reduced-motion`
 
 ## 本地预览
 
-在项目目录执行：
+首次使用先安装发布器依赖，再构建并预览 `dist/`：
 
 ```powershell
-python -m http.server 8000
+npm --prefix tools/hongzh0-blog-publisher ci
+npm --prefix tools/hongzh0-blog-publisher run build:site
+npx --yes http-server dist -p 8000
 ```
 
 然后访问 `http://localhost:8000`。
 
-## 部署为 GitHub 用户主页
+`dist/` 是可删除、可重建的部署产物，不提交到 Git。
 
-1. 在 GitHub 创建名为 `你的用户名.github.io` 的公开仓库。
-2. 将本目录所有文件推送到仓库的 `main` 分支。
-3. 打开仓库 **Settings → Pages**。
-4. 在 **Build and deployment** 中选择 **Deploy from a branch**。
-5. Branch 选择 `main` 和 `/(root)`，保存。
-6. 稍等片刻后访问 `https://你的用户名.github.io/`。
+## 部署到 GitHub Pages
 
-```powershell
-git init
-git add .
-git commit -m "Create personal blog"
-git branch -M main
-git remote add origin https://github.com/你的用户名/你的用户名.github.io.git
-git push -u origin main
-```
+1. 打开仓库 **Settings -> Pages**。
+2. 在 **Build and deployment** 中把 Source 设为 **GitHub Actions**。
+3. 推送到 `main` 后，`.github/workflows/pages.yml` 会先运行测试，再构建并仅部署 `dist/`。
+4. 部署产物只包含公开页面和资源；`content/`、`tools/` 不会进入 Pages。
 
-## 建议优先修改
-
-- 全局搜索替换 `hello@example.com` 和 GitHub 地址
-- 修改首页和归档中的示例文章
-- 把 `about.html` 里的照片占位区域替换为你的照片
-- 将 `feed.xml` 中的 `hg0434hongzh0` 替换成 GitHub 用户名
-- 若使用自定义域名，在根目录增加 `CNAME` 文件，内容只写域名
+自定义域名由根目录的 `CNAME` 管理，当前站点地址为 `https://hongzh0.wiki/`。
 
 ## 添加文章
-
-复制 `posts/security-research-workflow.html`，修改标题、日期、摘要和正文，再分别在 `index.html` 与 `archive.html` 添加入口即可。
-
-
-## 使用 VS Code 写博客
 
 博客的 Markdown 源文件统一放在：
 
@@ -61,7 +43,9 @@ git push -u origin main
 content/posts/
 ```
 
-不要直接编辑 `posts/*.html`、首页文章列表或归档列表；这些文件由插件自动生成。
+不要直接编辑 `dist/` 或根页面中的 `BLOG_*` 文章区块；这些内容由发布器生成。根目录 HTML 的其余部分与 `assets/` 是站点模板和公共资源。
+
+## 使用 VS Code 写博客
 
 已为本项目制作并安装 `hongzh0 Blog Publisher` 插件。在 VS Code 中按 `Ctrl+Shift+P`，可以使用：
 
@@ -70,7 +54,7 @@ content/posts/
 - `Blog: 生成静态页面`
 - `Blog: 发布到 GitHub Pages`
 
-发布命令会依次生成文章 HTML、更新首页、归档和 RSS，然后执行 Git 提交与推送。
+新文章默认写入 `published: false`，完成后改为 `true` 才会进入站点。发布命令会先运行测试和隔离构建，展示白名单内的待提交文件并要求确认，然后才执行 Git 提交与推送；它不会再使用 `git add -A`。
 
 ### 文章格式
 
@@ -82,7 +66,7 @@ category: 漏洞分析
 summary: 用于首页和搜索引擎的文章摘要
 slug: article-url
 coverText: 漏
-published: true
+published: false
 ---
 
 这里开始写正文。

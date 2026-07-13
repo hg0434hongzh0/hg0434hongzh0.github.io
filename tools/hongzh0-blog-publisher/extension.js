@@ -51,12 +51,99 @@ function extractPicGoUrls(response) {
   if (!response || response.success !== true || !Array.isArray(result)) throw new Error(response?.message || 'PicGo 上传失败，请检查 PicGo 日志和 Gitee 配置。');
   return result.map(item => typeof item === 'string' ? item : item?.imgUrl || item?.url).filter(Boolean);
 }
-async function runGit(root, args) {
+async function runGit(root, args, options = {}) {
   output.appendLine(`> git ${args.join(' ')}`);
   const result = await execFileAsync('git', args, { cwd: root, windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
-  if (result.stdout) output.appendLine(result.stdout.trim());
+  if (result.stdout && options.logOutput !== false) output.appendLine(result.stdout.trim());
   if (result.stderr) output.appendLine(result.stderr.trim());
   return result.stdout;
+}
+
+async function runPublisherTests(root) {
+  const publisherDirectory = path.join(root, 'tools', 'hongzh0-blog-publisher');
+  if (!fs.existsSync(path.join(publisherDirectory, 'package.json'))) {
+    throw new Error('找不到发布器测试目录：tools/hongzh0-blog-publisher');
+  }
+  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  output.appendLine('> npm test');
+  const result = await execFileAsync(npm, ['test'], {
+    cwd: publisherDirectory,
+    windowsHide: true,
+    maxBuffer: 10 * 1024 * 1024
+  });
+  if (result.stdout) output.appendLine(result.stdout.trim());
+  if (result.stderr) output.appendLine(result.stderr.trim());
+}
+
+function gitPath(value) {
+  return value.replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/$/, '');
+}
+
+function publishAllowlist(root) {
+  const configuredPosts = path.resolve(root, config().get('postsDirectory', 'content/posts'));
+  const relativePosts = gitPath(path.relative(root, configuredPosts));
+  if (!relativePosts || relativePosts === '..' || relativePosts.startsWith('../')) {
+    throw new Error('文章目录必须位于博客仓库内。');
+  }
+  return {
+    directories: [
+      relativePosts,
+      'assets',
+      'tools/hongzh0-blog-publisher/bin',
+      'tools/hongzh0-blog-publisher/lib',
+      'tools/hongzh0-blog-publisher/test'
+    ],
+    files: [
+      'index.html',
+      'archive.html',
+      'about.html',
+      '404.html',
+      'CNAME',
+      '.nojekyll',
+      '.gitattributes',
+      '.gitignore',
+      'README.md',
+      '.github/workflows/pages.yml',
+      'tools/hongzh0-blog-publisher/extension.js',
+      'tools/hongzh0-blog-publisher/README.md',
+      'tools/hongzh0-blog-publisher/package.json',
+      'tools/hongzh0-blog-publisher/package-lock.json'
+    ]
+  };
+}
+
+function isPublishablePath(file, allowlist) {
+  const normalized = gitPath(file);
+  return allowlist.files.includes(normalized)
+    || allowlist.directories.some(directory => normalized === directory || normalized.startsWith(`${directory}/`));
+}
+
+function parseStatusPaths(status, allowlist) {
+  const records = status.split('\0');
+  const paths = [];
+  for (let index = 0; index < records.length; index += 1) {
+    const record = records[index];
+    if (!record) continue;
+    const state = record.slice(0, 2);
+    const currentPath = record.slice(3);
+    if (isPublishablePath(currentPath, allowlist)) paths.push(gitPath(currentPath));
+    if (/[RC]/.test(state) && records[index + 1]) {
+      index += 1;
+      if (isPublishablePath(records[index], allowlist)) paths.push(gitPath(records[index]));
+    }
+  }
+  return [...new Set(paths)].sort((left, right) => left.localeCompare(right));
+}
+
+async function publishableChanges(root) {
+  const allowlist = publishAllowlist(root);
+  const pathspecs = [...allowlist.directories, ...allowlist.files];
+  const status = await runGit(
+    root,
+    ['status', '--porcelain=v1', '-z', '--untracked-files=all', '--', ...pathspecs],
+    { logOutput: false }
+  );
+  return parseStatusPaths(status, allowlist);
 }
 
 async function newPost() {
@@ -76,7 +163,7 @@ async function newPost() {
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, `${today()}-${slugify(slug)}.md`);
   if (fs.existsSync(file)) throw new Error(`文章已存在：${path.basename(file)}`);
-  const content = `---\ntitle: ${yamlString(title)}\ndate: ${today()}\ncategory: ${yamlString(category)}\nsummary: ${yamlString(summary)}\nslug: ${slug}\ncoverText: ${yamlString(coverText.trim())}\npublished: true\n---\n\n在这里开始写作。\n\n## 背景\n\n## 分析\n\n## 验证\n\n## 修复建议\n`;
+  const content = `---\ntitle: ${yamlString(title)}\ndate: ${today()}\ncategory: ${yamlString(category)}\nsummary: ${yamlString(summary)}\nslug: ${slug}\ncoverText: ${yamlString(coverText.trim())}\npublished: false\n---\n\n在这里开始写作。\n\n## 背景\n\n## 分析\n\n## 验证\n\n## 修复建议\n`;
   fs.writeFileSync(file, content, 'utf8');
   const document = await vscode.workspace.openTextDocument(file);
   await vscode.window.showTextDocument(document);
@@ -104,28 +191,51 @@ async function build() {
   const root = getRoot();
   await vscode.workspace.saveAll();
   const result = buildSite(root, { postsDirectory: config().get('postsDirectory', 'content/posts'), baseUrl: 'https://hongzh0.wiki/' });
-  output.appendLine(`生成完成：${result.posts.length} 篇文章`);
-  result.generated.forEach(file => output.appendLine(`  - ${file}`));
-  vscode.window.showInformationMessage(`博客已生成：${result.posts.length} 篇文章。`);
+  output.appendLine(`生成完成：${result.posts.length} 篇文章 -> ${result.outputDirectory}`);
+  result.generated.forEach(file => output.appendLine(`  - dist/${file}`));
+  vscode.window.showInformationMessage(`博客已生成到 dist：${result.posts.length} 篇文章。`);
   return result;
 }
 
 async function publish() {
   const root = getRoot();
   await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: '正在生成并发布博客…', cancellable: false }, async progress => {
-    progress.report({ message: '生成静态页面' });
+    await vscode.workspace.saveAll();
+    progress.report({ message: '运行发布器测试' });
+    await runPublisherTests(root);
+    progress.report({ message: '构建隔离部署产物' });
     const result = await build();
-    progress.report({ message: '检查 Git 变更' });
-    const status = await runGit(root, ['status', '--porcelain']);
-    if (!status.trim()) {
-      vscode.window.showInformationMessage('博客已经是最新状态，没有需要发布的变更。');
+    progress.report({ message: '检查可发布的源文件' });
+    const files = await publishableChanges(root);
+    if (!files.length) {
+      vscode.window.showInformationMessage('构建与测试已通过，没有需要提交的博客源文件。');
       return;
     }
+
+    output.appendLine('本次允许提交的文件：');
+    files.forEach(file => output.appendLine(`  - ${file}`));
+    output.show(true);
+    const reviewed = await vscode.window.showWarningMessage(
+      `请检查本次发布的 ${files.length} 个文件。`,
+      { modal: true, detail: files.join('\n') },
+      '文件无误'
+    );
+    if (reviewed !== '文件无误') return;
+
     const message = await vscode.window.showInputBox({ title: '发布博客', prompt: 'Git 提交说明', value: `Publish blog: ${result.posts[0].title}` });
     if (!message) return;
+
+    const action = config().get('autoPush', true) ? '提交并推送到 GitHub' : '仅提交到本地 Git';
+    const confirmed = await vscode.window.showWarningMessage(
+      action,
+      { modal: true, detail: `提交说明：${message}\n文件数量：${files.length}` },
+      '确认发布'
+    );
+    if (confirmed !== '确认发布') return;
+
     progress.report({ message: '提交文章' });
-    await runGit(root, ['add', '-A']);
-    await runGit(root, ['commit', '-m', message]);
+    await runGit(root, ['add', '--', ...files]);
+    await runGit(root, ['commit', '--only', '-m', message, '--', ...files]);
     if (config().get('autoPush', true)) {
       progress.report({ message: '推送到 GitHub Pages' });
       await runGit(root, ['push']);
