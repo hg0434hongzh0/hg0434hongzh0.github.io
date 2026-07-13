@@ -1,6 +1,6 @@
-# 余白手记 · GitHub Pages 博客
+# hongzh0's Blog · GitHub Pages
 
-一个无需构建工具、上传即可部署的中文静态博客。设计方向是「高度美化，但不过度装饰」：强调中文排版、清晰层级、温和配色和少量有意义的动效。
+一个无需构建工具、上传即可部署的个人安全研究博客。界面强调中文排版、清晰层级、温和配色和克制动效。
 
 ## 已包含
 
@@ -42,7 +42,7 @@ git push -u origin main
 
 ## 建议优先修改
 
-- 全局搜索替换 `余白手记`、`YUBAI`、`hello@example.com`
+- 全局搜索替换 `hello@example.com` 和 GitHub 地址
 - 修改首页和归档中的示例文章
 - 把 `about.html` 里的照片占位区域替换为你的照片
 - 将 `feed.xml` 中的 `YOUR_USERNAME` 替换成 GitHub 用户名
@@ -50,4 +50,5 @@ git push -u origin main
 
 ## 添加文章
 
-复制 `posts/designing-calm-interface.html`，修改标题、日期、摘要和正文，再分别在 `index.html` 与 `archive.html` 添加入口即可。
+复制 `posts/security-research-workflow.html`，修改标题、日期、摘要和正文，再分别在 `index.html` 与 `archive.html` 添加入口即可。
+
