@@ -97,7 +97,12 @@ try {
   assert.match(article, /name="twitter:image:alt"/);
   assert.match(article, /application\/ld\+json/);
   assert.match(article, /class="reading-progress"/);
+  assert.match(article, /class="article-hero wrap"/);
+  assert.match(article, /class="article-facts"/);
   assert.match(article, /class="mobile-toc wrap"/);
+  assert.match(article, /class="article-toc-nav"/);
+  assert.match(article, /END OF RESEARCH NOTE/);
+  assert.match(article, /property="article:published_time" content="2026-01-03T00:00:00\.000Z"/);
   assert.match(article, /class="article-nav"/);
   assert.match(article, /id="section-/);
   assert.match(article, /mailto:hongzh0@foxmail\.com/);
