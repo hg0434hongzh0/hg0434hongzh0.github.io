@@ -192,16 +192,17 @@ img.portrait-placeholder::before { content: none; }
 .not-found-copy { margin: 0 0 35px; color: var(--muted); line-height: 2; }
 @media (max-width: 800px) {
   :root { --wrap: min(100% - 36px, 1180px); }
-  .site-header { height: 76px; }
+  .site-header { position: relative; z-index: 100; height: 76px; }
   .menu-toggle { position: relative; z-index: 20; display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-content: center; gap: 6px; padding: 10px; cursor: pointer; }
   .menu-toggle span { width: 22px; height: 1px; background: var(--ink); transition: .2s; }
   .menu-toggle.open span:first-child { transform: translateY(3.5px) rotate(45deg); }
   .menu-toggle.open span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
-  .site-nav { position: fixed; z-index: 10; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 76px 24px 32px; background: var(--paper); visibility: hidden; opacity: 0; pointer-events: none; transition: opacity .3s var(--ease), visibility 0s linear .3s; }
+  .site-nav { position: fixed; z-index: 10; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 76px 24px 32px; background-color: var(--paper, #f3f0e9); background-image: none; color: var(--ink); box-shadow: 0 12px 30px rgba(32, 33, 29, .12); visibility: hidden; pointer-events: none; transform: translateY(-100%); overscroll-behavior: contain; transition: transform .3s var(--ease), visibility 0s linear .3s; }
+  [data-theme="dark"] .site-nav { background-color: #1d1f1b; box-shadow: 0 12px 30px rgba(0, 0, 0, .35); }
   .site-nav > a, .site-nav > button { opacity: 0; transform: translateY(10px); transition: opacity .25s var(--ease), transform .25s var(--ease), color .2s, background .2s, border-color .2s; }
   .site-nav > a { min-height: 48px; font-size: 18px; }
   .site-nav > button { height: 44px; }
-  .site-nav.open { visibility: visible; opacity: 1; pointer-events: auto; transition-delay: 0s; }
+  .site-nav.open { visibility: visible; pointer-events: auto; transform: translateY(0); transition-delay: 0s; }
   .site-nav.open > a, .site-nav.open > button { opacity: 1; transform: translateY(0); }
   .site-nav.open > :nth-child(2) { transition-delay: 35ms; }
   .site-nav.open > :nth-child(3) { transition-delay: 70ms; }
