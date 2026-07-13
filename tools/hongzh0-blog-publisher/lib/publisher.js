@@ -210,12 +210,12 @@ function renderMarkdown(markdown) {
   let html = marked.parse(markdown, { gfm: true, breaks: false });
   const toc = [];
   let index = 0;
-  html = html.replace(/<h2>([\s\S]*?)<\/h2>/g, (_, inner) => {
+  html = html.replace(/<h([2-4])>([\s\S]*?)<\/h\1>/g, (_, level, inner) => {
     index += 1;
     const text = stripHtml(inner);
     const id = `section-${slugify(text)}-${index}`;
-    toc.push({ id, text });
-    return `<h2 id="${escapeHtml(id)}">${inner}</h2>`;
+    toc.push({ id, text, level: Number(level) });
+    return `<h${level} id="${escapeHtml(id)}">${inner}</h${level}>`;
   });
   return { html, toc };
 }
@@ -244,7 +244,10 @@ function articlePage(post, options = {}) {
   const canonical = absoluteUrl(baseUrl, `posts/${post.slug}.html`);
   const rendered = renderMarkdown(post.content);
   const tocLinks = rendered.toc.length
-    ? rendered.toc.map((item, index) => `<a href="#${escapeHtml(item.id)}">${String(index + 1).padStart(2, '0')} ${escapeHtml(item.text.replace(/^\d+\s*[·.、-]?\s*/, ''))}</a>`).join('')
+    ? rendered.toc.map((item, index) => {
+        const cls = item.level > 2 ? ` class="toc-h${item.level}"` : '';
+        return `<a${cls} href="#${escapeHtml(item.id)}">${String(index + 1).padStart(2, '0')} ${escapeHtml(item.text.replace(/^\d+\s*[·.、-]?\s*/, ''))}</a>`;
+      }).join('')
     : '<a href="#article">正文</a>';
   const structuredData = JSON.stringify({
     '@context': 'https://schema.org',

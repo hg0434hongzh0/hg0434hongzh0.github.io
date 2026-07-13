@@ -178,6 +178,8 @@ img.portrait-placeholder::before { content: none; }
 .article-toc { position: sticky; top: 30px; align-self: start; font-size: 12px; }
 .article-toc span { display: block; margin-bottom: 18px; font: 10px var(--mono); color: var(--muted); }
 .article-toc a { display: block; margin-left: -10px; padding: 7px 0 7px 10px; border-left: 1px solid transparent; color: var(--muted); transition: color .2s, border-color .2s, transform .2s; }
+.article-toc a.toc-h3, .mobile-toc nav a.toc-h3 { padding-left: 22px; font-size: 11px; }
+.article-toc a.toc-h4, .mobile-toc nav a.toc-h4 { padding-left: 34px; font-size: 10px; opacity: .8; }
 .article-toc a:hover { color: var(--accent); }
 .article-toc a.is-active, .article-toc a[aria-current="location"] { border-left-color: var(--accent); color: var(--accent); transform: translateX(4px); }
 .article-content { min-width: 0; font-size: 17px; line-height: 2.1; overflow-wrap: break-word; }
