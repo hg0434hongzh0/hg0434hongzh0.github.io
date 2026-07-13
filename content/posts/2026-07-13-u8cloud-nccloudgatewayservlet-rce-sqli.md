@@ -8,9 +8,9 @@ coverText: U8
 published: true
 ---
 
-### NCCloudGatewayServlet RCE回顾
+## NCCloudGatewayServlet RCE回顾
 
-#### 基于通报的分析
+### 基于通报的分析
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/58tibo8hlb.png)
 
 
@@ -67,7 +67,7 @@ published: true
 
 这个对本漏洞无影响，对自己挖链子有影响，后面再说
 
-#### 基于补丁的分析
+### 基于补丁的分析
 
 第一个补丁：
 
@@ -95,7 +95,7 @@ ProcessFileUtils：
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/mwrhslwl6w.png)
 
 
-#### 如何构造POC以及为什么
+### 如何构造POC以及为什么
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/9jx1t7ebr4.png)
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/ch38kg8g3j.png)
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/4hz2eb42ju.png)
@@ -110,7 +110,7 @@ ProcessFileUtils：
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/xjku8nz899.png)
 
 
-#### 实战利用方式
+### 实战利用方式
 
 ```
 POST /servlet/NCCloudGatewayServlet HTTP/1.1
@@ -171,9 +171,9 @@ Content-Type: application/json
 
 基于此便有了下文
 
-### NCCloudGatewayServlet SQL注入新链挖掘
+## NCCloudGatewayServlet SQL注入新链挖掘
 
-#### 审计过程
+### 审计过程
 
 上文已经说过了，因为callNCService()反射的类必须是注册在EJB容器中的服务，所以不能随便找一个可控参数的反射类就拿过来充数。在挖掘过程中踩了不少坑：
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/p8dxemb85k.png)
@@ -226,32 +226,32 @@ nc.itf.uap.bd.corp.ICorpQry - 组织架构查询服务 ← SQL注入点
 
 无过滤SQL注入，塞到之前的RCE链子，这条链子就通了。
 
-#### 链子思路
+### 链子思路
 
-##### GatewayGW
+#### GatewayGW
 
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/festmx6934.png)
 
-##### CorpImpl
+#### CorpImpl
 
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/e7gdcefw6a.png)
 
-##### BaseDAO
+#### BaseDAO
 
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/htkqh3u7ed.png)
 
-##### JdbcPersistenceManager
+#### JdbcPersistenceManager
 
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/5a3ua814mu.png)
 
 
-#### Token绕过
+### Token绕过
 在官方针对与NCCloudGatewayServlet RCE的补丁里面对Token也加了一定的限制，加入了时间戳和sign验签。
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/f83zib0cdq.png)
 不过绕过还是很简单的，此处就不过多赘述了。搓了一个工具，方便以后如果找到新链子就直接拿ts和sign打就行
 链接：[U8 Token生成工具](https://www.yunpan.com/surl_yNFawFcSAde)（提取码：b108）
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/n35r2rohk6.png)
-#### 最终POC
+### 最终POC
 ![image.png](/assets/posts/u8cloud-nccloudgatewayservlet-rce-sqli/5ugojub7yy.png)
 
 打的是官网最新5.1的补丁，老版本也能打通，换成默认Token即可，全版本通杀实现。
