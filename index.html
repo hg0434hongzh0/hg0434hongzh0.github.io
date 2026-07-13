@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="utf-8">
@@ -6,62 +6,92 @@
   <meta name="description" content="hongzh0 的个人安全研究博客，记录漏洞分析、代码审计与攻防实践。">
   <meta name="theme-color" content="#f5f2eb">
   <title>hongzh0's Blog — 安全研究</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://hongzh0.wiki/">
+  <link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="https://hongzh0.wiki/feed.xml">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:site_name" content="hongzh0's Blog">
+  <meta property="og:title" content="hongzh0's Blog — 安全研究">
+  <meta property="og:description" content="hongzh0 的个人安全研究博客，记录漏洞分析、代码审计与攻防实践。">
+  <meta property="og:url" content="https://hongzh0.wiki/">
+  <meta property="og:image" content="https://hongzh0.wiki/assets/portrait.jpg">
+  <meta property="og:image:alt" content="hongzh0 的个人照片">
+  <meta property="og:image:width" content="960">
+  <meta property="og:image:height" content="962">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="hongzh0's Blog — 安全研究">
+  <meta name="twitter:description" content="hongzh0 的个人安全研究博客，记录漏洞分析、代码审计与攻防实践。">
+  <meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait.jpg">
+  <meta name="twitter:image:alt" content="hongzh0 的个人照片">
   <link rel="stylesheet" href="assets/style.css">
-  <script>document.documentElement.dataset.theme=localStorage.getItem('theme')||'light';</script>
+  <script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;}catch{document.documentElement.style.colorScheme='light';}</script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "hongzh0's Blog",
+      "url": "https://hongzh0.wiki/",
+      "description": "hongzh0 的个人安全研究博客，记录漏洞分析、代码审计与攻防实践。",
+      "inLanguage": "zh-CN",
+      "author": {
+        "@type": "Person",
+        "name": "hongzh0",
+        "url": "https://hongzh0.wiki/about.html"
+      }
+    }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到正文</a>
   <header class="site-header">
-    <a class="brand" href="index.html" aria-label="hongzh0's Blog 首页">
+    <a class="brand" href="index.html">
       <span class="brand-mark">hz</span>
       <span>hongzh0's Blog</span>
     </a>
-    <button class="menu-toggle" aria-label="打开导航" aria-expanded="false">
-      <span></span><span></span>
+    <button class="menu-toggle" type="button" aria-label="打开导航" aria-expanded="false" aria-controls="site-navigation">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span>
     </button>
-    <nav class="site-nav" aria-label="主导航">
-      <a class="active" href="index.html">首页</a>
+    <nav class="site-nav" id="site-navigation" aria-label="主导航">
+      <a class="active" href="index.html" aria-current="page">首页</a>
       <a href="archive.html">归档</a>
       <a href="about.html">关于</a>
-      <button class="theme-toggle" aria-label="切换深浅色主题">
-        <span class="sun">☼</span><span class="moon">◐</span>
+      <button class="theme-toggle" type="button" aria-label="切换深浅色主题" aria-pressed="false">
+        <span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span>
       </button>
     </nav>
   </header>
 
   <main id="main">
     <section class="hero wrap">
-      <div class="hero-kicker"><span></span> SECURITY RESEARCH · PERSONAL BLOG</div>
+      <div class="hero-kicker"><span aria-hidden="true"></span> SECURITY RESEARCH · PERSONAL BLOG</div>
       <div class="hero-grid">
         <h1>理解攻击面，<br><em>也理解系统本身。</em></h1>
         <div class="hero-aside">
           <p>记录漏洞研究、代码审计、攻防实践，以及安全工具与方法论。</p>
-          <a class="text-link" href="#latest">开始阅读 <span>↘</span></a>
+          <a class="text-link" href="#latest">开始阅读 <span aria-hidden="true">↘</span></a>
         </div>
       </div>
-      <div class="hero-rule"><span>SCROLL TO EXPLORE</span><i></i><b>01</b></div>
+      <div class="hero-rule" aria-hidden="true"><span>SCROLL TO EXPLORE</span><i></i><b>01</b></div>
     </section>
 
     <!-- BLOG_FEATURED_START -->
 <section id="latest" class="featured wrap section-space">
       <div class="section-head"><div><span class="eyebrow">Latest research</span><h2>最新研究</h2></div><span class="section-no">RESEARCH / 01</span></div>
       <article class="featured-card">
-        <a class="featured-visual" href="posts/security-research-workflow.html" aria-label="阅读：从代码审计到漏洞复现：我的安全研究工作流"><span class="visual-grid"></span><span class="visual-orbit orbit-one"></span><span class="visual-orbit orbit-two"></span><span class="visual-center">研</span><span class="visual-caption">SECURITY RESEARCH / LATEST</span></a>
-        <div class="featured-copy"><div class="post-meta"><span>研究笔记</span><time datetime="2026-07-08">2026.07.08</time><span>2 分钟</span></div><h3><a href="posts/security-research-workflow.html">从代码审计到漏洞复现：我的安全研究工作流</a></h3><p>一次可信的漏洞研究，需要从攻击面梳理、数据流追踪走到真实环境验证。这里记录我目前使用的一套完整工作流。</p><a class="read-more" href="posts/security-research-workflow.html"><span>阅读全文</span><i>↗</i></a></div>
+        <a class="featured-visual" href="posts/security-research-workflow.html" aria-label="研SECURITY RESEARCH / LATEST，阅读文章：从代码审计到漏洞复现：我的安全研究工作流"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" aria-hidden="true">研</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
+        <div class="featured-copy"><div class="post-meta"><span>研究笔记</span><time datetime="2026-07-08">2026.07.08</time><span>2 分钟</span></div><h3><a href="posts/security-research-workflow.html">从代码审计到漏洞复现：我的安全研究工作流</a></h3><p>一次可信的漏洞研究，需要从攻击面梳理、数据流追踪走到真实环境验证。这里记录我目前使用的一套完整工作流。</p><a class="read-more" href="posts/security-research-workflow.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
       </article>
     </section>
     <!-- BLOG_FEATURED_END -->
 
     <!-- BLOG_RECENT_START -->
-<section class="notes wrap section-space"><div class="section-head"><div><span class="eyebrow">Latest notes</span><h2>最近写下</h2></div><a class="text-link" href="archive.html">查看全部 <span>↗</span></a></div><div class="post-list"><article class="post-row"><div class="post-index">01</div><div class="post-body"><div class="post-meta"><span>研究笔记</span><time datetime="2026-07-08">2026.07.08</time></div><h3><a href="posts/security-research-workflow.html">从代码审计到漏洞复现：我的安全研究工作流</a></h3><p>一次可信的漏洞研究，需要从攻击面梳理、数据流追踪走到真实环境验证。这里记录我目前使用的一套完整工作流。</p></div><a class="round-arrow" href="posts/security-research-workflow.html" aria-label="阅读文章">↗</a></article></div></section>
+<section class="notes wrap section-space"><div class="section-head"><div><span class="eyebrow">Latest notes</span><h2>最近写下</h2></div><a class="text-link" href="archive.html">查看全部 <span aria-hidden="true">↗</span></a></div><div class="post-list"><article class="post-row"><div class="post-index">01</div><div class="post-body"><div class="post-meta"><span>研究笔记</span><time datetime="2026-07-08">2026.07.08</time></div><h3><a href="posts/security-research-workflow.html">从代码审计到漏洞复现：我的安全研究工作流</a></h3><p>一次可信的漏洞研究，需要从攻击面梳理、数据流追踪走到真实环境验证。这里记录我目前使用的一套完整工作流。</p></div><a class="round-arrow" href="posts/security-research-workflow.html" aria-label="阅读文章：从代码审计到漏洞复现：我的安全研究工作流"><span aria-hidden="true">↗</span></a></article></div></section>
     <!-- BLOG_RECENT_END -->
 
     <section class="quote-band">
       <div class="wrap quote-inner">
-        <span class="quote-mark">“</span>
+        <span class="quote-mark" aria-hidden="true">“</span>
         <blockquote>不要只证明漏洞“可能存在”，<br>要证明它在真实边界下确实可达。</blockquote>
         <cite>— hongzh0 · RESEARCH NOTE</cite>
       </div>
@@ -73,13 +103,8 @@
         <h2>更新通知</h2>
       </div>
       <div class="newsletter-copy">
-        <p>有新的漏洞分析或研究笔记时发送通知。<br>仅更新内容，不发送无关邮件。</p>
-        <form class="subscribe-form" data-demo-form>
-          <label class="sr-only" for="email">邮箱地址</label>
-          <input id="email" type="email" placeholder="你的邮箱地址" required>
-          <button type="submit">订阅 <span>→</span></button>
-        </form>
-        <small class="form-message" aria-live="polite"></small>
+        <p>通过 RSS 获取新的漏洞分析与研究笔记。<br>安静更新，不发送无关内容。</p>
+        <a class="text-link" href="feed.xml" type="application/rss+xml">订阅 RSS <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
@@ -88,8 +113,8 @@
     <div class="wrap footer-grid">
       <div><a class="brand footer-brand" href="index.html"><span class="brand-mark">hz</span><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div>
       <div class="footer-links"><span>探索</span><a href="archive.html">文章归档</a><a href="about.html">关于我</a><a href="feed.xml">RSS 订阅</a></div>
-      <div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub ↗</a><a href="mailto:hello@example.com">Email ↗</a></div>
-      <div class="footer-end"><span>© 2026 HONGZH0</span><button class="back-top" aria-label="返回顶部">↑</button></div>
+      <div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="mailto:hongzh0@foxmail.com">Email <span aria-hidden="true">↗</span></a></div>
+      <div class="footer-end"><span>© 2026 HONGZH0</span><button class="back-top" type="button" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div>
     </div>
   </footer>
   <script src="assets/main.js"></script>
