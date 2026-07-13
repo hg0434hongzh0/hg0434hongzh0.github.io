@@ -325,6 +325,85 @@
     revealVisibleItems();
   }
 
+  async function writeClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.append(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    if (!copied) throw new Error('copy failed');
+  }
+
+  function initCodeBlocks() {
+    const languageNames = {
+      bash: 'Shell',
+      shell: 'Shell',
+      sh: 'Shell',
+      powershell: 'PowerShell',
+      ps1: 'PowerShell',
+      javascript: 'JavaScript',
+      js: 'JavaScript',
+      typescript: 'TypeScript',
+      ts: 'TypeScript',
+      java: 'Java',
+      python: 'Python',
+      py: 'Python',
+      xml: 'XML',
+      html: 'HTML',
+      json: 'JSON',
+      yaml: 'YAML',
+      yml: 'YAML',
+      sql: 'SQL',
+      http: 'HTTP'
+    };
+
+    document.querySelectorAll('.article-content pre').forEach(pre => {
+      if (pre.closest('.code-shell')) return;
+      const code = pre.querySelector('code');
+      if (!code) return;
+      const languageClass = [...code.classList].find(name => name.startsWith('language-'));
+      const languageKey = languageClass?.slice('language-'.length).toLowerCase() || 'text';
+      const shell = document.createElement('div');
+      const toolbar = document.createElement('div');
+      const label = document.createElement('span');
+      const copy = document.createElement('button');
+
+      shell.className = 'code-shell';
+      toolbar.className = 'code-toolbar';
+      label.textContent = languageNames[languageKey] || languageKey.toUpperCase();
+      copy.className = 'code-copy';
+      copy.type = 'button';
+      copy.textContent = '复制';
+      copy.setAttribute('aria-label', `复制 ${label.textContent} 代码`);
+
+      pre.replaceWith(shell);
+      toolbar.append(label, copy);
+      shell.append(toolbar, pre);
+      bindOnce(copy, 'copy-code', 'click', async () => {
+        try {
+          await writeClipboard(code.textContent || '');
+          copy.textContent = '已复制';
+          copy.dataset.copied = 'true';
+          window.setTimeout(() => {
+            copy.textContent = '复制';
+            delete copy.dataset.copied;
+          }, 1600);
+        } catch (_) {
+          copy.textContent = '复制失败';
+          window.setTimeout(() => { copy.textContent = '复制'; }, 1600);
+        }
+      });
+    });
+  }
+
   function initReadingProgress() {
     const article = document.querySelector('.article-content');
     if (!article) return;
@@ -436,6 +515,7 @@
     initMenu();
     initBackToTop();
     initArchiveFilters();
+    initCodeBlocks();
     initReveals();
     initReadingProgress();
     initTocScrollSpy();
