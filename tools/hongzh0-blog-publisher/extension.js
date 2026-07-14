@@ -163,7 +163,7 @@ async function newPost() {
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, `${today()}-${slugify(slug)}.md`);
   if (fs.existsSync(file)) throw new Error(`文章已存在：${path.basename(file)}`);
-  const content = `---\ntitle: ${yamlString(title)}\ndate: ${today()}\ncategory: ${yamlString(category)}\nsummary: ${yamlString(summary)}\nslug: ${slug}\ncoverText: ${yamlString(coverText.trim())}\npublished: false\n---\n\n在这里开始写作。\n\n## 背景\n\n## 分析\n\n## 验证\n\n## 修复建议\n`;
+  const content = `---\ntitle: ${yamlString(title)}\ndate: ${today()}\ncategory: ${yamlString(category)}\nsummary: ${yamlString(summary)}\nslug: ${slug}\ncoverText: ${yamlString(coverText.trim())}\nencrypted: false\npublished: false\n---\n\n在这里开始写作。\n\n## 背景\n\n## 分析\n\n## 验证\n\n## 修复建议\n`;
   fs.writeFileSync(file, content, 'utf8');
   const document = await vscode.workspace.openTextDocument(file);
   await vscode.window.showTextDocument(document);
