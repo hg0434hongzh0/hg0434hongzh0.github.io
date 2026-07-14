@@ -18,7 +18,7 @@ function fixture() {
   fs.mkdirSync(path.join(root, 'assets', 'fonts'));
   fs.writeFileSync(path.join(root, 'assets', 'fonts', 'font-face.css'), '/* local fonts */');
   fs.writeFileSync(path.join(root, 'assets', 'favicon.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>');
-  fs.writeFileSync(path.join(root, 'index.html'), '<!-- BLOG_FEATURED_START -->template-featured<!-- BLOG_FEATURED_END --><!-- BLOG_RECENT_START -->template-recent<!-- BLOG_RECENT_END -->');
+  fs.writeFileSync(path.join(root, 'index.html'), '<!DOCTYPE html><link rel="stylesheet" href="assets/style.css"><!-- BLOG_FEATURED_START -->template-featured<!-- BLOG_FEATURED_END --><!-- BLOG_RECENT_START -->template-recent<!-- BLOG_RECENT_END --><script src="assets/main.js"></script>');
   fs.writeFileSync(path.join(root, 'archive.html'), '<!-- BLOG_ARCHIVE_START -->template-archive<!-- BLOG_ARCHIVE_END -->');
   fs.writeFileSync(path.join(root, 'about.html'), '<!DOCTYPE html><title>About</title>');
   fs.writeFileSync(path.join(root, '404.html'), '<!DOCTYPE html><title>Not found</title>');
@@ -84,6 +84,8 @@ try {
   const index = fs.readFileSync(path.join(root, 'dist', 'index.html'), 'utf8');
   const recent = index.slice(index.indexOf('BLOG_RECENT_START'), index.indexOf('BLOG_RECENT_END'));
   assert.match(index, /最新文章/);
+  assert.match(index, /assets\/style\.css\?v=[a-f0-9]{12}/);
+  assert.match(index, /assets\/main\.js\?v=[a-f0-9]{12}/);
   assert.match(index, /<h2>最新<em>研究<\/em><\/h2>/);
   assert.match(index, /<h2>最近<em>写下<\/em><\/h2>/);
   assert.match(recent, /较早文章/);
@@ -119,6 +121,8 @@ try {
   assert.doesNotMatch(article, /@foxmail\.com/);
   assert.match(article, /github\.com\/hg0434hongzh0/);
   assert.match(article, /assets\/fonts\/font-face\.css/);
+  assert.match(article, /assets\/style\.css\?v=[a-f0-9]{12}/);
+  assert.match(article, /assets\/main\.js\?v=[a-f0-9]{12}/);
   assert.doesNotMatch(article, /fonts\.(?:googleapis|gstatic)\.com/);
   assert.doesNotMatch(article, /article-encrypted-payload/);
   assert.doesNotMatch(article, /article-crypto\.js/);
@@ -152,7 +156,7 @@ try {
   const encryptedArticle = fs.readFileSync(path.join(encryptedRoot, 'dist', 'posts', 'protected-post.html'), 'utf8');
   assert.match(encryptedArticle, /data-article-unlock/);
   assert.match(encryptedArticle, /article-encrypted-payload/);
-  assert.match(encryptedArticle, /article-crypto\.js/);
+  assert.match(encryptedArticle, /article-crypto\.js\?v=[a-f0-9]{12}/);
   assert.doesNotMatch(encryptedArticle, /只应在解密后出现的正文标记/);
   assert.doesNotMatch(encryptedArticle, /私密章节/);
   assert.doesNotMatch(encryptedArticle, /href="#section-/);
