@@ -107,7 +107,9 @@ try {
   assert.match(article, /property="article:published_time" content="2026-01-03T00:00:00\.000Z"/);
   assert.match(article, /class="article-nav"/);
   assert.match(article, /id="section-/);
-  assert.match(article, /mailto:hongzh0@foxmail\.com/);
+  assert.equal(article.includes(['mail', 'to:'].join('')), false);
+  assert.doesNotMatch(article, /@foxmail\.com/);
+  assert.match(article, /github\.com\/hg0434hongzh0/);
   assert.match(article, /fonts\.googleapis\.com/);
 
   const sitemap = fs.readFileSync(path.join(root, 'dist', 'sitemap.xml'), 'utf8');
