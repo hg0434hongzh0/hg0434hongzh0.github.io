@@ -390,13 +390,12 @@ server {
 
 ## 参考链接
 
-- [RabbitMQ 官方安全公告：GHSA-7v84-m3g5-vxq6](https://github.com/rabbitmq/rabbitmq-server/security/advisories/GHSA-7v84-m3g5-vxq6)：说明漏洞影响范围、Windows 与多管理扩展触发条件、攻击效果、CVSS 评分和官方修复版本。
-- [RabbitMQ 修复提交（main 分支）](https://github.com/rabbitmq/rabbitmq-server/commit/39c3a8e9c71da0403d8dfc13f700e60c936e3682)：展示在文件存在性探测前增加路径片段校验的核心修复代码及测试变更。
-- [RabbitMQ 修复提交（反向移植）](https://github.com/rabbitmq/rabbitmq-server/commit/6730797f6a34b4e8308cea60adf1243857e70204)：展示相同路径校验逻辑在维护分支中的落地情况。
-- [RabbitMQ 修复 PR：#15803](https://github.com/rabbitmq/rabbitmq-server/pull/15803)：汇总修复方案、代码审查过程及相关提交。
-- [RabbitMQ 4.2.6 Release](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.2.6)：`4.2.x` 分支最低修复版本的发布与下载页面。
-- [RabbitMQ 4.1.11 Release](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.1.11)：`4.1.x` 分支最低修复版本的发布与下载页面。
-- [RabbitMQ Server v4.1.8：`rabbit_mgmt_dispatcher.erl`](https://github.com/rabbitmq/rabbitmq-server/blob/v4.1.8/deps/rabbitmq_management/src/rabbit_mgmt_dispatcher.erl)：用于确认 `LocalPaths` 的构造、`/[...]` 静态资源通配路由及路由排序。
-- [RabbitMQ Server v4.1.8：`rabbit_mgmt_wm_static.erl`](https://github.com/rabbitmq/rabbitmq-server/blob/v4.1.8/deps/rabbitmq_management/src/rabbit_mgmt_wm_static.erl)：用于确认多目录分支在 Cowboy 校验前调用 `read_file_info/1` 的漏洞根因。
-- [CVE.org：CVE-2026-57211](https://www.cve.org/CVERecord?id=CVE-2026-57211)：提供 CVE 编号、CWE 分类、受影响版本和 CNA 评分信息。
-- [NVD：CVE-2026-57211](https://nvd.nist.gov/vuln/detail/CVE-2026-57211)：提供 NVD 漏洞条目、参考来源和后续分析信息。
+1. [RabbitMQ 官方安全公告：漏洞影响、触发条件与修复版本](https://github.com/rabbitmq/rabbitmq-server/security/advisories/GHSA-7v84-m3g5-vxq6)
+2. [RabbitMQ 主分支修复提交：增加路径片段校验](https://github.com/rabbitmq/rabbitmq-server/commit/39c3a8e9c71da0403d8dfc13f700e60c936e3682)
+3. [RabbitMQ 维护分支修复提交：反向移植路径校验](https://github.com/rabbitmq/rabbitmq-server/commit/6730797f6a34b4e8308cea60adf1243857e70204)
+4. [RabbitMQ 修复 PR #15803：修复方案与代码审查](https://github.com/rabbitmq/rabbitmq-server/pull/15803)
+5. [RabbitMQ 4.2.6 Release：4.2.x 分支修复版本](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.2.6)
+6. [RabbitMQ v4.1.8 路由源码：`rabbit_mgmt_dispatcher.erl`](https://github.com/rabbitmq/rabbitmq-server/blob/v4.1.8/deps/rabbitmq_management/src/rabbit_mgmt_dispatcher.erl)
+7. [RabbitMQ v4.1.8 静态文件处理源码：`rabbit_mgmt_wm_static.erl`](https://github.com/rabbitmq/rabbitmq-server/blob/v4.1.8/deps/rabbitmq_management/src/rabbit_mgmt_wm_static.erl)
+8. [CVE.org：CVE-2026-57211 官方记录](https://www.cve.org/CVERecord?id=CVE-2026-57211)
+9. [NVD：CVE-2026-57211 漏洞条目](https://nvd.nist.gov/vuln/detail/CVE-2026-57211)
