@@ -553,12 +553,27 @@
     scheduleMeasure();
   }
 
+  function useLocalImageFallback(image) {
+    const fallback = image.dataset.fallbackSrc;
+    if (!fallback || image.dataset.fallbackAttempted === 'true' || image.getAttribute('src') === fallback) return;
+    image.dataset.fallbackAttempted = 'true';
+    image.src = fallback;
+  }
+
+  function initImageFallbacks() {
+    document.querySelectorAll('img[data-fallback-src]').forEach(image => {
+      bindOnce(image, 'local-image-fallback', 'error', () => useLocalImageFallback(image), { once: true });
+      if (image.complete && image.naturalWidth === 0) useLocalImageFallback(image);
+    });
+  }
+
   function init() {
     initTheme();
     initMenu();
     initBackToTop();
     initArchiveFilters();
     initCodeBlocks();
+    initImageFallbacks();
     initReveals();
     initReadingProgress();
     initTocScrollSpy();
@@ -566,6 +581,7 @@
 
   bindOnce(document, 'article-unlocked', 'article:unlocked', () => {
     initCodeBlocks();
+    initImageFallbacks();
     initReveals();
     initTocScrollSpy();
     refreshers.forEach(refresh => refresh());

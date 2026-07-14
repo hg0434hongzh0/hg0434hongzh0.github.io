@@ -100,7 +100,7 @@ try {
   assert.match(article, /property="og:image"/);
   assert.match(article, /property="og:image:alt"/);
   assert.match(article, /property="og:image:width" content="960"/);
-  assert.match(article, /property="og:image:height" content="962"/);
+  assert.match(article, /property="og:image:height" content="960"/);
   assert.match(article, /name="twitter:card"/);
   assert.match(article, /name="twitter:image:alt"/);
   assert.match(article, /application\/ld\+json/);
@@ -129,6 +129,22 @@ try {
 
   const imageHtml = renderMarkdown('![验证图片](/assets/posts/test/image.png)').html;
   assert.match(imageHtml, /<img loading="lazy" decoding="async"/);
+  assert.match(imageHtml, /src="\/assets\/posts\/test\/image\.png"/);
+  assert.doesNotMatch(imageHtml, /data-fallback-src|referrerpolicy/);
+
+  const giteeImageHtml = renderMarkdown(
+    '<img src="/assets/posts/test/image.png" data-gitee-file="image.png" alt="验证图片">'
+  ).html;
+  assert.match(giteeImageHtml, /src="https:\/\/gitee\.com\/hongzh0\/picrrrrasaasaszxxzxz\/raw\/master\/image\.png"/);
+  assert.match(giteeImageHtml, /data-fallback-src="\/assets\/posts\/test\/image\.png"/);
+  assert.match(giteeImageHtml, /referrerpolicy="no-referrer"/);
+  assert.doesNotMatch(giteeImageHtml, /data-gitee-file/);
+
+  const untrustedImageHtml = renderMarkdown(
+    '<img src="/assets/posts/test/image.png" data-gitee-file="other.png" alt="验证图片">'
+  ).html;
+  assert.match(untrustedImageHtml, /src="\/assets\/posts\/test\/image\.png"/);
+  assert.doesNotMatch(untrustedImageHtml, /data-fallback-src|referrerpolicy/);
 
   const sitemap = fs.readFileSync(path.join(root, 'dist', 'sitemap.xml'), 'utf8');
   assert.match(sitemap, /https:\/\/hongzh0\.wiki\/posts\/newest-post\.html/);
