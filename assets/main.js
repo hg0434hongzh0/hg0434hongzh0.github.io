@@ -278,13 +278,10 @@
 
   function initReveals() {
     const selectors = [
-      '.hero > *',
       '.page-hero > *',
       '.section-head',
       '.featured-card',
       '.post-row',
-      '.quote-inner > *',
-      '.newsletter > *',
       '.rss-cta > *',
       '.archive-year',
       '.about-grid > *',

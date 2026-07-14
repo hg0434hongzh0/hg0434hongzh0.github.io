@@ -297,7 +297,7 @@ ${footer('..')}<script src="../assets/main.js"></script></body></html>\n`;
 
 function featuredSection(post) {
   return `<section id="latest" class="featured wrap section-space">
-      <div class="section-head"><div><span class="eyebrow">Latest research</span><h2>最新研究</h2></div><span class="section-no">RESEARCH / 01</span></div>
+      <div class="section-head"><h2>最新<em>研究</em></h2><span class="section-no">01 / FEATURED</span></div>
       <article class="featured-card">
         <a class="featured-visual" href="posts/${escapeHtml(post.slug)}.html" aria-label="${escapeHtml(post.coverText)}SECURITY RESEARCH / LATEST，阅读文章：${escapeHtml(post.title)}"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
         <div class="featured-copy"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span></div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p><a class="read-more" href="posts/${escapeHtml(post.slug)}.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
@@ -309,7 +309,7 @@ function recentSection(posts) {
   const recent = posts.slice(1, 4);
   if (!recent.length) return '';
   const rows = recent.map((post, index) => `<article class="post-row"><div class="post-index">${String(index + 1).padStart(2, '0')}</div><div class="post-body"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time></div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p></div><a class="round-arrow" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span aria-hidden="true">↗</span></a></article>`).join('\n        ');
-  return `<section class="notes wrap section-space"><div class="section-head"><div><span class="eyebrow">Latest notes</span><h2>最近写下</h2></div><a class="text-link" href="archive.html">查看全部 <span aria-hidden="true">↗</span></a></div><div class="post-list">${rows}</div></section>`;
+  return `<section class="notes wrap section-space"><div class="section-head"><h2>最近<em>写下</em></h2><a class="text-link" href="archive.html">查看全部 <span aria-hidden="true">↗</span></a></div><div class="post-list">${rows}</div></section>`;
 }
 
 function archiveSection(posts) {
