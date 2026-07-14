@@ -4,6 +4,7 @@
   const root = document.documentElement;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const mobileNavigation = window.matchMedia('(max-width: 800px)');
+  const visitStatsEndpoint = 'https://cdn.busuanzi.cc/api.php';
   const boundEvents = new WeakMap();
   const revealItems = new Set();
   const refreshers = new Set();
@@ -12,6 +13,7 @@
   let revealObserver;
   let activeMenu;
   let themeTransitionRunning = false;
+  let visitStatsRequested = false;
 
   function bindOnce(target, key, type, listener, options) {
     if (!target) return;
@@ -553,6 +555,28 @@
     scheduleMeasure();
   }
 
+  function initVisitStats() {
+    if (visitStatsRequested || !document.querySelector('[id^="busuanzi_"]')) return;
+    visitStatsRequested = true;
+    fetch(visitStatsEndpoint, {
+      method: 'POST',
+      body: JSON.stringify({ url: window.location.href, referrer: document.referrer })
+    })
+      .then(response => {
+        if (!response.ok) throw new Error(`visit stats request failed: ${response.status}`);
+        return response.json();
+      })
+      .then(counters => {
+        Object.entries(counters).forEach(([id, value]) => {
+          const element = document.getElementById(id);
+          if (element) element.textContent = String(value);
+        });
+      })
+      .catch(() => {
+        // Keep the placeholder when the optional statistics service is unavailable.
+      });
+  }
+
   function useLocalImageFallback(image) {
     const fallback = image.dataset.fallbackSrc;
     if (!fallback || image.dataset.fallbackAttempted === 'true' || image.getAttribute('src') === fallback) return;
@@ -574,6 +598,7 @@
     initArchiveFilters();
     initCodeBlocks();
     initImageFallbacks();
+    initVisitStats();
     initReveals();
     initReadingProgress();
     initTocScrollSpy();

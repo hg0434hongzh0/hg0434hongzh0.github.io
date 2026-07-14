@@ -107,6 +107,10 @@ try {
   assert.match(article, /class="reading-progress"/);
   assert.match(article, /class="article-hero wrap"/);
   assert.match(article, /class="article-facts"/);
+  assert.match(article, /id="busuanzi_page_pv"/);
+  assert.match(article, /id="busuanzi_site_pv"/);
+  assert.match(article, /id="busuanzi_site_uv"/);
+  assert.doesNotMatch(article, /busuanzi\.min\.js/);
   assert.match(article, /class="mobile-toc wrap"/);
   assert.match(article, /class="article-toc-nav"/);
   assert.match(article, /END OF RESEARCH NOTE/);

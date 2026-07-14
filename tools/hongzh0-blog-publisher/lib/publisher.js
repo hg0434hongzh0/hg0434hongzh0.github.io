@@ -304,7 +304,7 @@ function header(relative = '..') {
 }
 
 function footer(relative = '..') {
-  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><span class="brand-mark">hz</span><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
+  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><span class="brand-mark">hz</span><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
 }
 
 function articleNavigation(previous, next) {
@@ -418,7 +418,7 @@ function articlePage(post, options = {}) {
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(post.title)}"><meta name="twitter:description" content="${escapeHtml(post.summary)}"><meta name="twitter:image" content="${escapeHtml(OG_IMAGE)}"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
 <script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css"><link rel="stylesheet" href="../assets/style.css${assetQuery}"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
 <div class="reading-progress" aria-hidden="true"><span></span></div>${header('..')}
-<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span></div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div></dl></header>
+<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span></div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
 <div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · ${escapeHtml(post.date)}</span></div></section>
 <details class="mobile-toc wrap"><summary><span>文章目录</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></summary><nav aria-label="移动端文章目录">${publicTocLinks}</nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></div><nav class="article-toc-nav">${publicTocLinks}</nav></aside><article class="article-content">${articleBody}<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 ${displayDate(post.date)} · hongzh0's Blog</p></footer>${articleNavigation(options.previous, options.next)}</article></div></main>
 ${footer('..')}<script src="../assets/main.js${assetQuery}"></script>${post.encrypted ? `<script src="../assets/article-crypto.js${assetQuery}"></script>` : ''}</body></html>\n`;
@@ -496,19 +496,32 @@ function readRequiredFile(root, relativePath, encoding = null) {
   return fs.readFileSync(fullPath, encoding || undefined);
 }
 
+function renameWithRetry(source, destination, retries = 5) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      fs.renameSync(source, destination);
+      return;
+    } catch (error) {
+      const retryable = ['EACCES', 'EBUSY', 'EPERM'].includes(error.code);
+      if (!retryable || attempt >= retries) throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50 * (attempt + 1));
+    }
+  }
+}
+
 function replaceDirectory(tempDirectory, outputDirectory) {
   const backupDirectory = `${outputDirectory}.backup-${process.pid}-${Date.now()}`;
   let movedExisting = false;
   if (fs.existsSync(outputDirectory)) {
-    fs.renameSync(outputDirectory, backupDirectory);
+    renameWithRetry(outputDirectory, backupDirectory);
     movedExisting = true;
   }
 
   try {
-    fs.renameSync(tempDirectory, outputDirectory);
+    renameWithRetry(tempDirectory, outputDirectory);
   } catch (error) {
     if (movedExisting && !fs.existsSync(outputDirectory)) {
-      fs.renameSync(backupDirectory, outputDirectory);
+      renameWithRetry(backupDirectory, outputDirectory);
     }
     throw error;
   }

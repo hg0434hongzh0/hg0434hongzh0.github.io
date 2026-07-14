@@ -40,13 +40,13 @@ docker pull gogs/gogs:0.14.1
 
 拉取镜像后，按照实验网络与数据卷规划启动容器并完成初始化。本文复现环境的运行状态如下：
 
-![Gogs 漏洞分析截图 01](/assets/posts/gogs-organization-name-path-traversal-rce/20260626214100915.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260626214100915.png" data-gitee-file="20260626214100915.png" alt="Gogs 漏洞分析截图 01">
 
 ## 5. 漏洞复现
 
 ### 5.1 复现结果
 
-![Gogs 漏洞分析截图 02](/assets/posts/gogs-organization-name-path-traversal-rce/20260626213252151.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260626213252151.png" data-gitee-file="20260626213252151.png" alt="Gogs 漏洞分析截图 02">
 
 ### 5.2 公开 PoC
 
@@ -235,7 +235,7 @@ Content-Type: application/json
 #### 5.3.12 获取 RCE 回显
 
 **实例 URL：** `http://192.168.131.134:3000/hongzh0/writer-42c09a64/raw/main/nessted/rce-9d862f6c.git/pwned`
-![Gogs 漏洞分析截图 03](/assets/posts/gogs-organization-name-path-traversal-rce/20260704163850811.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260704163850811.png" data-gitee-file="20260704163850811.png" alt="Gogs 漏洞分析截图 03">
 
 ## 6. 漏洞分析
 
@@ -243,31 +243,31 @@ Content-Type: application/json
 
 `internal/route/api/v1/api.go` 定义了 REST API 路由；是否使用 `reqToken()` 可以帮助判断接口所需的认证权限。
 
-![Gogs 漏洞分析截图 04](/assets/posts/gogs-organization-name-path-traversal-rce/20260628005521946.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260628005521946.png" data-gitee-file="20260628005521946.png" alt="Gogs 漏洞分析截图 04">
 
 路由采用分层映射，组织创建接口最终对应 `/api/v1/user/orgs`。
 
-![Gogs 漏洞分析截图 05](/assets/posts/gogs-organization-name-path-traversal-rce/20260629115650861.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629115650861.png" data-gitee-file="20260629115650861.png" alt="Gogs 漏洞分析截图 05">
 
 继续查看 `CreateOrgOption`，可以看到 `UserName` 直接承接用户输入，仅进行了非空检查，没有路径规范化或格式约束。
 
-![Gogs 漏洞分析截图 06](/assets/posts/gogs-organization-name-path-traversal-rce/20260629145605625.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629145605625.png" data-gitee-file="20260629145605625.png" alt="Gogs 漏洞分析截图 06">
 
 从 `api.go` 跟入 `CreateMyOrg` 和 `CreateOrgForUser`：
 
-![Gogs 漏洞分析截图 07](/assets/posts/gogs-organization-name-path-traversal-rce/20260629102248083.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629102248083.png" data-gitee-file="20260629102248083.png" alt="Gogs 漏洞分析截图 07">
 
-![Gogs 漏洞分析截图 08](/assets/posts/gogs-organization-name-path-traversal-rce/20260629104759871.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629104759871.png" data-gitee-file="20260629104759871.png" alt="Gogs 漏洞分析截图 08">
 
 `CreateOrgForUser` 主要检查用户名是否已存在以及是否被禁止，但这些检查并未覆盖路径遍历输入。继续进入 `CreateOrganization`，第一层调用为 `isUsernameAllowed`。
 
-![Gogs 漏洞分析截图 09](/assets/posts/gogs-organization-name-path-traversal-rce/20260629113824454.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629113824454.png" data-gitee-file="20260629113824454.png" alt="Gogs 漏洞分析截图 09">
 
 `isUsernameAllowed` 使用 `reservedUsernames` 作为保留名称黑名单：
 
-![Gogs 漏洞分析截图 10](/assets/posts/gogs-organization-name-path-traversal-rce/20260629113931774.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629113931774.png" data-gitee-file="20260629113931774.png" alt="Gogs 漏洞分析截图 10">
 
-![Gogs 漏洞分析截图 11](/assets/posts/gogs-organization-name-path-traversal-rce/20260629114016649.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629114016649.png" data-gitee-file="20260629114016649.png" alt="Gogs 漏洞分析截图 11">
 
 因此，从 API 创建组织时主要经过以下三类检查：
 
@@ -277,37 +277,37 @@ Content-Type: application/json
 
 黑名单虽然包含 `.` 和 `..`，但 `isUsernameAllowed` 采用完整字符串匹配。输入为 `..` 时会被拦截，输入为 `../` 或更长的路径遍历序列时则不会命中黑名单。
 
-![Gogs 漏洞分析截图 12](/assets/posts/gogs-organization-name-path-traversal-rce/20260629113549076.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629113549076.png" data-gitee-file="20260629113549076.png" alt="Gogs 漏洞分析截图 12">
 
-![Gogs 漏洞分析截图 13](/assets/posts/gogs-organization-name-path-traversal-rce/20260629114555991.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629114555991.png" data-gitee-file="20260629114555991.png" alt="Gogs 漏洞分析截图 13">
 
-![Gogs 漏洞分析截图 14](/assets/posts/gogs-organization-name-path-traversal-rce/20260629114653406.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629114653406.png" data-gitee-file="20260629114653406.png" alt="Gogs 漏洞分析截图 14">
 
 Web 端组织创建路由位于 `internal/cmd/web.go`：
 
-![Gogs 漏洞分析截图 15](/assets/posts/gogs-organization-name-path-traversal-rce/20260629152450598.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629152450598.png" data-gitee-file="20260629152450598.png" alt="Gogs 漏洞分析截图 15">
 
 Web 端的 `CreateOrg` 使用了额外的名称格式校验：
 
-![Gogs 漏洞分析截图 16](/assets/posts/gogs-organization-name-path-traversal-rce/20260629152740483.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629152740483.png" data-gitee-file="20260629152740483.png" alt="Gogs 漏洞分析截图 16">
 
 其中 `AlphaDashDot` 是 Macaron 框架提供的正则校验规则。API 调用链没有应用这项规则，因此 Web 表单受到约束，并不代表对应 API 同样安全。
 
-![Gogs 漏洞分析截图 17](/assets/posts/gogs-organization-name-path-traversal-rce/20260629153143065.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629153143065.png" data-gitee-file="20260629153143065.png" alt="Gogs 漏洞分析截图 17">
 
 继续查看 `CreateOrganization`：
 
-![Gogs 漏洞分析截图 18](/assets/posts/gogs-organization-name-path-traversal-rce/20260629104441652.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629104441652.png" data-gitee-file="20260629104441652.png" alt="Gogs 漏洞分析截图 18">
 
 函数调用 `os.MkdirAll()` 创建组织目录，并通过 `UserPath(org.Name)` 生成目标路径。跟入 `UserPath` 后可以看到，组织名称仅转为小写，随后直接参与路径拼接。
 
-![Gogs 漏洞分析截图 19](/assets/posts/gogs-organization-name-path-traversal-rce/20260629111004631.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629111004631.png" data-gitee-file="20260629111004631.png" alt="Gogs 漏洞分析截图 19">
 
-![Gogs 漏洞分析截图 20](/assets/posts/gogs-organization-name-path-traversal-rce/20260629111224900.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629111224900.png" data-gitee-file="20260629111224900.png" alt="Gogs 漏洞分析截图 20">
 
 项目在 `internal/pathutil/pathutil.go` 中已经存在用于阻止路径越界的辅助函数，但该组织创建调用链没有使用它。
 
-![Gogs 漏洞分析截图 21](/assets/posts/gogs-organization-name-path-traversal-rce/20260629112352680.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629112352680.png" data-gitee-file="20260629112352680.png" alt="Gogs 漏洞分析截图 21">
 
 最终，攻击者可以通过组织名称中的 `../` 序列改变仓库目录落点，再结合 Git 工作树同步和 Hook 覆盖完成 RCE 利用链。
 
@@ -317,7 +317,7 @@ RCE 阶段与路径遍历阶段所需权限一致：攻击者只需要一个 Gog
 
 Gogs 创建仓库时会在磁盘上生成 Git 裸仓库，并写入 `hooks/update` 等包装脚本。例如，正常的 `hooks/update` 会调用 `/app/gogs/gogs hook update`。当仓库发生特定 Git 操作时，这些 Hook 会由 Git 自动触发。
 
-![Gogs 漏洞分析截图 22](/assets/posts/gogs-organization-name-path-traversal-rce/20260630161819871.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260630161819871.png" data-gitee-file="20260630161819871.png" alt="Gogs 漏洞分析截图 22">
 
 攻击链可以概括为三个阶段：
 
@@ -333,7 +333,7 @@ Gogs 创建仓库时会在磁盘上生成 Git 裸仓库，并写入 `hooks/updat
 docker exec cve-2026-52813-target /app/gogs/gogs --version
 ```
 
-![Gogs 漏洞分析截图 23](/assets/posts/gogs-organization-name-path-traversal-rce/20260626214405007.png)
+<img src="/assets/posts/gogs-organization-name-path-traversal-rce/20260626214405007.png" data-gitee-file="20260626214405007.png" alt="Gogs 漏洞分析截图 23">
 
 ### 7.2 Gogs 升级
 
