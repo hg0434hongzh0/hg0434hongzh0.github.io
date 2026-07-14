@@ -80,6 +80,8 @@ try {
   const index = fs.readFileSync(path.join(root, 'dist', 'index.html'), 'utf8');
   const recent = index.slice(index.indexOf('BLOG_RECENT_START'), index.indexOf('BLOG_RECENT_END'));
   assert.match(index, /最新文章/);
+  assert.match(index, /<h2>最新<em>研究<\/em><\/h2>/);
+  assert.match(index, /<h2>最近<em>写下<\/em><\/h2>/);
   assert.match(recent, /较早文章/);
   assert.doesNotMatch(recent, /最新文章/);
 
