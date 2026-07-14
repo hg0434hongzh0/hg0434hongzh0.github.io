@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const matter = require('gray-matter');
 const yaml = require('js-yaml');
 const { marked } = require('marked');
@@ -103,10 +104,15 @@ function requiredString(data, field) {
   return data[field].trim();
 }
 
-function parsePublished(value) {
+function parseBoolean(value, field, defaultValue = false) {
+  if (value === undefined || value === null || value === '') return defaultValue;
   if (value === true || value === 'true') return true;
   if (value === false || value === 'false') return false;
-  throw new Error('front matter published 必须是 true 或 false');
+  throw new Error(`front matter ${field} 必须是 true 或 false`);
+}
+
+function parsePublished(value) {
+  return parseBoolean(value, 'published');
 }
 
 function parsePublishedAt(value, date) {
@@ -146,6 +152,14 @@ function parsePost(fullPath) {
   const slug = requiredString(data, 'slug');
   const coverText = requiredString(data, 'coverText');
   const published = parsePublished(data.published);
+  const encrypted = parseBoolean(data.encrypted, 'encrypted', false);
+  let passwordEnv = '';
+  if (Object.prototype.hasOwnProperty.call(data, 'passwordEnv')) {
+    passwordEnv = requiredString(data, 'passwordEnv');
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(passwordEnv)) {
+      throw new Error('front matter passwordEnv 必须是有效的环境变量名');
+    }
+  }
 
   if (!validateDate(date)) {
     throw new Error('front matter date 必须是有效的 YYYY-MM-DD 日期');
@@ -177,6 +191,8 @@ function parsePost(fullPath) {
     slug,
     coverText,
     published,
+    encrypted,
+    passwordEnv,
     content: parsed.content.trim(),
     minutes
   };
@@ -225,6 +241,11 @@ function loadPosts(root, postsDirectory = 'content/posts') {
 
 function renderMarkdown(markdown) {
   let html = marked.parse(markdown, { gfm: true, breaks: false });
+  html = html.replace(/<img\b([^>]*)>/gi, (match, attributes) => {
+    const loading = /\sloading\s*=/.test(attributes) ? '' : ' loading="lazy"';
+    const decoding = /\sdecoding\s*=/.test(attributes) ? '' : ' decoding="async"';
+    return `<img${loading}${decoding}${attributes}>`;
+  });
   const toc = [];
   let index = 0;
   html = html.replace(/<h([2-4])>([\s\S]*?)<\/h\1>/g, (_, level, inner) => {
@@ -256,6 +277,63 @@ function articleNavigation(previous, next) {
   return `<nav class="article-nav" aria-label="文章导航">${previousLink}${nextLink}</nav>`;
 }
 
+function passwordMapFromEnvironment() {
+  const source = process.env.BLOG_POST_PASSWORDS_JSON;
+  if (!source || !source.trim()) return {};
+  let parsed;
+  try {
+    parsed = JSON.parse(source);
+  } catch (_) {
+    throw new Error('环境变量 BLOG_POST_PASSWORDS_JSON 必须是有效的 JSON 对象');
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('环境变量 BLOG_POST_PASSWORDS_JSON 必须是 slug 到密码的 JSON 对象');
+  }
+  return parsed;
+}
+
+function resolvePostPassword(post, options = {}) {
+  if (!post.encrypted) return '';
+  let password = '';
+  if (options.passwords instanceof Map) password = options.passwords.get(post.slug) || '';
+  else if (options.passwords && typeof options.passwords === 'object') password = options.passwords[post.slug] || '';
+  if (!password && post.passwordEnv) password = process.env[post.passwordEnv] || '';
+  if (!password) password = passwordMapFromEnvironment()[post.slug] || '';
+  if (typeof password !== 'string' || password.length < 8) {
+    throw new Error(`加密文章 ${post.slug} 缺少至少 8 个字符的密码；请配置 BLOG_POST_PASSWORDS_JSON 或 passwordEnv`);
+  }
+  return password;
+}
+
+function encryptArticlePayload(payload, password, slug) {
+  const iterations = 250000;
+  const salt = crypto.randomBytes(16);
+  const iv = crypto.randomBytes(12);
+  const aad = Buffer.from(`hongzh0-blog:${slug}:v1`, 'utf8');
+  const key = crypto.pbkdf2Sync(password, salt, iterations, 32, 'sha256');
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  cipher.setAAD(aad);
+  const encrypted = Buffer.concat([
+    cipher.update(JSON.stringify(payload), 'utf8'),
+    cipher.final(),
+    cipher.getAuthTag()
+  ]);
+  return {
+    version: 1,
+    iterations,
+    salt: salt.toString('base64'),
+    iv: iv.toString('base64'),
+    data: encrypted.toString('base64')
+  };
+}
+
+function safeJson(value) {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
 function articlePage(post, options = {}) {
   const baseUrl = normalizeBaseUrl(options.baseUrl);
   const canonical = absoluteUrl(baseUrl, `posts/${post.slug}.html`);
@@ -267,6 +345,14 @@ function articlePage(post, options = {}) {
         return `<a${cls} href="#${escapeHtml(item.id)}">${String(index + 1).padStart(2, '0')} ${escapeHtml(item.text.replace(/^\d+\s*[·.、-]?\s*/, ''))}</a>`;
       }).join('')
     : '<a href="#article">正文</a>';
+  const password = resolvePostPassword(post, options);
+  const encryptedPayload = post.encrypted
+    ? safeJson(encryptArticlePayload({ html: rendered.html, toc: tocLinks }, password, post.slug))
+    : '';
+  const publicTocLinks = post.encrypted ? '' : tocLinks;
+  const articleBody = post.encrypted
+    ? `<section class="article-unlock" data-article-unlock aria-labelledby="article-unlock-title"><span class="article-unlock-kicker">PROTECTED RESEARCH NOTE</span><h2 id="article-unlock-title">这篇文章已加密</h2><p>输入访问密码后，正文只会在当前浏览器中解密。</p><form class="article-unlock-form"><label for="article-password">访问密码</label><div class="article-unlock-control"><input id="article-password" name="password" type="password" minlength="8" autocomplete="current-password" required><button type="submit">解锁文章</button></div><p class="article-unlock-status" role="status" aria-live="polite"></p></form></section><script id="article-encrypted-payload" type="application/json" data-slug="${escapeHtml(post.slug)}">${encryptedPayload}</script>`
+    : rendered.html;
   const structuredData = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -287,12 +373,12 @@ function articlePage(post, options = {}) {
 <link rel="canonical" href="${escapeHtml(canonical)}"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="${escapeHtml(post.title)}"><meta property="og:description" content="${escapeHtml(post.summary)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(OG_IMAGE)}"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="962"><meta property="article:published_time" content="${post.publishedAt}">
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(post.title)}"><meta name="twitter:description" content="${escapeHtml(post.summary)}"><meta name="twitter:image" content="${escapeHtml(OG_IMAGE)}"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
-<script type="application/ld+json">${structuredData}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="../assets/style.css"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
+<script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css"><link rel="stylesheet" href="../assets/style.css"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
 <div class="reading-progress" aria-hidden="true"><span></span></div>${header('..')}
 <main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span></div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div></dl></header>
 <div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · ${escapeHtml(post.date)}</span></div></section>
-<details class="mobile-toc wrap"><summary><span>文章目录</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></summary><nav aria-label="移动端文章目录">${tocLinks}</nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></div><nav class="article-toc-nav">${tocLinks}</nav></aside><article class="article-content">${rendered.html}<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 ${displayDate(post.date)} · hongzh0's Blog</p></footer>${articleNavigation(options.previous, options.next)}</article></div></main>
-${footer('..')}<script src="../assets/main.js"></script></body></html>\n`;
+<details class="mobile-toc wrap"><summary><span>文章目录</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></summary><nav aria-label="移动端文章目录">${publicTocLinks}</nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></div><nav class="article-toc-nav">${publicTocLinks}</nav></aside><article class="article-content">${articleBody}<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 ${displayDate(post.date)} · hongzh0's Blog</p></footer>${articleNavigation(options.previous, options.next)}</article></div></main>
+${footer('..')}<script src="../assets/main.js"></script>${post.encrypted ? '<script src="../assets/article-crypto.js"></script>' : ''}</body></html>\n`;
 }
 
 function featuredSection(post) {
@@ -421,7 +507,8 @@ function buildSite(root, options = {}) {
     html: articlePage(post, {
       baseUrl,
       previous: posts[index + 1] || null,
-      next: posts[index - 1] || null
+      next: posts[index - 1] || null,
+      passwords: options.passwords
     })
   }));
   const feed = feedXml(posts, baseUrl);

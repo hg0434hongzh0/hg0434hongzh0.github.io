@@ -2,7 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { buildSite, loadPosts } = require('../lib/publisher');
+const crypto = require('crypto');
+const { buildSite, loadPosts, renderMarkdown } = require('../lib/publisher');
 
 const roots = [];
 
@@ -13,6 +14,9 @@ function fixture() {
   fs.mkdirSync(path.join(root, 'assets'));
   fs.writeFileSync(path.join(root, 'assets', 'style.css'), 'body{}');
   fs.writeFileSync(path.join(root, 'assets', 'main.js'), 'void 0;');
+  fs.writeFileSync(path.join(root, 'assets', 'article-crypto.js'), 'void 0;');
+  fs.mkdirSync(path.join(root, 'assets', 'fonts'));
+  fs.writeFileSync(path.join(root, 'assets', 'fonts', 'font-face.css'), '/* local fonts */');
   fs.writeFileSync(path.join(root, 'assets', 'favicon.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>');
   fs.writeFileSync(path.join(root, 'index.html'), '<!-- BLOG_FEATURED_START -->template-featured<!-- BLOG_FEATURED_END --><!-- BLOG_RECENT_START -->template-recent<!-- BLOG_RECENT_END -->');
   fs.writeFileSync(path.join(root, 'archive.html'), '<!-- BLOG_ARCHIVE_START -->template-archive<!-- BLOG_ARCHIVE_END -->');
@@ -110,7 +114,13 @@ try {
   assert.equal(article.includes(['mail', 'to:'].join('')), false);
   assert.doesNotMatch(article, /@foxmail\.com/);
   assert.match(article, /github\.com\/hg0434hongzh0/);
-  assert.match(article, /fonts\.googleapis\.com/);
+  assert.match(article, /assets\/fonts\/font-face\.css/);
+  assert.doesNotMatch(article, /fonts\.(?:googleapis|gstatic)\.com/);
+  assert.doesNotMatch(article, /article-encrypted-payload/);
+  assert.doesNotMatch(article, /article-crypto\.js/);
+
+  const imageHtml = renderMarkdown('![验证图片](/assets/posts/test/image.png)').html;
+  assert.match(imageHtml, /<img loading="lazy" decoding="async"/);
 
   const sitemap = fs.readFileSync(path.join(root, 'dist', 'sitemap.xml'), 'utf8');
   assert.match(sitemap, /https:\/\/hongzh0\.wiki\/posts\/newest-post\.html/);
@@ -127,6 +137,41 @@ try {
   writePost(root, '2026-01-04-duplicate.md', { title: '重复文章', date: '2026-01-04', slug: 'newest-post' });
   assert.throws(() => buildSite(root), /重复 slug/);
   assert.equal(fs.readFileSync(path.join(root, 'dist', 'index.html'), 'utf8'), previousIndex);
+
+  const encryptedRoot = fixture();
+  const secretBody = '只应在解密后出现的正文标记。\n\n## 私密章节\n\n![私密图片](/assets/posts/protected/secret.png)';
+  writePost(encryptedRoot, 'protected.md', { title: '受保护文章', slug: 'protected-post', encrypted: 'true' }, secretBody);
+  assert.throws(() => buildSite(encryptedRoot), /加密文章 protected-post 缺少至少 8 个字符的密码/);
+  assert.ok(!fs.existsSync(path.join(encryptedRoot, 'dist')));
+
+  buildSite(encryptedRoot, { passwords: { 'protected-post': 'correct horse battery staple' } });
+  const encryptedArticle = fs.readFileSync(path.join(encryptedRoot, 'dist', 'posts', 'protected-post.html'), 'utf8');
+  assert.match(encryptedArticle, /data-article-unlock/);
+  assert.match(encryptedArticle, /article-encrypted-payload/);
+  assert.match(encryptedArticle, /article-crypto\.js/);
+  assert.doesNotMatch(encryptedArticle, /只应在解密后出现的正文标记/);
+  assert.doesNotMatch(encryptedArticle, /私密章节/);
+  assert.doesNotMatch(encryptedArticle, /href="#section-/);
+
+  const payloadMatch = encryptedArticle.match(/<script id="article-encrypted-payload" type="application\/json" data-slug="protected-post">([^<]+)<\/script>/);
+  assert.ok(payloadMatch, 'encrypted payload should be embedded as JSON');
+  const payload = JSON.parse(payloadMatch[1]);
+  const encryptedBytes = Buffer.from(payload.data, 'base64');
+  const ciphertext = encryptedBytes.subarray(0, -16);
+  const authTag = encryptedBytes.subarray(-16);
+  const key = crypto.pbkdf2Sync('correct horse battery staple', Buffer.from(payload.salt, 'base64'), payload.iterations, 32, 'sha256');
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(payload.iv, 'base64'));
+  decipher.setAAD(Buffer.from('hongzh0-blog:protected-post:v1', 'utf8'));
+  decipher.setAuthTag(authTag);
+  const decrypted = JSON.parse(Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString('utf8'));
+  assert.match(decrypted.html, /只应在解密后出现的正文标记/);
+  assert.match(decrypted.html, /<img loading="lazy" decoding="async"/);
+  assert.match(decrypted.toc, /私密章节/);
+
+  const invalidEncryptedRoot = fixture();
+  writePost(invalidEncryptedRoot, 'invalid-encrypted.md', { encrypted: 'sometimes' });
+  assert.throws(() => buildSite(invalidEncryptedRoot), /encrypted 必须是 true 或 false/);
+  assert.ok(!fs.existsSync(path.join(invalidEncryptedRoot, 'dist')));
 
   const invalidDateRoot = fixture();
   writePost(invalidDateRoot, 'invalid.md', { date: '2026-02-30' });

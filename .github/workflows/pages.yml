@@ -37,6 +37,8 @@ jobs:
           cache-dependency-path: tools/hongzh0-blog-publisher/package-lock.json
       - run: npm --prefix tools/hongzh0-blog-publisher ci
       - run: npm --prefix tools/hongzh0-blog-publisher run build:site
+        env:
+          BLOG_POST_PASSWORDS_JSON: ${{ secrets.BLOG_POST_PASSWORDS_JSON }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

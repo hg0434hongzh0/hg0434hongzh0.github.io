@@ -518,6 +518,14 @@
     initTocScrollSpy();
   }
 
+  bindOnce(document, 'article-unlocked', 'article:unlocked', () => {
+    initCodeBlocks();
+    initReveals();
+    initTocScrollSpy();
+    refreshers.forEach(refresh => refresh());
+    revealVisibleItems();
+  });
+
   bindOnce(reducedMotion, 'reduced-motion-change', 'change', () => {
     if (reducedMotion.matches) {
       revealObserver?.disconnect();
