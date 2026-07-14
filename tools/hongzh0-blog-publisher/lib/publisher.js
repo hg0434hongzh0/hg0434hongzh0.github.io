@@ -6,7 +6,7 @@ const yaml = require('js-yaml');
 const { marked } = require('marked');
 
 const DEFAULT_BASE_URL = 'https://hongzh0.wiki/';
-const OG_IMAGE = 'https://hongzh0.wiki/assets/portrait.jpg';
+const OG_IMAGE = 'https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg';
 const VERSIONED_ASSETS = ['style.css', 'main.js', 'article-crypto.js'];
 const REQUIRED_FIELDS = ['title', 'date', 'category', 'summary', 'slug', 'coverText', 'published'];
 const START = {
@@ -256,9 +256,33 @@ function loadPosts(root, postsDirectory = 'content/posts') {
     .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt) || right.date.localeCompare(left.date) || left.slug.localeCompare(right.slug));
 }
 
+const TRUSTED_IMAGE_CDN_BASE = 'https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/';
+
+function imageAttribute(attributes, name) {
+  const match = attributes.match(new RegExp(`\\s${name}\\s*=\\s*(["'])(.*?)\\1`, 'i'));
+  return match ? match[2] : '';
+}
+
+function trustedImageCdnFile(value) {
+  return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value);
+}
+
 function renderMarkdown(markdown) {
   let html = marked.parse(markdown, { gfm: true, breaks: false });
-  html = html.replace(/<img\b([^>]*)>/gi, (match, attributes) => {
+  html = html.replace(/<img\b([^>]*)>/gi, (match, originalAttributes) => {
+    let attributes = originalAttributes;
+    const localSource = imageAttribute(attributes, 'src');
+    const cdnFile = imageAttribute(attributes, 'data-gitee-file');
+
+    if (localSource.startsWith('/assets/') && localSource.endsWith(`/${cdnFile}`) && trustedImageCdnFile(cdnFile)) {
+      const cdnSource = `${TRUSTED_IMAGE_CDN_BASE}${cdnFile}`;
+      attributes = attributes
+        .replace(/\sdata-gitee-file\s*=\s*(["']).*?\1/i, '')
+        .replace(/(\ssrc\s*=\s*)(["']).*?\2/i, `$1"${cdnSource}"`);
+      attributes += ` data-fallback-src="${localSource}"`;
+      if (!/\sreferrerpolicy\s*=/.test(attributes)) attributes += ' referrerpolicy="no-referrer"';
+    }
+
     const loading = /\sloading\s*=/.test(attributes) ? '' : ' loading="lazy"';
     const decoding = /\sdecoding\s*=/.test(attributes) ? '' : ' decoding="async"';
     return `<img${loading}${decoding}${attributes}>`;
@@ -390,7 +414,7 @@ function articlePage(post, options = {}) {
   return `<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(post.summary)}"><meta name="theme-color" content="#f3f0e9"><title>${escapeHtml(post.title)} — hongzh0's Blog</title>
 <link rel="canonical" href="${escapeHtml(canonical)}"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="${escapeHtml(post.title)}"><meta property="og:description" content="${escapeHtml(post.summary)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(OG_IMAGE)}"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="962"><meta property="article:published_time" content="${post.publishedAt}">
+<meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="${escapeHtml(post.title)}"><meta property="og:description" content="${escapeHtml(post.summary)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(OG_IMAGE)}"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="960"><meta property="article:published_time" content="${post.publishedAt}">
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(post.title)}"><meta name="twitter:description" content="${escapeHtml(post.summary)}"><meta name="twitter:image" content="${escapeHtml(OG_IMAGE)}"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
 <script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css"><link rel="stylesheet" href="../assets/style.css${assetQuery}"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
 <div class="reading-progress" aria-hidden="true"><span></span></div>${header('..')}
