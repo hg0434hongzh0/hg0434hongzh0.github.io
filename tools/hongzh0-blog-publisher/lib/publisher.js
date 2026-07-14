@@ -300,11 +300,11 @@ function renderMarkdown(markdown) {
 }
 
 function header(relative = '..') {
-  return `<a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="${relative}/index.html"><span class="brand-mark">hz</span><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="${relative}/index.html">首页</a><a href="${relative}/archive.html">归档</a><a href="${relative}/about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>`;
+  return `<a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="${relative}/index.html"><span class="brand-mark">hz</span><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="${relative}/index.html">首页</a><a href="${relative}/archive.html">归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>`;
 }
 
 function footer(relative = '..') {
-  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><span class="brand-mark">hz</span><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
+  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><span class="brand-mark">hz</span><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
 }
 
 function articleNavigation(previous, next) {
@@ -476,6 +476,7 @@ function sitemapXml(posts, baseUrl = DEFAULT_BASE_URL) {
   const entries = [
     { url: normalizedBaseUrl, date: latestDate },
     { url: absoluteUrl(normalizedBaseUrl, 'archive.html'), date: latestDate },
+    { url: absoluteUrl(normalizedBaseUrl, 'links.html') },
     { url: absoluteUrl(normalizedBaseUrl, 'about.html') },
     ...posts.map(post => ({ url: absoluteUrl(normalizedBaseUrl, `posts/${post.slug}.html`), date: post.date }))
   ];
@@ -552,6 +553,7 @@ function buildSite(root, options = {}) {
   let indexHtml = versionAssetUrls(readRequiredFile(siteRoot, 'index.html', 'utf8'), assetsVersion);
   let archiveHtml = versionAssetUrls(readRequiredFile(siteRoot, 'archive.html', 'utf8'), assetsVersion);
   const aboutHtml = versionAssetUrls(readRequiredFile(siteRoot, 'about.html', 'utf8'), assetsVersion);
+  const linksHtml = versionAssetUrls(readRequiredFile(siteRoot, 'links.html', 'utf8'), assetsVersion);
   const notFoundHtml = versionAssetUrls(readRequiredFile(siteRoot, '404.html', 'utf8'), assetsVersion);
   const cname = readRequiredFile(siteRoot, 'CNAME');
   const noJekyll = readRequiredFile(siteRoot, '.nojekyll');
@@ -586,6 +588,7 @@ function buildSite(root, options = {}) {
     fs.writeFileSync(path.join(tempDirectory, 'index.html'), indexHtml, 'utf8');
     fs.writeFileSync(path.join(tempDirectory, 'archive.html'), archiveHtml, 'utf8');
     fs.writeFileSync(path.join(tempDirectory, 'about.html'), aboutHtml);
+    fs.writeFileSync(path.join(tempDirectory, 'links.html'), linksHtml);
     fs.writeFileSync(path.join(tempDirectory, '404.html'), notFoundHtml);
     fs.writeFileSync(path.join(tempDirectory, 'CNAME'), cname);
     fs.writeFileSync(path.join(tempDirectory, '.nojekyll'), noJekyll);
@@ -610,6 +613,7 @@ function buildSite(root, options = {}) {
       'index.html',
       'archive.html',
       'about.html',
+      'links.html',
       '404.html',
       'feed.xml',
       'sitemap.xml',

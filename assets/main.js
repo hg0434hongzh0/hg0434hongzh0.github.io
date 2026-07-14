@@ -14,6 +14,7 @@
   let activeMenu;
   let themeTransitionRunning = false;
   let visitStatsRequested = false;
+  let imageLightbox;
 
   function bindOnce(target, key, type, listener, options) {
     if (!target) return;
@@ -591,6 +592,178 @@
     });
   }
 
+  function imageCaption(image) {
+    const figureCaption = image.closest('figure')?.querySelector('figcaption');
+    const adjacentCaption = image.parentElement?.querySelector(':scope > em');
+    return figureCaption?.textContent?.trim()
+      || adjacentCaption?.textContent?.trim()
+      || image.getAttribute('alt')?.trim()
+      || '文章图片';
+  }
+
+  function createImageLightbox() {
+    const overlay = document.createElement('div');
+    overlay.className = 'image-lightbox';
+    overlay.hidden = true;
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', '图片预览');
+    overlay.innerHTML = `
+      <div class="image-lightbox-backdrop" data-lightbox-dismiss aria-hidden="true"></div>
+      <div class="image-lightbox-shell">
+        <div class="image-lightbox-topbar">
+          <div class="image-lightbox-meta"><span>IMAGE VIEWER</span><strong data-lightbox-count></strong></div>
+          <button class="image-lightbox-close" type="button" aria-label="关闭图片预览"><span aria-hidden="true">×</span></button>
+        </div>
+        <div class="image-lightbox-stage">
+          <button class="image-lightbox-nav image-lightbox-prev" type="button" aria-label="查看上一张图片"><span aria-hidden="true">←</span></button>
+          <figure class="image-lightbox-figure">
+            <div class="image-lightbox-media is-loading"><img alt=""></div>
+            <figcaption data-lightbox-caption></figcaption>
+          </figure>
+          <button class="image-lightbox-nav image-lightbox-next" type="button" aria-label="查看下一张图片"><span aria-hidden="true">→</span></button>
+        </div>
+      </div>`;
+    document.body.append(overlay);
+
+    const preview = overlay.querySelector('.image-lightbox-media img');
+    const media = overlay.querySelector('.image-lightbox-media');
+    const caption = overlay.querySelector('[data-lightbox-caption]');
+    const counter = overlay.querySelector('[data-lightbox-count]');
+    const closeButton = overlay.querySelector('.image-lightbox-close');
+    const previousButton = overlay.querySelector('.image-lightbox-prev');
+    const nextButton = overlay.querySelector('.image-lightbox-next');
+    const controller = {
+      overlay,
+      preview,
+      media,
+      caption,
+      counter,
+      closeButton,
+      previousButton,
+      nextButton,
+      images: [],
+      index: 0,
+      trigger: null,
+      closeTimer: 0
+    };
+
+    const showAt = index => {
+      if (!controller.images.length) return;
+      controller.index = (index + controller.images.length) % controller.images.length;
+      const sourceImage = controller.images[controller.index];
+      const source = sourceImage.currentSrc || sourceImage.src;
+      const fallback = sourceImage.dataset.fallbackSrc || '';
+      controller.media.classList.add('is-loading');
+      controller.preview.dataset.fallbackSrc = fallback;
+      delete controller.preview.dataset.fallbackAttempted;
+      controller.preview.alt = sourceImage.alt || '';
+      controller.preview.referrerPolicy = sourceImage.referrerPolicy || (source.startsWith('https://gitee.com/') ? 'no-referrer' : '');
+      controller.preview.src = source;
+      controller.caption.textContent = imageCaption(sourceImage);
+      controller.counter.textContent = `${String(controller.index + 1).padStart(2, '0')} / ${String(controller.images.length).padStart(2, '0')}`;
+      const multiple = controller.images.length > 1;
+      controller.previousButton.hidden = !multiple;
+      controller.nextButton.hidden = !multiple;
+    };
+
+    const close = () => {
+      if (overlay.hidden) return;
+      overlay.classList.remove('is-open');
+      document.body.classList.remove('lightbox-open');
+      window.clearTimeout(controller.closeTimer);
+      controller.closeTimer = window.setTimeout(() => {
+        overlay.hidden = true;
+        preview.removeAttribute('src');
+        controller.trigger?.focus({ preventScroll: true });
+      }, reducedMotion.matches ? 0 : 260);
+    };
+
+    const move = direction => showAt(controller.index + direction);
+    bindOnce(closeButton, 'lightbox-close', 'click', close);
+    bindOnce(previousButton, 'lightbox-previous', 'click', () => move(-1));
+    bindOnce(nextButton, 'lightbox-next', 'click', () => move(1));
+    bindOnce(overlay.querySelector('[data-lightbox-dismiss]'), 'lightbox-backdrop', 'click', close);
+    bindOnce(preview, 'lightbox-load', 'load', () => media.classList.remove('is-loading'));
+    bindOnce(preview, 'lightbox-error', 'error', () => {
+      const fallback = preview.dataset.fallbackSrc;
+      if (fallback && preview.dataset.fallbackAttempted !== 'true' && preview.getAttribute('src') !== fallback) {
+        preview.dataset.fallbackAttempted = 'true';
+        preview.referrerPolicy = '';
+        preview.src = fallback;
+        return;
+      }
+      media.classList.remove('is-loading');
+    });
+    bindOnce(document, 'image-lightbox-keydown', 'keydown', event => {
+      if (overlay.hidden) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+      } else if (event.key === 'ArrowLeft' && controller.images.length > 1) {
+        event.preventDefault();
+        move(-1);
+      } else if (event.key === 'ArrowRight' && controller.images.length > 1) {
+        event.preventDefault();
+        move(1);
+      } else if (event.key === 'Tab') {
+        const controls = [previousButton, nextButton, closeButton].filter(button => !button.hidden);
+        if (!controls.length) return;
+        const current = controls.indexOf(document.activeElement);
+        let next = event.shiftKey ? current - 1 : current + 1;
+        if (current < 0) next = event.shiftKey ? controls.length - 1 : 0;
+        if (next < 0) next = controls.length - 1;
+        if (next >= controls.length) next = 0;
+        event.preventDefault();
+        controls[next].focus();
+      }
+    });
+
+    controller.open = (trigger, images) => {
+      window.clearTimeout(controller.closeTimer);
+      controller.trigger = trigger;
+      controller.images = images;
+      const selectedIndex = images.indexOf(trigger);
+      showAt(selectedIndex < 0 ? 0 : selectedIndex);
+      overlay.hidden = false;
+      document.body.classList.add('lightbox-open');
+      requestAnimationFrame(() => {
+        overlay.classList.add('is-open');
+        closeButton.focus({ preventScroll: true });
+      });
+    };
+    return controller;
+  }
+
+  function initImageLightbox() {
+    const images = [...document.querySelectorAll('.article-content img')]
+      .filter(image => !image.closest('[data-lightbox-ignore]'));
+    if (!images.length) return;
+    if (!imageLightbox) imageLightbox = createImageLightbox();
+
+    images.forEach(image => {
+      image.classList.add('is-lightbox-ready');
+      if (!image.closest('a, button, [role="button"]')) {
+        image.tabIndex = 0;
+        image.setAttribute('role', 'button');
+      }
+      image.setAttribute('aria-haspopup', 'dialog');
+      image.setAttribute('aria-label', `放大图片：${imageCaption(image)}`);
+      bindOnce(image, 'open-image-lightbox', 'click', event => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        const currentImages = [...document.querySelectorAll('.article-content img.is-lightbox-ready')];
+        imageLightbox.open(image, currentImages);
+      });
+      bindOnce(image, 'open-image-lightbox-keyboard', 'keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        const currentImages = [...document.querySelectorAll('.article-content img.is-lightbox-ready')];
+        imageLightbox.open(image, currentImages);
+      });
+    });
+  }
+
   function init() {
     initTheme();
     initMenu();
@@ -598,6 +771,7 @@
     initArchiveFilters();
     initCodeBlocks();
     initImageFallbacks();
+    initImageLightbox();
     initVisitStats();
     initReveals();
     initReadingProgress();
@@ -607,6 +781,7 @@
   bindOnce(document, 'article-unlocked', 'article:unlocked', () => {
     initCodeBlocks();
     initImageFallbacks();
+    initImageLightbox();
     initReveals();
     initTocScrollSpy();
     refreshers.forEach(refresh => refresh());

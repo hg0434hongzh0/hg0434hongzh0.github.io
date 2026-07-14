@@ -21,6 +21,7 @@ function fixture() {
   fs.writeFileSync(path.join(root, 'index.html'), '<!DOCTYPE html><link rel="stylesheet" href="assets/style.css"><!-- BLOG_FEATURED_START -->template-featured<!-- BLOG_FEATURED_END --><!-- BLOG_RECENT_START -->template-recent<!-- BLOG_RECENT_END --><script src="assets/main.js"></script>');
   fs.writeFileSync(path.join(root, 'archive.html'), '<!-- BLOG_ARCHIVE_START -->template-archive<!-- BLOG_ARCHIVE_END -->');
   fs.writeFileSync(path.join(root, 'about.html'), '<!DOCTYPE html><title>About</title>');
+  fs.writeFileSync(path.join(root, 'links.html'), '<!DOCTYPE html><title>Links</title><link rel="stylesheet" href="assets/style.css"><script src="assets/main.js"></script>');
   fs.writeFileSync(path.join(root, '404.html'), '<!DOCTYPE html><title>Not found</title>');
   fs.writeFileSync(path.join(root, 'CNAME'), 'hongzh0.wiki\n');
   fs.writeFileSync(path.join(root, '.nojekyll'), '');
@@ -74,7 +75,7 @@ try {
   assert.equal(path.basename(result.outputDirectory), 'dist');
 
   const topLevel = fs.readdirSync(path.join(root, 'dist')).sort();
-  assert.deepEqual(topLevel, ['.nojekyll', '404.html', 'CNAME', 'about.html', 'archive.html', 'assets', 'feed.xml', 'index.html', 'posts', 'robots.txt', 'sitemap.xml']);
+  assert.deepEqual(topLevel, ['.nojekyll', '404.html', 'CNAME', 'about.html', 'archive.html', 'assets', 'feed.xml', 'index.html', 'links.html', 'posts', 'robots.txt', 'sitemap.xml']);
   assert.ok(!fs.existsSync(path.join(root, 'dist', 'content')));
   assert.ok(!fs.existsSync(path.join(root, 'dist', 'tools')));
   assert.ok(!fs.existsSync(path.join(root, 'dist', 'posts', 'stale-post.html')));
@@ -93,6 +94,10 @@ try {
 
   const archive = fs.readFileSync(path.join(root, 'dist', 'archive.html'), 'utf8');
   assert.doesNotMatch(archive, /data-filter=/);
+
+  const links = fs.readFileSync(path.join(root, 'dist', 'links.html'), 'utf8');
+  assert.match(links, /assets\/style\.css\?v=[a-f0-9]{12}/);
+  assert.match(links, /assets\/main\.js\?v=[a-f0-9]{12}/);
 
   const article = fs.readFileSync(path.join(root, 'dist', 'posts', 'newest-post.html'), 'utf8');
   assert.match(article, /^<!DOCTYPE html>/);
@@ -124,6 +129,7 @@ try {
   assert.equal(article.includes(['mail', 'to:'].join('')), false);
   assert.doesNotMatch(article, /@foxmail\.com/);
   assert.match(article, /github\.com\/hg0434hongzh0/);
+  assert.match(article, /href="\.\.\/links\.html">友链<\/a>/);
   assert.match(article, /assets\/fonts\/font-face\.css/);
   assert.match(article, /assets\/style\.css\?v=[a-f0-9]{12}/);
   assert.match(article, /assets\/main\.js\?v=[a-f0-9]{12}/);
@@ -151,6 +157,7 @@ try {
   assert.doesNotMatch(untrustedImageHtml, /data-fallback-src|referrerpolicy/);
 
   const sitemap = fs.readFileSync(path.join(root, 'dist', 'sitemap.xml'), 'utf8');
+  assert.match(sitemap, /https:\/\/hongzh0\.wiki\/links\.html/);
   assert.match(sitemap, /https:\/\/hongzh0\.wiki\/posts\/newest-post\.html/);
   assert.doesNotMatch(sitemap, /draft-post/);
   assert.match(fs.readFileSync(path.join(root, 'dist', 'robots.txt'), 'utf8'), /Sitemap: https:\/\/hongzh0\.wiki\/sitemap\.xml/);
