@@ -5,7 +5,7 @@ publishedAt: 2026-01-14T14:49:33+08:00
 category: 漏洞分析
 summary: 从 NCCloudGatewayServlet 的鉴权与反射调用链出发，复盘补丁变化，并进一步挖掘 U8Cloud 全版本 SQL 注入利用链。
 slug: u8cloud-nccloudgatewayservlet-rce-sqli
-coverText: U8
+coverText: U8Cloud
 published: true
 ---
 

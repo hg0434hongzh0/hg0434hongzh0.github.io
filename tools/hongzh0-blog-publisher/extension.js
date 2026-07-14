@@ -23,6 +23,12 @@ function today() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 }
+function suggestedCoverText(title, category) {
+  const technicalName = String(title).match(/[A-Za-z][A-Za-z0-9.+#_-]{1,7}/)?.[0];
+  if (technicalName) return [...technicalName].slice(0, 8).join('');
+  const titleText = [...String(title).replace(/[\s\p{P}\p{S}]+/gu, '')].slice(0, 4).join('');
+  return titleText || [...String(category)].slice(0, 2).join('');
+}
 function yamlString(value) { return JSON.stringify(String(value)); }
 function requestJson(urlText, payload) {
   return new Promise((resolve, reject) => {
@@ -157,7 +163,7 @@ async function newPost() {
   const fallback = `post-${today().replaceAll('-', '')}`;
   const slug = await vscode.window.showInputBox({ title: '文章 URL', prompt: '仅使用小写字母、数字和连字符', value: fallback, validateInput: v => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v) ? undefined : '请使用小写字母、数字和连字符' });
   if (!slug) return;
-  const coverText = await vscode.window.showInputBox({ title: '封面文字', prompt: '封面中央显示 1～2 个字', value: category.slice(0, 1), validateInput: v => v.trim() && [...v.trim()].length <= 2 ? undefined : '请输入 1～2 个字符' });
+  const coverText = await vscode.window.showInputBox({ title: '封面文字', prompt: '优先使用 Gogs、XStream 这类可识别的产品名（最多 8 个字符）', value: suggestedCoverText(title, category), validateInput: v => v.trim() && [...v.trim()].length <= 8 ? undefined : '请输入 1～8 个字符' });
   if (!coverText) return;
   const dir = path.join(root, config().get('postsDirectory', 'content/posts'));
   fs.mkdirSync(dir, { recursive: true });

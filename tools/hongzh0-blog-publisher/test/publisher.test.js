@@ -48,7 +48,7 @@ function writePost(root, file, values = {}, body = '正文。\n\n## 分析过程
 
 try {
   const root = fixture();
-  writePost(root, '2026-01-03-newest.md', { title: '最新文章', date: '2026-01-03', slug: 'newest-post' });
+  writePost(root, '2026-01-03-newest.md', { title: '最新文章', date: '2026-01-03', slug: 'newest-post', coverText: 'Gogs' }, '正文。\n\n## 漏洞简介\n\n### 影响范围');
   writePost(root, '2026-01-02-older.md', { title: '较早文章', slug: 'older-post' });
   writePost(root, '2026-01-01-draft.md', { title: '草稿文章', date: '2026-01-01', slug: 'draft-post', published: 'false' });
   fs.mkdirSync(path.join(root, 'dist', 'posts'), { recursive: true });
@@ -111,6 +111,10 @@ try {
   assert.match(article, /property="article:published_time" content="2026-01-03T00:00:00\.000Z"/);
   assert.match(article, /class="article-nav"/);
   assert.match(article, /id="section-/);
+  assert.match(article, /data-cover-length="4" aria-hidden="true">Gogs<\/span>/);
+  assert.match(article, /href="#section-[^"]+">漏洞简介<\/a>/);
+  assert.match(article, /class="toc-h3" href="#section-[^"]+">影响范围<\/a>/);
+  assert.doesNotMatch(article, />0[12] (?:漏洞简介|影响范围)<\/a>/);
   assert.equal(article.includes(['mail', 'to:'].join('')), false);
   assert.doesNotMatch(article, /@foxmail\.com/);
   assert.match(article, /github\.com\/hg0434hongzh0/);
@@ -172,6 +176,11 @@ try {
   writePost(invalidEncryptedRoot, 'invalid-encrypted.md', { encrypted: 'sometimes' });
   assert.throws(() => buildSite(invalidEncryptedRoot), /encrypted 必须是 true 或 false/);
   assert.ok(!fs.existsSync(path.join(invalidEncryptedRoot, 'dist')));
+
+  const invalidCoverRoot = fixture();
+  writePost(invalidCoverRoot, 'invalid-cover.md', { coverText: '123456789' });
+  assert.throws(() => buildSite(invalidCoverRoot), /coverText 最多包含 8 个字符/);
+  assert.ok(!fs.existsSync(path.join(invalidCoverRoot, 'dist')));
 
   const invalidDateRoot = fixture();
   writePost(invalidDateRoot, 'invalid.md', { date: '2026-02-30' });

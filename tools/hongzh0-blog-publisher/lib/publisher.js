@@ -168,8 +168,8 @@ function parsePost(fullPath) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     throw new Error('front matter slug 只能包含小写字母、数字和连字符');
   }
-  if ([...coverText].length > 2) {
-    throw new Error('front matter coverText 最多包含 2 个字符');
+  if ([...coverText].length > 8) {
+    throw new Error('front matter coverText 最多包含 8 个字符');
   }
 
   let minutes = readingMinutes(parsed.content);
@@ -340,9 +340,9 @@ function articlePage(post, options = {}) {
   const rendered = renderMarkdown(post.content);
   const sectionCount = rendered.toc.filter(item => item.level === 2).length || rendered.toc.length;
   const tocLinks = rendered.toc.length
-    ? rendered.toc.map((item, index) => {
+    ? rendered.toc.map(item => {
         const cls = item.level > 2 ? ` class="toc-h${item.level}"` : '';
-        return `<a${cls} href="#${escapeHtml(item.id)}">${String(index + 1).padStart(2, '0')} ${escapeHtml(item.text.replace(/^\d+\s*[·.、-]?\s*/, ''))}</a>`;
+        return `<a${cls} href="#${escapeHtml(item.id)}">${escapeHtml(item.text)}</a>`;
       }).join('')
     : '<a href="#article">正文</a>';
   const password = resolvePostPassword(post, options);
@@ -376,7 +376,7 @@ function articlePage(post, options = {}) {
 <script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css"><link rel="stylesheet" href="../assets/style.css"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
 <div class="reading-progress" aria-hidden="true"><span></span></div>${header('..')}
 <main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span></div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div></dl></header>
-<div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · ${escapeHtml(post.date)}</span></div></section>
+<div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · ${escapeHtml(post.date)}</span></div></section>
 <details class="mobile-toc wrap"><summary><span>文章目录</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></summary><nav aria-label="移动端文章目录">${publicTocLinks}</nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></div><nav class="article-toc-nav">${publicTocLinks}</nav></aside><article class="article-content">${articleBody}<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 ${displayDate(post.date)} · hongzh0's Blog</p></footer>${articleNavigation(options.previous, options.next)}</article></div></main>
 ${footer('..')}<script src="../assets/main.js"></script>${post.encrypted ? '<script src="../assets/article-crypto.js"></script>' : ''}</body></html>\n`;
 }
@@ -385,7 +385,7 @@ function featuredSection(post) {
   return `<section id="latest" class="featured wrap section-space">
       <div class="section-head"><h2>最新<em>研究</em></h2><span class="section-no">01 / FEATURED</span></div>
       <article class="featured-card">
-        <a class="featured-visual" href="posts/${escapeHtml(post.slug)}.html" aria-label="${escapeHtml(post.coverText)}SECURITY RESEARCH / LATEST，阅读文章：${escapeHtml(post.title)}"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
+        <a class="featured-visual" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
         <div class="featured-copy"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span></div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p><a class="read-more" href="posts/${escapeHtml(post.slug)}.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
       </article>
     </section>`;
