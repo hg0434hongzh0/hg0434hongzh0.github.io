@@ -1,7 +1,7 @@
 ---
 title: Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）
-date: 2026-07-13
-publishedAt: 2026-07-13T22:16:32+08:00
+date: 2026-07-04
+publishedAt: 2026-07-04T22:16:32+08:00
 category: 漏洞分析
 summary: 从组织创建 API 的名称校验缺陷出发，分析路径遍历如何将仓库写入 local-r 工作树，并通过覆盖 Git hooks/update 构造远程代码执行链。
 slug: gogs-organization-name-path-traversal-rce
