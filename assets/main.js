@@ -284,6 +284,7 @@
       '.page-hero > *',
       '.section-head',
       '.featured-card',
+      '.friend-card',
       '.post-row',
       '.rss-cta > *',
       '.archive-year',
