@@ -7,6 +7,7 @@ const { marked } = require('marked');
 
 const DEFAULT_BASE_URL = 'https://hongzh0.wiki/';
 const OG_IMAGE = 'https://hongzh0.wiki/assets/portrait.jpg';
+const VERSIONED_ASSETS = ['style.css', 'main.js', 'article-crypto.js'];
 const REQUIRED_FIELDS = ['title', 'date', 'category', 'summary', 'slug', 'coverText', 'published'];
 const START = {
   featured: '<!-- BLOG_FEATURED_START -->',
@@ -59,6 +60,22 @@ function normalizeBaseUrl(value = DEFAULT_BASE_URL) {
 
 function absoluteUrl(baseUrl, relativePath = '') {
   return new URL(relativePath, baseUrl).href;
+}
+
+function assetVersion(assetsDirectory) {
+  const hash = crypto.createHash('sha256');
+  for (const file of VERSIONED_ASSETS) {
+    hash.update(file);
+    hash.update(fs.readFileSync(path.join(assetsDirectory, file)));
+  }
+  return hash.digest('hex').slice(0, 12);
+}
+
+function versionAssetUrls(html, version) {
+  return String(html).replace(
+    /((?:\.\.\/|\/)?assets\/(?:style\.css|main\.js|article-crypto\.js))(?:\?v=[^"'<>\s]*)?/g,
+    `$1?v=${version}`
+  );
 }
 
 function assertInsideSiteRoot(siteRoot, targetPath, label) {
@@ -353,6 +370,8 @@ function articlePage(post, options = {}) {
   const articleBody = post.encrypted
     ? `<section class="article-unlock" data-article-unlock aria-labelledby="article-unlock-title"><span class="article-unlock-kicker">PROTECTED RESEARCH NOTE</span><h2 id="article-unlock-title">这篇文章已加密</h2><p>输入访问密码后，正文只会在当前浏览器中解密。</p><form class="article-unlock-form"><label for="article-password">访问密码</label><div class="article-unlock-control"><input id="article-password" name="password" type="password" minlength="8" autocomplete="current-password" required><button type="submit">解锁文章</button></div><p class="article-unlock-status" role="status" aria-live="polite"></p></form></section><script id="article-encrypted-payload" type="application/json" data-slug="${escapeHtml(post.slug)}">${encryptedPayload}</script>`
     : rendered.html;
+  const assetsVersion = options.assetsVersion || '';
+  const assetQuery = assetsVersion ? `?v=${escapeHtml(assetsVersion)}` : '';
   const structuredData = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -373,12 +392,12 @@ function articlePage(post, options = {}) {
 <link rel="canonical" href="${escapeHtml(canonical)}"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="${escapeHtml(post.title)}"><meta property="og:description" content="${escapeHtml(post.summary)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(OG_IMAGE)}"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="962"><meta property="article:published_time" content="${post.publishedAt}">
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(post.title)}"><meta name="twitter:description" content="${escapeHtml(post.summary)}"><meta name="twitter:image" content="${escapeHtml(OG_IMAGE)}"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
-<script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css"><link rel="stylesheet" href="../assets/style.css"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
+<script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css"><link rel="stylesheet" href="../assets/style.css${assetQuery}"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
 <div class="reading-progress" aria-hidden="true"><span></span></div>${header('..')}
 <main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span></div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div></dl></header>
 <div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · ${escapeHtml(post.date)}</span></div></section>
 <details class="mobile-toc wrap"><summary><span>文章目录</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></summary><nav aria-label="移动端文章目录">${publicTocLinks}</nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></div><nav class="article-toc-nav">${publicTocLinks}</nav></aside><article class="article-content">${articleBody}<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 ${displayDate(post.date)} · hongzh0's Blog</p></footer>${articleNavigation(options.previous, options.next)}</article></div></main>
-${footer('..')}<script src="../assets/main.js"></script>${post.encrypted ? '<script src="../assets/article-crypto.js"></script>' : ''}</body></html>\n`;
+${footer('..')}<script src="../assets/main.js${assetQuery}"></script>${post.encrypted ? `<script src="../assets/article-crypto.js${assetQuery}"></script>` : ''}</body></html>\n`;
 }
 
 function featuredSection(post) {
@@ -492,10 +511,11 @@ function buildSite(root, options = {}) {
     throw new Error('缺少公开目录：assets');
   }
 
-  let indexHtml = readRequiredFile(siteRoot, 'index.html', 'utf8');
-  let archiveHtml = readRequiredFile(siteRoot, 'archive.html', 'utf8');
-  const aboutHtml = readRequiredFile(siteRoot, 'about.html');
-  const notFoundHtml = readRequiredFile(siteRoot, '404.html');
+  const assetsVersion = assetVersion(assetsDirectory);
+  let indexHtml = versionAssetUrls(readRequiredFile(siteRoot, 'index.html', 'utf8'), assetsVersion);
+  let archiveHtml = versionAssetUrls(readRequiredFile(siteRoot, 'archive.html', 'utf8'), assetsVersion);
+  const aboutHtml = versionAssetUrls(readRequiredFile(siteRoot, 'about.html', 'utf8'), assetsVersion);
+  const notFoundHtml = versionAssetUrls(readRequiredFile(siteRoot, '404.html', 'utf8'), assetsVersion);
   const cname = readRequiredFile(siteRoot, 'CNAME');
   const noJekyll = readRequiredFile(siteRoot, '.nojekyll');
 
@@ -508,7 +528,8 @@ function buildSite(root, options = {}) {
       baseUrl,
       previous: posts[index + 1] || null,
       next: posts[index - 1] || null,
-      passwords: options.passwords
+      passwords: options.passwords,
+      assetsVersion
     })
   }));
   const feed = feedXml(posts, baseUrl);
