@@ -203,7 +203,7 @@
         { opacity: 0, transform: 'translateY(8px)' },
         { opacity: 1, transform: 'translateY(0)' }
       ],
-      { duration: 240, easing: 'cubic-bezier(.2,.7,.2,1)' }
+      { duration: 280, easing: 'cubic-bezier(.16,1,.3,1)' }
     );
     filterAnimations.set(item, animation);
   }
@@ -418,25 +418,40 @@
     progress.dataset.progressReady = 'true';
 
     let frame = 0;
-    const update = () => {
-      frame = 0;
+    let measurePending = true;
+    let start = 0;
+    let end = 0;
+    let lastRatio = -1;
+
+    const measure = () => {
       const rect = article.getBoundingClientRect();
       const top = rect.top + window.scrollY;
-      const bottom = top + rect.height;
-      const start = top - window.innerHeight * 0.25;
-      const end = bottom - window.innerHeight * 0.75;
+      start = top - window.innerHeight * 0.25;
+      end = top + rect.height - window.innerHeight * 0.75;
+      measurePending = false;
+    };
+    const update = () => {
+      frame = 0;
+      if (measurePending) measure();
       const ratio = end <= start ? 1 : Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)));
+      if (Math.abs(ratio - lastRatio) < 0.0005) return;
+      lastRatio = ratio;
       indicator.style.transform = `scaleX(${ratio})`;
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    const scheduleMeasure = () => {
+      measurePending = true;
+      schedule();
+    };
 
     bindOnce(window, 'reading-progress-scroll', 'scroll', schedule, { passive: true });
-    bindOnce(window, 'reading-progress-resize', 'resize', schedule, { passive: true });
-    if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(article);
-    refreshers.add(schedule);
-    schedule();
+    bindOnce(window, 'reading-progress-resize', 'resize', scheduleMeasure, { passive: true });
+    bindOnce(window, 'reading-progress-load', 'load', scheduleMeasure, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(scheduleMeasure).observe(article);
+    refreshers.add(scheduleMeasure);
+    scheduleMeasure();
   }
 
   function initTocScrollSpy() {
@@ -471,40 +486,71 @@
 
     let frame = 0;
     let currentId = '';
+    let positions = [];
+    let documentHeight = 0;
+    let measurePending = true;
+
+    const measure = () => {
+      positions = sections
+        .map(section => ({ section, top: section.getBoundingClientRect().top + window.scrollY }))
+        .sort((a, b) => a.top - b.top);
+      documentHeight = document.documentElement.scrollHeight;
+      measurePending = false;
+    };
+    const setCurrent = id => {
+      if (id === currentId) return;
+      if (currentId) {
+        linksById.get(currentId)?.forEach(link => {
+          link.classList.remove('is-active');
+          link.removeAttribute('aria-current');
+        });
+      }
+      currentId = id;
+      linksById.get(currentId)?.forEach(link => {
+        link.classList.add('is-active');
+        link.setAttribute('aria-current', 'location');
+      });
+    };
     const update = () => {
       frame = 0;
+      if (measurePending) measure();
+      if (!positions.length) return;
+
       const marker = window.scrollY + window.innerHeight * 0.3;
-      let activeSection = sections[0];
-      sections.forEach(section => {
-        const top = section.getBoundingClientRect().top + window.scrollY;
-        if (top <= marker) activeSection = section;
-      });
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
-        activeSection = sections[sections.length - 1];
-      }
-      if (activeSection.id === currentId) return;
-      currentId = activeSection.id;
-      links.forEach(link => {
-        let linkId;
-        try {
-          linkId = decodeURIComponent(link.hash.slice(1));
-        } catch (_) {
-          linkId = link.hash.slice(1);
+      let low = 0;
+      let high = positions.length - 1;
+      let activeIndex = 0;
+      while (low <= high) {
+        const middle = (low + high) >> 1;
+        if (positions[middle].top <= marker) {
+          activeIndex = middle;
+          low = middle + 1;
+        } else {
+          high = middle - 1;
         }
-        const active = linkId === currentId;
-        link.classList.toggle('is-active', active);
-        if (active) link.setAttribute('aria-current', 'location');
-        else link.removeAttribute('aria-current');
-      });
+      }
+      if (window.innerHeight + window.scrollY >= documentHeight - 4) activeIndex = positions.length - 1;
+      setCurrent(positions[activeIndex].section.id);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    const scheduleMeasure = () => {
+      measurePending = true;
+      schedule();
+    };
 
+    links.forEach(link => {
+      link.classList.remove('is-active');
+      link.removeAttribute('aria-current');
+    });
     bindOnce(window, 'toc-scrollspy-scroll', 'scroll', schedule, { passive: true });
-    bindOnce(window, 'toc-scrollspy-resize', 'resize', schedule, { passive: true });
-    refreshers.add(schedule);
-    schedule();
+    bindOnce(window, 'toc-scrollspy-resize', 'resize', scheduleMeasure, { passive: true });
+    bindOnce(window, 'toc-scrollspy-load', 'load', scheduleMeasure, { passive: true });
+    const article = document.querySelector('.article-content');
+    if (article && 'ResizeObserver' in window) new ResizeObserver(scheduleMeasure).observe(article);
+    refreshers.add(scheduleMeasure);
+    scheduleMeasure();
   }
 
   function init() {
