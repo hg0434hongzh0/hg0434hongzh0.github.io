@@ -9,6 +9,7 @@ const { transformSync } = require('esbuild');
 const DEFAULT_BASE_URL = 'https://hongzh0.wiki/';
 const OG_IMAGE = 'https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg';
 const VERSIONED_ASSETS = ['style.css', 'main.js', 'article-crypto.js', 'fonts/font-face.css'];
+const HOME_CATALOG_PAGE_SIZE = 3;
 const REQUIRED_FIELDS = ['title', 'date', 'category', 'summary', 'slug', 'coverText', 'published'];
 const START = {
   featured: '<!-- BLOG_FEATURED_START -->',
@@ -426,7 +427,7 @@ function header(relative = '..') {
 }
 
 function footer(relative = '..') {
-  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
+  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、Agent应用、工具开发。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
 }
 
 function articleNavigation(previous, next) {
@@ -540,7 +541,7 @@ function articlePage(post, options = {}) {
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(post.title)}"><meta name="twitter:description" content="${escapeHtml(post.summary)}"><meta name="twitter:image" content="${escapeHtml(OG_IMAGE)}"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
 <script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css${assetQuery}"><link rel="stylesheet" href="../assets/style.css${assetQuery}">${themeBootstrapScript()}</head><body>
 <div class="reading-progress" aria-hidden="true"><span></span></div>${header('..')}
-<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span></div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
+<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span>${postBadge(post)}</div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
 <div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · ${escapeHtml(post.date)}</span></div></section>
 <details class="mobile-toc wrap"><summary><span>文章目录</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></summary><nav aria-label="移动端文章目录">${publicTocLinks}</nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>${String(sectionCount).padStart(2, '0')} SECTIONS</small></div><nav class="article-toc-nav">${publicTocLinks}</nav></aside><article class="article-content">${articleBody}<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 ${displayDate(post.date)} · hongzh0's Blog</p></footer>${articleNavigation(options.previous, options.next)}</article></div></main>
 ${footer('..')}<script src="../assets/main.js${assetQuery}"></script>${post.encrypted ? `<script src="../assets/article-crypto.js${assetQuery}"></script>` : ''}</body></html>\n`;
@@ -561,11 +562,18 @@ function featuredSection(post) {
     </section>`;
 }
 
-function recentSection(posts) {
-  const recent = posts.slice(1, 4);
-  if (!recent.length) return '';
-  const rows = recent.map((post, index) => `<article class="post-row"><div class="post-index">${String(index + 1).padStart(2, '0')}</div><div class="post-body"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time>${postBadge(post)}</div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p></div><a class="round-arrow" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span aria-hidden="true">↗</span></a></article>`).join('\n        ');
-  return `<section class="notes wrap section-space"><div class="section-head"><h2>最近<em>写下</em></h2><a class="text-link" href="archive.html">查看全部 <span aria-hidden="true">↗</span></a></div><div class="post-list">${rows}</div></section>`;
+function catalogSection(posts) {
+  if (!posts.length) return '';
+  const rows = posts.map((post, index) => `<article class="post-row" data-catalog-item><div class="post-index">${String(index + 1).padStart(2, '0')}</div><div class="post-body"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span>${postBadge(post)}</div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p></div><a class="round-arrow" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span aria-hidden="true">↗</span></a></article>`).join('\n        ');
+  const pageCount = Math.ceil(posts.length / HOME_CATALOG_PAGE_SIZE);
+  const pageButtons = Array.from({ length: pageCount }, (_, index) => {
+    const page = index + 1;
+    return `<button class="catalog-page-button catalog-page-number${page === 1 ? ' active' : ''}" type="button" data-catalog-page="${page}" aria-label="第 ${page} 页"${page === 1 ? ' aria-current="page"' : ''}>${String(page).padStart(2, '0')}</button>`;
+  }).join('');
+  const pagination = pageCount > 1
+    ? `<nav class="catalog-pagination" aria-label="文章目录分页" data-catalog-pagination hidden><button class="catalog-page-button catalog-page-step" type="button" data-catalog-action="prev"><span aria-hidden="true">←</span><span>上一页</span></button><div class="catalog-page-numbers">${pageButtons}</div><span class="catalog-page-status" data-catalog-status aria-live="polite">第 1 / ${pageCount} 页</span><button class="catalog-page-button catalog-page-step" type="button" data-catalog-action="next"><span>下一页</span><span aria-hidden="true">→</span></button></nav>`
+    : '';
+  return `<section class="notes home-catalog wrap section-space" aria-labelledby="home-catalog-title" data-home-catalog data-page-size="${HOME_CATALOG_PAGE_SIZE}"><div class="section-head"><h2 id="home-catalog-title">文章<em>目录</em></h2><a class="text-link" href="archive.html">完整归档 <span aria-hidden="true">↗</span></a></div><div class="post-list" id="home-post-list">${rows}</div>${pagination}</section>`;
 }
 
 function archiveSection(posts) {
@@ -594,7 +602,7 @@ function feedXml(posts, baseUrl = DEFAULT_BASE_URL) {
     return `<item><title>${escapeXml(post.title)}</title><link>${escapeXml(url)}</link><guid isPermaLink="true">${escapeXml(url)}</guid><pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate><category>${escapeXml(post.category)}</category><description>${escapeXml(post.summary)}</description></item>`;
   }).join('');
   const buildDate = new Date(posts[0].publishedAt).toUTCString();
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hongzh0's Blog</title><link>${escapeXml(normalizedBaseUrl)}</link><description>安全研究、漏洞分析与攻防实践</description><language>zh-cn</language><lastBuildDate>${buildDate}</lastBuildDate><atom:link href="${escapeXml(absoluteUrl(normalizedBaseUrl, 'feed.xml'))}" rel="self" type="application/rss+xml"/>${items}</channel></rss>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hongzh0's Blog</title><link>${escapeXml(normalizedBaseUrl)}</link><description>安全研究、Agent应用、工具开发</description><language>zh-cn</language><lastBuildDate>${buildDate}</lastBuildDate><atom:link href="${escapeXml(absoluteUrl(normalizedBaseUrl, 'feed.xml'))}" rel="self" type="application/rss+xml"/>${items}</channel></rss>\n`;
 }
 
 function sitemapXml(posts, baseUrl = DEFAULT_BASE_URL) {
@@ -687,7 +695,7 @@ function buildSite(root, options = {}) {
   const noJekyll = readRequiredFile(siteRoot, '.nojekyll');
 
   indexHtml = replaceBlock(indexHtml, START.featured, END.featured, featuredSection(posts[0]));
-  indexHtml = replaceBlock(indexHtml, START.recent, END.recent, recentSection(posts));
+  indexHtml = replaceBlock(indexHtml, START.recent, END.recent, catalogSection(posts));
   archiveHtml = replaceBlock(archiveHtml, START.archive, END.archive, archiveSection(posts));
   const articles = posts.map((post, index) => ({
     path: `posts/${post.slug}.html`,
