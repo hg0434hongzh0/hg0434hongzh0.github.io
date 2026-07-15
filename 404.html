@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="你寻找的页面不在这里，返回 hongzh0's Blog 继续阅读。">
-  <meta name="theme-color" content="#f3f0e9">
+  <meta name="theme-color" content="#f5f2eb">
   <meta name="robots" content="noindex, follow">
   <title>页面没有找到 — hongzh0's Blog</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="canonical" href="https://hongzh0.wiki/404.html">
   <link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="https://hongzh0.wiki/feed.xml">
   <meta property="og:type" content="website">
@@ -27,12 +28,12 @@
   <meta name="twitter:image:alt" content="hongzh0 的个人照片">
   <link rel="stylesheet" href="/assets/fonts/font-face.css">
   <link rel="stylesheet" href="/assets/style.css">
-  <script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;}catch{document.documentElement.style.colorScheme='light';}</script>
+  <script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到正文</a>
   <header class="site-header">
-    <a class="brand" href="/"><img class="brand-avatar" src="/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg" alt="" width="36" height="36"><span>hongzh0's Blog</span></a>
+    <a class="brand" href="/"><img class="brand-avatar" src="/assets/avatar-128.webp" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a>
     <button class="menu-toggle" type="button" aria-label="打开导航" aria-expanded="false" aria-controls="site-navigation"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <nav class="site-nav" id="site-navigation" aria-label="主导航">
       <a href="/">首页</a>
