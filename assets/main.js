@@ -282,7 +282,7 @@
   }
 
   function initHomeCatalogPagination() {
-    document.querySelectorAll('[data-home-catalog]').forEach(catalog => {
+    document.querySelectorAll('[data-post-catalog]').forEach(catalog => {
       if (catalog.dataset.paginationReady === 'true') return;
       const items = [...catalog.querySelectorAll('[data-catalog-item]')];
       const pagination = catalog.querySelector('[data-catalog-pagination]');
@@ -334,7 +334,7 @@
         if (scroll) catalog.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
       };
 
-      bindOnce(pagination, 'home-catalog-pages', 'click', event => {
+      bindOnce(pagination, 'post-catalog-pages', 'click', event => {
         const button = event.target.closest('button');
         if (!button || button.disabled) return;
         let targetPage = currentPage;
@@ -344,7 +344,7 @@
         if (targetPage === currentPage) return;
         render(targetPage, { updateUrl: true, scroll: true });
       });
-      bindOnce(window, 'home-catalog-popstate', 'popstate', () => render(requestedPage()));
+      bindOnce(window, 'post-catalog-popstate', 'popstate', () => render(requestedPage()));
       render(currentPage);
     });
   }
