@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 760" aria-hidden="true">
+  <defs>
+    <linearGradient id="stain" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d92a43"/>
+      <stop offset=".54" stop-color="#a40e29"/>
+      <stop offset="1" stop-color="#650b1b"/>
+    </linearGradient>
+    <radialGradient id="wet" cx="38%" cy="34%" r="72%">
+      <stop offset="0" stop-color="#e74758" stop-opacity=".78"/>
+      <stop offset=".5" stop-color="#ac102c" stop-opacity=".68"/>
+      <stop offset="1" stop-color="#6a0b1c" stop-opacity=".5"/>
+    </radialGradient>
+    <filter id="soft-edge" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <!-- 非对称主血迹：不闭合成花形，只保留随机隆起、缺口和拖曳边缘。 -->
+  <g opacity=".72">
+    <path d="M62 174C47 151 57 126 81 119 103 112 110 92 132 96 151 100 156 121 174 125 196 130 212 115 232 127 253 140 244 164 258 180 272 196 301 197 306 220 311 242 286 253 275 270 263 288 273 313 253 326 232 339 211 315 190 320 169 325 159 350 135 344 112 338 115 308 97 297 78 285 51 298 38 279 24 260 44 239 39 218 34 198 10 184 19 165 27 147 49 151 62 174Z" fill="url(#wet)"/>
+    <path d="M70 169C91 157 109 160 126 173 143 185 164 176 181 185 199 195 199 217 216 226 229 233 248 227 259 240 269 253 257 270 244 278 225 289 211 276 193 282 172 289 163 310 142 309 122 308 116 286 101 276 84 265 62 273 51 257 41 242 55 227 53 211 51 194 54 179 70 169Z" fill="#870e22" opacity=".42"/>
+    <path d="M101 116C85 91 82 65 93 39 111 65 119 91 116 116Z" fill="url(#stain)" opacity=".58"/>
+    <path d="M257 184C289 169 319 170 347 185 316 194 286 198 257 194Z" fill="url(#stain)" opacity=".52"/>
+    <path d="M82 298C73 331 57 356 32 376 40 343 53 316 73 293Z" fill="url(#stain)" opacity=".5"/>
+    <path d="M219 318C235 348 238 377 228 405 213 377 207 350 211 323Z" fill="url(#stain)" opacity=".43"/>
+    <ellipse cx="152" cy="214" rx="86" ry="72" fill="#c21a36" opacity=".08" filter="url(#soft-edge)"/>
+  </g>
+
+  <!-- 右下是不规则擦拭痕，不使用中心对称结构。 -->
+  <g opacity=".58">
+    <path d="M474 457C501 434 537 431 563 445 584 457 594 447 617 449 642 452 657 470 646 486 636 500 608 496 593 505 574 516 567 541 542 543 518 546 511 523 491 515 474 508 452 517 439 503 425 488 447 472 474 457Z" fill="url(#stain)"/>
+    <path d="M454 486C488 474 522 476 552 488 576 498 607 493 630 482 606 508 578 520 548 516 515 512 486 501 454 505Z" fill="#710c1d" opacity=".46"/>
+    <path d="M622 456C652 435 681 426 711 429 685 446 658 458 629 466Z" fill="url(#stain)" opacity=".6"/>
+    <path d="M497 523C480 552 458 572 431 586 446 557 465 535 490 518Z" fill="url(#stain)" opacity=".48"/>
+    <path d="M553 540C563 568 561 593 548 616 538 588 537 563 545 541Z" fill="url(#stain)" opacity=".44"/>
+    <ellipse cx="543" cy="490" rx="88" ry="35" fill="#d42642" opacity=".07" filter="url(#soft-edge)"/>
+  </g>
+
+  <!-- 松散飞溅：尺寸、方向和间距均不规则。 -->
+  <g fill="#ad102c" opacity=".48">
+    <circle cx="334" cy="89" r="5"/>
+    <circle cx="390" cy="267" r="3"/>
+    <circle cx="678" cy="303" r="6"/>
+    <circle cx="693" cy="651" r="3.5"/>
+    <circle cx="303" cy="645" r="4.5"/>
+    <circle cx="74" cy="534" r="3"/>
+    <circle cx="418" cy="704" r="2.5"/>
+    <ellipse cx="509" cy="125" rx="4" ry="12" transform="rotate(38 509 125)"/>
+    <ellipse cx="651" cy="185" rx="3" ry="9" transform="rotate(-57 651 185)"/>
+    <ellipse cx="186" cy="631" rx="3.5" ry="11" transform="rotate(24 186 631)"/>
+  </g>
+  <g fill="url(#stain)" opacity=".4">
+    <path d="M341 566C326 546 329 524 349 506 357 531 354 550 341 566Z"/>
+    <path d="M377 604C398 589 420 587 440 598 417 609 397 611 377 604Z"/>
+    <path d="M573 252C590 234 610 229 630 237 610 252 591 258 573 252Z"/>
+    <path d="M96 446C78 431 73 412 81 394 95 411 101 429 96 446Z"/>
+  </g>
+</svg>
