@@ -6,6 +6,7 @@ category: 漏洞分析
 summary: 分析 RabbitMQ Management 多静态目录预探测逻辑如何在 Cowboy 路径校验前解析 Windows UNC 路径，触发出站 SMB 认证并泄露 NetNTLMv2 凭据材料。
 slug: rabbitmq-management-unc-ssrf
 coverText: RabbitMQ
+badge: 定风波Agent复现
 published: true
 ---
 
