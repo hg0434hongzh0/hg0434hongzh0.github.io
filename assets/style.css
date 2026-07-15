@@ -406,7 +406,7 @@ body.lightbox-open { overflow: hidden; }
 
 /* Friends page */
 .links-section { padding-block: 24px clamp(76px, 9vw, 128px); }
-.friend-grid { max-width: 860px; margin-inline: auto; padding-top: 26px; border-top: 1px solid var(--line); }
+.friend-grid { display: grid; max-width: 860px; gap: 30px; margin-inline: auto; padding-top: 26px; border-top: 1px solid var(--line); }
 .friend-card { display: grid; grid-template-columns: 280px minmax(0, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); text-decoration: none; box-shadow: var(--shadow); transition: border-color var(--duration-fast), box-shadow 420ms var(--ease), transform 420ms var(--ease); }
 .friend-card:hover { border-color: rgba(223,118,89,.56); box-shadow: 0 40px 96px -38px rgba(39,31,21,.38); transform: translate3d(0, -7px, 0); }
 [data-theme="dark"] .friend-card:hover { box-shadow: 0 40px 96px -38px rgba(0,0,0,.78); }
