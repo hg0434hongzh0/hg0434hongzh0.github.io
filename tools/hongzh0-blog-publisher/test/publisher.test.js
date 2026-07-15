@@ -51,8 +51,8 @@ function writePost(root, file, values = {}, body = '正文。\n\n## 分析过程
 
 try {
   const root = fixture();
-  writePost(root, '2026-01-03-newest.md', { title: '最新文章', date: '2026-01-03', slug: 'newest-post', coverText: 'Gogs' }, '正文。\n\n## 漏洞简介\n\n### 影响范围');
-  writePost(root, '2026-01-02-older.md', { title: '较早文章', slug: 'older-post' });
+  writePost(root, '2026-01-03-newest.md', { title: '最新文章', date: '2026-01-03', slug: 'newest-post', coverText: 'Gogs', badge: '定风波Agent复现' }, '正文。\n\n## 漏洞简介\n\n### 影响范围');
+  writePost(root, '2026-01-02-older.md', { title: '较早文章', slug: 'older-post', badge: '实测复现' });
   writePost(root, '2026-01-01-draft.md', { title: '草稿文章', date: '2026-01-01', slug: 'draft-post', published: 'false' });
   fs.mkdirSync(path.join(root, 'dist', 'posts'), { recursive: true });
   fs.writeFileSync(path.join(root, 'dist', 'posts', 'stale-post.html'), 'stale');
@@ -93,7 +93,9 @@ try {
   assert.doesNotMatch(index, /class="featured-visual"[^>]*aria-label=/);
   assert.match(index, /<h2>最新<em>研究<\/em><\/h2>/);
   assert.match(index, /<h2>最近<em>写下<\/em><\/h2>/);
+  assert.match(index, /<span class="post-badge">定风波Agent复现<\/span>/);
   assert.match(recent, /较早文章/);
+  assert.match(recent, /<span class="post-badge">实测复现<\/span>/);
   assert.doesNotMatch(recent, /最新文章/);
 
   const archive = fs.readFileSync(path.join(root, 'dist', 'archive.html'), 'utf8');
@@ -238,6 +240,11 @@ try {
   writePost(invalidCoverRoot, 'invalid-cover.md', { coverText: '123456789' });
   assert.throws(() => buildSite(invalidCoverRoot), /coverText 最多包含 8 个字符/);
   assert.ok(!fs.existsSync(path.join(invalidCoverRoot, 'dist')));
+
+  const invalidBadgeRoot = fixture();
+  writePost(invalidBadgeRoot, 'invalid-badge.md', { badge: '1234567890123456789012345' });
+  assert.throws(() => buildSite(invalidBadgeRoot), /badge 最多包含 24 个字符/);
+  assert.ok(!fs.existsSync(path.join(invalidBadgeRoot, 'dist')));
 
   const invalidDateRoot = fixture();
   writePost(invalidDateRoot, 'invalid.md', { date: '2026-02-30' });

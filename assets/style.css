@@ -125,8 +125,11 @@ button { color: inherit; }
 .visual-center[data-cover-length="8"] { font-size: 14px; }
 .visual-caption { position: absolute; z-index: 2; left: 30px; bottom: 26px; color: rgba(242,237,227,.72); font: 10px var(--mono); letter-spacing: .18em; }
 .featured-copy { display: flex; flex-direction: column; justify-content: center; padding: 64px 68px; border-left: 3px solid var(--accent); background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 92%, transparent), color-mix(in srgb, var(--paper-2) 78%, transparent)); }
-.post-meta { display: flex; flex-wrap: wrap; gap: 17px; color: var(--muted); }
+.post-meta { display: flex; flex-wrap: wrap; gap: 11px 17px; align-items: center; color: var(--muted); }
 .post-meta span:first-child { color: var(--accent); }
+.post-meta .post-badge { position: relative; display: inline-flex; min-height: 25px; align-items: center; gap: 7px; padding: 4px 11px 4px 9px; border: 1px solid color-mix(in srgb, var(--accent) 46%, var(--line)); border-radius: 999px; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 13%, var(--surface)), color-mix(in srgb, var(--accent) 5%, var(--paper))); color: var(--accent); font: 600 10px/1.35 var(--mono); letter-spacing: .055em; text-transform: none; white-space: nowrap; box-shadow: inset 0 1px color-mix(in srgb, #fff 54%, transparent), 0 8px 22px -16px color-mix(in srgb, var(--accent) 80%, transparent); }
+.post-meta .post-badge::before { content: "✦"; font-size: 8px; line-height: 1; }
+[data-theme="dark"] .post-meta .post-badge { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, var(--surface)), color-mix(in srgb, var(--accent) 8%, var(--paper))); box-shadow: inset 0 1px rgba(255,255,255,.08), 0 10px 24px -16px rgba(0,0,0,.72); }
 .featured-copy h3 { margin: 28px 0 22px; font-size: clamp(29px, 3vw, 44px); font-weight: 500; line-height: 1.44; letter-spacing: -.018em; }
 .featured-copy h3 a { transition: color .25s; }
 .featured-copy h3 a:hover { color: var(--accent); }

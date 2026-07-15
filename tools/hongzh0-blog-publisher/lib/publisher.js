@@ -283,6 +283,9 @@ function parsePost(fullPath) {
   const summary = requiredString(data, 'summary');
   const slug = requiredString(data, 'slug');
   const coverText = requiredString(data, 'coverText');
+  const badge = Object.prototype.hasOwnProperty.call(data, 'badge')
+    ? requiredString(data, 'badge')
+    : '';
   const published = parsePublished(data.published);
   const encrypted = parseBoolean(data.encrypted, 'encrypted', false);
   let passwordEnv = '';
@@ -303,6 +306,9 @@ function parsePost(fullPath) {
   if ([...coverText].length > 8) {
     throw new Error('front matter coverText 最多包含 8 个字符');
   }
+  if ([...badge].length > 24) {
+    throw new Error('front matter badge 最多包含 24 个字符');
+  }
 
   let minutes = readingMinutes(parsed.content);
   if (Object.prototype.hasOwnProperty.call(data, 'readingTime')) {
@@ -322,6 +328,7 @@ function parsePost(fullPath) {
     summary,
     slug,
     coverText,
+    badge,
     published,
     encrypted,
     passwordEnv,
@@ -539,12 +546,17 @@ function articlePage(post, options = {}) {
 ${footer('..')}<script src="../assets/main.js${assetQuery}"></script>${post.encrypted ? `<script src="../assets/article-crypto.js${assetQuery}"></script>` : ''}</body></html>\n`;
 }
 
+function postBadge(post) {
+  if (!post.badge) return '';
+  return `<span class="post-badge">${escapeHtml(post.badge)}</span>`;
+}
+
 function featuredSection(post) {
   return `<section id="latest" class="featured wrap section-space">
       <div class="section-head"><h2>最新<em>研究</em></h2><span class="section-no">01 / FEATURED</span></div>
       <article class="featured-card">
         <a class="featured-visual" href="posts/${escapeHtml(post.slug)}.html"><span class="sr-only">${escapeHtml(post.coverText)} SECURITY RESEARCH / LATEST，阅读文章：${escapeHtml(post.title)}</span><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
-        <div class="featured-copy"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span></div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p><a class="read-more" href="posts/${escapeHtml(post.slug)}.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
+        <div class="featured-copy"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span>${postBadge(post)}</div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p><a class="read-more" href="posts/${escapeHtml(post.slug)}.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
       </article>
     </section>`;
 }
@@ -552,7 +564,7 @@ function featuredSection(post) {
 function recentSection(posts) {
   const recent = posts.slice(1, 4);
   if (!recent.length) return '';
-  const rows = recent.map((post, index) => `<article class="post-row"><div class="post-index">${String(index + 1).padStart(2, '0')}</div><div class="post-body"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time></div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p></div><a class="round-arrow" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span aria-hidden="true">↗</span></a></article>`).join('\n        ');
+  const rows = recent.map((post, index) => `<article class="post-row"><div class="post-index">${String(index + 1).padStart(2, '0')}</div><div class="post-body"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time>${postBadge(post)}</div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p></div><a class="round-arrow" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span aria-hidden="true">↗</span></a></article>`).join('\n        ');
   return `<section class="notes wrap section-space"><div class="section-head"><h2>最近<em>写下</em></h2><a class="text-link" href="archive.html">查看全部 <span aria-hidden="true">↗</span></a></div><div class="post-list">${rows}</div></section>`;
 }
 
