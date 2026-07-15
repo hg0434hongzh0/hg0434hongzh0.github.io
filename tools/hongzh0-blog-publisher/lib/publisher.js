@@ -9,7 +9,7 @@ const { transformSync } = require('esbuild');
 const DEFAULT_BASE_URL = 'https://hongzh0.wiki/';
 const OG_IMAGE = 'https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg';
 const VERSIONED_ASSETS = ['style.css', 'main.js', 'article-crypto.js', 'fonts/font-face.css'];
-const HOME_CATALOG_PAGE_SIZE = 3;
+const CATALOG_PAGE_SIZE = 3;
 const REQUIRED_FIELDS = ['title', 'date', 'category', 'summary', 'slug', 'coverText', 'published'];
 const START = {
   featured: '<!-- BLOG_FEATURED_START -->',
@@ -554,7 +554,7 @@ function postBadge(post) {
 
 function featuredSection(post) {
   return `<section id="latest" class="featured wrap section-space">
-      <div class="section-head"><h2>最新<em>研究</em></h2><span class="section-no">01 / FEATURED</span></div>
+      <div class="section-head"><h2>最新<em>研究</em></h2><a class="section-no featured-more-link" href="archive.html">查看更多 <span aria-hidden="true">↗</span></a></div>
       <article class="featured-card">
         <a class="featured-visual" href="posts/${escapeHtml(post.slug)}.html"><span class="sr-only">${escapeHtml(post.coverText)} SECURITY RESEARCH / LATEST，阅读文章：${escapeHtml(post.title)}</span><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
         <div class="featured-copy"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span>${postBadge(post)}</div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p><a class="read-more" href="posts/${escapeHtml(post.slug)}.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
@@ -562,10 +562,10 @@ function featuredSection(post) {
     </section>`;
 }
 
-function catalogSection(posts) {
+function archiveSection(posts) {
   if (!posts.length) return '';
   const rows = posts.map((post, index) => `<article class="post-row" data-catalog-item><div class="post-index">${String(index + 1).padStart(2, '0')}</div><div class="post-body"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span>${postBadge(post)}</div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p></div><a class="round-arrow" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span aria-hidden="true">↗</span></a></article>`).join('\n        ');
-  const pageCount = Math.ceil(posts.length / HOME_CATALOG_PAGE_SIZE);
+  const pageCount = Math.ceil(posts.length / CATALOG_PAGE_SIZE);
   const pageButtons = Array.from({ length: pageCount }, (_, index) => {
     const page = index + 1;
     return `<button class="catalog-page-button catalog-page-number${page === 1 ? ' active' : ''}" type="button" data-catalog-page="${page}" aria-label="第 ${page} 页"${page === 1 ? ' aria-current="page"' : ''}>${String(page).padStart(2, '0')}</button>`;
@@ -573,26 +573,7 @@ function catalogSection(posts) {
   const pagination = pageCount > 1
     ? `<nav class="catalog-pagination" aria-label="文章目录分页" data-catalog-pagination hidden><button class="catalog-page-button catalog-page-step" type="button" data-catalog-action="prev"><span aria-hidden="true">←</span><span>上一页</span></button><div class="catalog-page-numbers">${pageButtons}</div><span class="catalog-page-status" data-catalog-status aria-live="polite">第 1 / ${pageCount} 页</span><button class="catalog-page-button catalog-page-step" type="button" data-catalog-action="next"><span>下一页</span><span aria-hidden="true">→</span></button></nav>`
     : '';
-  return `<section class="notes home-catalog wrap section-space" aria-labelledby="home-catalog-title" data-home-catalog data-page-size="${HOME_CATALOG_PAGE_SIZE}"><div class="section-head"><h2 id="home-catalog-title">文章<em>目录</em></h2><a class="text-link" href="archive.html">完整归档 <span aria-hidden="true">↗</span></a></div><div class="post-list" id="home-post-list">${rows}</div>${pagination}</section>`;
-}
-
-function archiveSection(posts) {
-  const categoryKeys = new Map();
-  posts.forEach(post => {
-    if (!categoryKeys.has(post.category)) categoryKeys.set(post.category, `cat-${categoryKeys.size + 1}`);
-  });
-  const filters = categoryKeys.size > 1
-    ? `<div class="archive-tools" role="group" aria-label="文章分类筛选"><button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">全部</button>${[...categoryKeys].map(([name, key]) => `<button type="button" class="filter-btn" data-filter="${key}" aria-pressed="false">${escapeHtml(name)}</button>`).join('')}</div>`
-    : '';
-  const years = [...new Set(posts.map(post => post.date.slice(0, 4)))];
-  const groups = years.map(year => {
-    const items = posts
-      .filter(post => post.date.startsWith(year))
-      .map(post => `<article class="archive-item" data-category="${categoryKeys.get(post.category)}"><time datetime="${post.date}">${post.date.slice(5).replace('-', '.')}</time><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a><span>${escapeHtml(post.category)}</span></article>`)
-      .join('\n');
-    return `<div class="archive-year"><h2>${year}</h2><div>${items}</div></div>`;
-  }).join('\n');
-  return `<section class="wrap section-space">${filters}${groups}</section>`;
+  return `<section class="notes post-catalog archive-catalog wrap section-space" aria-labelledby="archive-catalog-title" data-post-catalog data-page-size="${CATALOG_PAGE_SIZE}"><div class="section-head"><h2 id="archive-catalog-title">文章<em>目录</em></h2><span class="section-no">${String(posts.length).padStart(2, '0')} / POSTS</span></div><div class="post-list" id="archive-post-list">${rows}</div>${pagination}</section>`;
 }
 
 function feedXml(posts, baseUrl = DEFAULT_BASE_URL) {
@@ -695,7 +676,7 @@ function buildSite(root, options = {}) {
   const noJekyll = readRequiredFile(siteRoot, '.nojekyll');
 
   indexHtml = replaceBlock(indexHtml, START.featured, END.featured, featuredSection(posts[0]));
-  indexHtml = replaceBlock(indexHtml, START.recent, END.recent, catalogSection(posts));
+  indexHtml = replaceBlock(indexHtml, START.recent, END.recent, '');
   archiveHtml = replaceBlock(archiveHtml, START.archive, END.archive, archiveSection(posts));
   const articles = posts.map((post, index) => ({
     path: `posts/${post.slug}.html`,

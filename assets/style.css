@@ -45,9 +45,9 @@ html.theme-transition::view-transition-new(root) { animation: theme-enter 260ms 
 html { overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 28px; scrollbar-gutter: stable; }
 body { position: relative; min-width: 0; margin: 0; overflow-x: clip; isolation: isolate; color: var(--ink); background-color: var(--paper); background-image: radial-gradient(circle at 78% -18%, color-mix(in srgb, var(--accent) 10%, transparent) 0, transparent 34rem); font-family: var(--serif); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; transition: background-color .3s, color .3s; }
 body::before { content: ""; position: fixed; inset: 0; z-index: -2; background: url('/assets/noise.svg') repeat; opacity: .2; pointer-events: none; mix-blend-mode: multiply; }
-body::after { content: ""; position: fixed; inset: 0; z-index: -1; background-image: url('/assets/blood-bloom.svg'), url('/assets/blood-bloom.svg'); background-position: left -116px top 112px, right -132px bottom 7vh; background-size: clamp(250px, 28vw, 420px) auto, clamp(210px, 23vw, 350px) auto; background-repeat: no-repeat; opacity: .82; pointer-events: none; }
+body::after { content: ""; position: fixed; inset: 0; z-index: -1; background-image: url('/assets/blood-bloom.svg'), url('/assets/blood-bloom.svg'); background-position: left -116px top 112px, right -132px bottom 7vh; background-size: clamp(250px, 28vw, 420px) auto, clamp(210px, 23vw, 350px) auto; background-repeat: no-repeat; opacity: .13; pointer-events: none; }
 [data-theme="dark"] body::before { opacity: .09; mix-blend-mode: soft-light; }
-[data-theme="dark"] body::after { opacity: .94; }
+[data-theme="dark"] body::after { opacity: .34; filter: saturate(1.22) brightness(1.12); }
 body.menu-open { overflow: hidden; }
 main { min-width: 0; }
 a { color: inherit; text-decoration: none; }
@@ -104,6 +104,10 @@ button { color: inherit; }
 .page-hero p,
 .about-copy p { text-wrap: pretty; }
 .section-no { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface) 68%, transparent); color: var(--muted); }
+.featured-more-link { gap: 8px; transition: color var(--duration-fast), border-color var(--duration-fast), background var(--duration-fast), transform var(--duration-fast) var(--ease); }
+.featured-more-link span { transition: transform var(--duration-fast) var(--ease); }
+.featured-more-link:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); color: var(--accent); transform: translate3d(0, -2px, 0); }
+.featured-more-link:hover span { transform: translate3d(2px, -2px, 0); }
 .featured-card { isolation: isolate; display: grid; grid-template-columns: 1.08fr .92fr; min-height: 520px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--line-strong) 60%, var(--line)); border-radius: 4px; background: var(--surface); box-shadow: var(--shadow); transition: transform 480ms var(--ease), box-shadow 480ms var(--ease), border-color var(--duration-base) var(--ease); backface-visibility: hidden; }
 .featured-card:hover { border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); transform: translate3d(0, -6px, 0); box-shadow: 0 36px 90px -34px rgba(39, 31, 21, .3); }
 [data-theme="dark"] .featured-card:hover { box-shadow: 0 36px 90px -34px rgba(0,0,0,.72); }
@@ -154,7 +158,7 @@ button { color: inherit; }
 .round-arrow { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; background: color-mix(in srgb, var(--surface) 62%, transparent); transition: .25s var(--ease); }
 .post-row:hover .round-arrow { background: var(--accent); border-color: var(--accent); color: #fff; transform: rotate(45deg); }
 .post-row[hidden] { display: none; }
-.home-catalog { scroll-margin-top: 86px; }
+.post-catalog { scroll-margin-top: 86px; }
 .catalog-pagination { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 14px; align-items: center; margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line-strong); }
 .catalog-page-numbers { display: flex; flex-wrap: wrap; gap: 8px; }
 .catalog-page-button { display: inline-flex; min-width: 42px; min-height: 42px; align-items: center; justify-content: center; gap: 8px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface) 72%, transparent); color: var(--muted); font: 600 10px/1 var(--mono); letter-spacing: .06em; cursor: pointer; transition: color var(--duration-fast), background var(--duration-fast), border-color var(--duration-fast), transform var(--duration-fast) var(--ease); }
@@ -267,8 +271,8 @@ img.portrait-placeholder::before { content: none; }
   .menu-toggle.open span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
   .site-nav { position: fixed; z-index: 10; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 76px 24px 32px; background-color: var(--paper, #f3f0e9); background-image: none; color: var(--ink); box-shadow: 0 12px 30px rgba(32, 33, 29, .12); visibility: hidden; opacity: 0; pointer-events: none; transform: translate3d(0, -22px, 0); overscroll-behavior: contain; transition: opacity var(--duration-base) var(--ease), transform 420ms var(--ease), visibility 0s linear 420ms; backface-visibility: hidden; }
   [data-theme="dark"] .site-nav { background-color: #1d1f1b; box-shadow: 0 12px 30px rgba(0, 0, 0, .35); }
-  body::after { background-position: left -94px top 96px, right -104px bottom 9vh; background-size: 250px auto, 220px auto; opacity: .7; }
-  [data-theme="dark"] body::after { opacity: .84; }
+  body::after { background-position: left -94px top 96px, right -104px bottom 9vh; background-size: 250px auto, 220px auto; opacity: .1; }
+  [data-theme="dark"] body::after { opacity: .29; }
   .site-nav > a, .site-nav > button { opacity: 0; transform: translate3d(0, 8px, 0); transition: opacity var(--duration-base) var(--ease), transform var(--duration-base) var(--ease), color var(--duration-fast), background var(--duration-fast), border-color var(--duration-fast); }
   .site-nav > a { min-height: 48px; font-size: 18px; }
   .site-nav > button { height: 44px; }

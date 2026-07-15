@@ -54,7 +54,7 @@ try {
   writePost(root, '2026-01-03-newest.md', { title: '最新文章', date: '2026-01-03', slug: 'newest-post', coverText: 'Gogs', badge: '定风波Agent复现' }, '正文。\n\n## 漏洞简介\n\n### 影响范围');
   writePost(root, '2026-01-02-older.md', { title: '较早文章', slug: 'older-post', badge: '实测复现' });
   writePost(root, '2026-01-01-third.md', { title: '第三篇文章', date: '2026-01-01', slug: 'third-post' });
-  writePost(root, '2025-12-31-fourth.md', { title: '第四篇文章', date: '2025-12-31', slug: 'fourth-post' });
+  writePost(root, '2025-12-31-fourth.md', { title: '第四篇文章', date: '2025-12-31', slug: 'fourth-post', category: '漏洞挖掘' });
   writePost(root, '2026-01-01-draft.md', { title: '草稿文章', date: '2026-01-01', slug: 'draft-post', published: 'false' });
   fs.mkdirSync(path.join(root, 'dist', 'posts'), { recursive: true });
   fs.writeFileSync(path.join(root, 'dist', 'posts', 'stale-post.html'), 'stale');
@@ -94,17 +94,23 @@ try {
   assert.match(index, /<span class="sr-only">Gogs SECURITY RESEARCH \/ LATEST，阅读文章：最新文章<\/span>/);
   assert.doesNotMatch(index, /class="featured-visual"[^>]*aria-label=/);
   assert.match(index, /<h2>最新<em>研究<\/em><\/h2>/);
-  assert.match(index, /<h2 id="home-catalog-title">文章<em>目录<\/em><\/h2>/);
+  assert.match(index, /class="section-no featured-more-link" href="archive\.html">查看更多/);
+  assert.doesNotMatch(index, /更多文章请查看归档/);
   assert.match(index, /<span class="post-badge">定风波Agent复现<\/span>/);
-  assert.match(recent, /较早文章/);
-  assert.match(recent, /<span class="post-badge">实测复现<\/span>/);
-  assert.match(recent, /最新文章/);
-  assert.match(recent, /data-home-catalog data-page-size="3"/);
-  assert.match(recent, /data-catalog-page="2"/);
-  assert.match(recent, /data-catalog-pagination hidden/);
+  assert.doesNotMatch(recent, /<article/);
+  assert.doesNotMatch(index, /data-post-catalog/);
+  assert.doesNotMatch(index, /较早文章|第三篇文章|第四篇文章/);
 
   const archive = fs.readFileSync(path.join(root, 'dist', 'archive.html'), 'utf8');
-  assert.doesNotMatch(archive, /data-filter=/);
+  assert.match(archive, /<h2 id="archive-catalog-title">文章<em>目录<\/em><\/h2>/);
+  assert.match(archive, /data-post-catalog data-page-size="3"/);
+  assert.match(archive, /data-catalog-page="2"/);
+  assert.match(archive, /data-catalog-pagination hidden/);
+  assert.match(archive, /最新文章/);
+  assert.match(archive, /较早文章/);
+  assert.match(archive, /<span class="post-badge">定风波Agent复现<\/span>/);
+  assert.match(archive, /<span class="post-badge">实测复现<\/span>/);
+  assert.match(archive, /漏洞挖掘/);
 
   const links = fs.readFileSync(path.join(root, 'dist', 'links.html'), 'utf8');
   assert.match(links, /assets\/style\.css\?v=[a-f0-9]{12}/);
