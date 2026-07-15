@@ -53,12 +53,14 @@ try {
   const root = fixture();
   writePost(root, '2026-01-03-newest.md', { title: '最新文章', date: '2026-01-03', slug: 'newest-post', coverText: 'Gogs', badge: '定风波Agent复现' }, '正文。\n\n## 漏洞简介\n\n### 影响范围');
   writePost(root, '2026-01-02-older.md', { title: '较早文章', slug: 'older-post', badge: '实测复现' });
+  writePost(root, '2026-01-01-third.md', { title: '第三篇文章', date: '2026-01-01', slug: 'third-post' });
+  writePost(root, '2025-12-31-fourth.md', { title: '第四篇文章', date: '2025-12-31', slug: 'fourth-post' });
   writePost(root, '2026-01-01-draft.md', { title: '草稿文章', date: '2026-01-01', slug: 'draft-post', published: 'false' });
   fs.mkdirSync(path.join(root, 'dist', 'posts'), { recursive: true });
   fs.writeFileSync(path.join(root, 'dist', 'posts', 'stale-post.html'), 'stale');
 
   const posts = loadPosts(root, 'content/posts');
-  assert.deepEqual(posts.map(post => post.slug), ['newest-post', 'older-post']);
+  assert.deepEqual(posts.map(post => post.slug), ['newest-post', 'older-post', 'third-post', 'fourth-post']);
 
   const sameDayRoot = fixture();
   writePost(sameDayRoot, 'first.md', { title: '当天先发布', date: '2026-01-05', publishedAt: '2026-01-05T09:00:00+08:00', slug: 'same-day-first' });
@@ -73,7 +75,7 @@ try {
   assert.doesNotMatch(sameDayFeatured, /当天先发布/);
 
   const result = buildSite(root, { baseUrl: 'https://hongzh0.wiki/' });
-  assert.equal(result.posts.length, 2);
+  assert.equal(result.posts.length, 4);
   assert.equal(path.basename(result.outputDirectory), 'dist');
 
   const topLevel = fs.readdirSync(path.join(root, 'dist')).sort();
@@ -92,11 +94,14 @@ try {
   assert.match(index, /<span class="sr-only">Gogs SECURITY RESEARCH \/ LATEST，阅读文章：最新文章<\/span>/);
   assert.doesNotMatch(index, /class="featured-visual"[^>]*aria-label=/);
   assert.match(index, /<h2>最新<em>研究<\/em><\/h2>/);
-  assert.match(index, /<h2>最近<em>写下<\/em><\/h2>/);
+  assert.match(index, /<h2 id="home-catalog-title">文章<em>目录<\/em><\/h2>/);
   assert.match(index, /<span class="post-badge">定风波Agent复现<\/span>/);
   assert.match(recent, /较早文章/);
   assert.match(recent, /<span class="post-badge">实测复现<\/span>/);
-  assert.doesNotMatch(recent, /最新文章/);
+  assert.match(recent, /最新文章/);
+  assert.match(recent, /data-home-catalog data-page-size="3"/);
+  assert.match(recent, /data-catalog-page="2"/);
+  assert.match(recent, /data-catalog-pagination hidden/);
 
   const archive = fs.readFileSync(path.join(root, 'dist', 'archive.html'), 'utf8');
   assert.doesNotMatch(archive, /data-filter=/);
@@ -122,6 +127,7 @@ try {
   assert.match(article, /class="reading-progress"/);
   assert.match(article, /class="article-hero wrap"/);
   assert.match(article, /class="article-facts"/);
+  assert.match(article, /<span class="post-badge">定风波Agent复现<\/span>/);
   assert.match(article, /id="busuanzi_page_pv"/);
   assert.match(article, /id="busuanzi_site_pv"/);
   assert.match(article, /id="busuanzi_site_uv"/);
