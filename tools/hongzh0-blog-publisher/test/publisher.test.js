@@ -113,6 +113,7 @@ try {
   assert.match(article, /name="twitter:card"/);
   assert.match(article, /name="twitter:image:alt"/);
   assert.match(article, /rel="apple-touch-icon" href="\/assets\/apple-touch-icon\.png"/);
+  assert.match(article, /srcset="\/assets\/avatar-72\.webp 72w, \/assets\/avatar-128\.webp 128w" sizes="36px"/);
   assert.match(article, /meta name="theme-color" content="#f5f2eb"/);
   assert.match(article, /prefers-color-scheme: dark/);
   assert.match(article, /application\/ld\+json/);
