@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="hongzh0's Blog 友链。">
+  <meta name="description" content="hongzh0's Blog 的朋友站点与长期关注的独立博客。">
   <meta name="theme-color" content="#f5f2eb">
   <title>友链 — hongzh0's Blog</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="canonical" href="https://hongzh0.wiki/links.html">
   <link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="https://hongzh0.wiki/feed.xml">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_CN">
   <meta property="og:site_name" content="hongzh0's Blog">
   <meta property="og:title" content="友链 — hongzh0's Blog">
-  <meta property="og:description" content="hongzh0's Blog 友链。">
+  <meta property="og:description" content="hongzh0's Blog 的朋友站点与长期关注的独立博客。">
   <meta property="og:url" content="https://hongzh0.wiki/links.html">
   <meta property="og:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg">
   <meta property="og:image:alt" content="hongzh0 的个人照片">
@@ -21,17 +22,17 @@
   <meta property="og:image:height" content="960">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="友链 — hongzh0's Blog">
-  <meta name="twitter:description" content="hongzh0's Blog 友链。">
+  <meta name="twitter:description" content="hongzh0's Blog 的朋友站点与长期关注的独立博客。">
   <meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg">
   <meta name="twitter:image:alt" content="hongzh0 的个人照片">
   <link rel="stylesheet" href="/assets/fonts/font-face.css">
   <link rel="stylesheet" href="assets/style.css">
-  <script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;}catch{document.documentElement.style.colorScheme='light';}</script>
+  <script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到正文</a>
   <header class="site-header">
-    <a class="brand" href="index.html"><img class="brand-avatar" src="/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg" alt="" width="36" height="36"><span>hongzh0's Blog</span></a>
+    <a class="brand" href="index.html"><img class="brand-avatar" src="/assets/avatar-128.webp" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a>
     <button class="menu-toggle" type="button" aria-label="打开导航" aria-expanded="false" aria-controls="site-navigation"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <nav class="site-nav" id="site-navigation" aria-label="主导航">
       <a href="index.html">首页</a>
@@ -50,9 +51,10 @@
 
     <section class="links-section wrap" aria-label="友链列表">
       <div class="friend-grid">
-        <a class="friend-card reveal-item" href="https://yosheep.com" target="_blank" rel="noopener noreferrer" aria-label="访问 YoSheep（在新窗口打开）">
+        <a class="friend-card reveal-item" href="https://yosheep.com" target="_blank" rel="noopener noreferrer">
+          <span class="sr-only">在新窗口打开：</span>
           <div class="friend-card-visual" aria-hidden="true">
-            <img class="friend-card-logo" src="/assets/friends/yosheep.jpg" alt="" width="724" height="723">
+            <img class="friend-card-logo" src="/assets/friends/yosheep-384.webp" alt="" width="384" height="384" decoding="async" fetchpriority="high">
           </div>
           <div class="friend-card-copy">
             <span class="friend-card-kicker">Friend · 01</span>
@@ -69,7 +71,7 @@
 
   <footer class="site-footer">
     <div class="wrap footer-grid">
-      <div><a class="brand footer-brand" href="index.html"><img class="brand-avatar" src="/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg" alt="" width="36" height="36"><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div>
+      <div><a class="brand footer-brand" href="index.html"><img class="brand-avatar" src="/assets/avatar-128.webp" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div>
       <div class="footer-links"><span>探索</span><a href="archive.html">文章归档</a><a href="links.html">友链</a><a href="about.html">关于我</a><a href="feed.xml">RSS 订阅</a></div>
       <div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
       <div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button class="back-top" type="button" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div>

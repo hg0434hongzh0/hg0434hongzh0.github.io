@@ -4,10 +4,11 @@ const crypto = require('crypto');
 const matter = require('gray-matter');
 const yaml = require('js-yaml');
 const { marked } = require('marked');
+const { transformSync } = require('esbuild');
 
 const DEFAULT_BASE_URL = 'https://hongzh0.wiki/';
 const OG_IMAGE = 'https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg';
-const VERSIONED_ASSETS = ['style.css', 'main.js', 'article-crypto.js'];
+const VERSIONED_ASSETS = ['style.css', 'main.js', 'article-crypto.js', 'fonts/font-face.css'];
 const REQUIRED_FIELDS = ['title', 'date', 'category', 'summary', 'slug', 'coverText', 'published'];
 const START = {
   featured: '<!-- BLOG_FEATURED_START -->',
@@ -62,20 +63,134 @@ function absoluteUrl(baseUrl, relativePath = '') {
   return new URL(relativePath, baseUrl).href;
 }
 
-function assetVersion(assetsDirectory) {
+function assetVersion(assetsDirectory, siteRoot, postsDirectory) {
   const hash = crypto.createHash('sha256');
+  hash.update(require('esbuild/package.json').version);
+  hash.update(fs.readFileSync(__filename));
   for (const file of VERSIONED_ASSETS) {
     hash.update(file);
     hash.update(fs.readFileSync(path.join(assetsDirectory, file)));
+  }
+  for (const file of ['index.html', 'archive.html', 'about.html', 'links.html', '404.html']) {
+    hash.update(file);
+    hash.update(fs.readFileSync(path.join(siteRoot, file)));
+  }
+  const markdownFiles = fs.readdirSync(postsDirectory)
+    .filter(file => file.endsWith('.md'))
+    .sort((left, right) => left.localeCompare(right, 'en'));
+  for (const file of markdownFiles) {
+    hash.update(file);
+    hash.update(fs.readFileSync(path.join(postsDirectory, file)));
   }
   return hash.digest('hex').slice(0, 12);
 }
 
 function versionAssetUrls(html, version) {
   return String(html).replace(
-    /((?:\.\.\/|\/)?assets\/(?:style\.css|main\.js|article-crypto\.js))(?:\?v=[^"'<>\s]*)?/g,
+    /((?:\.\.\/|\/)?assets\/(?:style\.css|main\.js|article-crypto\.js|fonts\/font-face\.css))(?:\?v=[^"'<>\s]*)?/g,
     `$1?v=${version}`
   );
+}
+
+
+function unicodeRangeContains(codePoints, value) {
+  for (const rawRange of value.split(',')) {
+    const range = rawRange.trim().replace(/^U\+/i, '').toUpperCase();
+    if (!range) continue;
+    let start;
+    let end;
+    if (range.includes('?')) {
+      start = Number.parseInt(range.replaceAll('?', '0'), 16);
+      end = Number.parseInt(range.replaceAll('?', 'F'), 16);
+    } else if (range.includes('-')) {
+      const [left, right] = range.split('-', 2);
+      start = Number.parseInt(left, 16);
+      end = Number.parseInt(right, 16);
+    } else {
+      start = Number.parseInt(range, 16);
+      end = start;
+    }
+    if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
+    for (const codePoint of codePoints) {
+      if (codePoint >= start && codePoint <= end) return true;
+    }
+  }
+  return false;
+}
+
+function collectFontCodePoints(outputDirectory, postsDirectory) {
+  const codePoints = new Set();
+  const addText = value => {
+    for (const character of value) codePoints.add(character.codePointAt(0));
+  };
+  const addFiles = (directory, include) => {
+    if (!fs.existsSync(directory)) return;
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const target = path.join(directory, entry.name);
+      if (entry.isDirectory()) addFiles(target, include);
+      else if (include(target)) addText(fs.readFileSync(target, 'utf8'));
+    }
+  };
+
+  addFiles(outputDirectory, file => {
+    const relative = path.relative(outputDirectory, file).replaceAll('\\', '/');
+    if (relative === 'assets/fonts/font-face.css') return false;
+    return /\.(?:html|xml|txt|css|js)$/.test(file);
+  });
+  addFiles(postsDirectory, file => file.endsWith('.md'));
+  return codePoints;
+}
+
+function pruneFontAssets(assetsDirectory, codePoints) {
+  const cssPath = path.join(assetsDirectory, 'fonts', 'font-face.css');
+  const source = fs.readFileSync(cssPath, 'utf8');
+  const blocks = source.match(/(?:\/\*[\s\S]*?\*\/\s*)?@font-face\s*\{[\s\S]*?\}/g) || [];
+  const keptBlocks = blocks.filter(block => {
+    const match = block.match(/unicode-range\s*:\s*([^;]+)/i);
+    return !match || unicodeRangeContains(codePoints, match[1]);
+  });
+  const optimizedSource = `${keptBlocks.join('\n')}\n`;
+  fs.writeFileSync(cssPath, optimizedSource, 'utf8');
+
+  const referencedFiles = new Set();
+  for (const block of keptBlocks) {
+    for (const match of block.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)) {
+      referencedFiles.add(path.basename(match[1]));
+    }
+  }
+  const filesDirectory = path.join(assetsDirectory, 'fonts', 'files');
+  if (!fs.existsSync(filesDirectory)) return;
+  for (const entry of fs.readdirSync(filesDirectory, { withFileTypes: true })) {
+    if (entry.isFile() && !referencedFiles.has(entry.name)) {
+      fs.rmSync(path.join(filesDirectory, entry.name));
+    }
+  }
+}
+
+function optimizePublicAssets(assetsDirectory, codePoints) {
+  pruneFontAssets(assetsDirectory, codePoints);
+  const targets = [
+    ['style.css', 'css'],
+    ['main.js', 'js'],
+    ['article-crypto.js', 'js'],
+    [path.join('fonts', 'font-face.css'), 'css']
+  ];
+
+  for (const [relativePath, loader] of targets) {
+    const filePath = path.join(assetsDirectory, relativePath);
+    const source = fs.readFileSync(filePath, 'utf8');
+    const result = transformSync(source, {
+      loader,
+      minify: true,
+      legalComments: 'none',
+      ...(loader === 'js' ? { target: 'es2020' } : {})
+    });
+    fs.writeFileSync(filePath, result.code, 'utf8');
+  }
+}
+
+function themeBootstrapScript() {
+  return `<script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script>`;
 }
 
 function assertInsideSiteRoot(siteRoot, targetPath, label) {
@@ -300,11 +415,11 @@ function renderMarkdown(markdown) {
 }
 
 function header(relative = '..') {
-  return `<a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="${relative}/index.html"><img class="brand-avatar" src="/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg" alt="" width="36" height="36"><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="${relative}/index.html">首页</a><a href="${relative}/archive.html">归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>`;
+  return `<a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="${relative}/index.html"><img class="brand-avatar" src="/assets/avatar-128.webp" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="${relative}/index.html">首页</a><a href="${relative}/archive.html">归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>`;
 }
 
 function footer(relative = '..') {
-  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><img class="brand-avatar" src="/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg" alt="" width="36" height="36"><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
+  return `<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="${relative}/index.html"><img class="brand-avatar" src="/assets/avatar-128.webp" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div><div class="footer-links"><span>探索</span><a href="${relative}/archive.html">文章归档</a><a href="${relative}/links.html">友链</a><a href="${relative}/about.html">关于我</a><a href="${relative}/feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© ${new Date().getFullYear()} HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer>`;
 }
 
 function articleNavigation(previous, next) {
@@ -412,11 +527,11 @@ function articlePage(post, options = {}) {
   }).replace(/</g, '\\u003c');
 
   return `<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(post.summary)}"><meta name="theme-color" content="#f3f0e9"><title>${escapeHtml(post.title)} — hongzh0's Blog</title>
-<link rel="canonical" href="${escapeHtml(canonical)}"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(post.summary)}"><meta name="theme-color" content="#f5f2eb"><title>${escapeHtml(post.title)} — hongzh0's Blog</title>
+<link rel="canonical" href="${escapeHtml(canonical)}"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="${escapeHtml(post.title)}"><meta property="og:description" content="${escapeHtml(post.summary)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(OG_IMAGE)}"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="960"><meta property="article:published_time" content="${post.publishedAt}">
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(post.title)}"><meta name="twitter:description" content="${escapeHtml(post.summary)}"><meta name="twitter:image" content="${escapeHtml(OG_IMAGE)}"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
-<script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css"><link rel="stylesheet" href="../assets/style.css${assetQuery}"><script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(error){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
+<script type="application/ld+json">${structuredData}</script><link rel="stylesheet" href="/assets/fonts/font-face.css${assetQuery}"><link rel="stylesheet" href="../assets/style.css${assetQuery}">${themeBootstrapScript()}</head><body>
 <div class="reading-progress" aria-hidden="true"><span></span></div>${header('..')}
 <main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / ${escapeHtml(post.category)}</a><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.publishedAt}">${displayDate(post.date)}</time><span>${post.minutes} 分钟阅读</span></div><h1>${escapeHtml(post.title)}</h1><p class="article-lead">${escapeHtml(post.summary)}</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>${displayDate(post.date)}</dd></div><div><dt>READING</dt><dd>${post.minutes} MIN</dd></div><div><dt>SECTIONS</dt><dd>${String(sectionCount).padStart(2, '0')}</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
 <div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · ${escapeHtml(post.date)}</span></div></section>
@@ -428,7 +543,7 @@ function featuredSection(post) {
   return `<section id="latest" class="featured wrap section-space">
       <div class="section-head"><h2>最新<em>研究</em></h2><span class="section-no">01 / FEATURED</span></div>
       <article class="featured-card">
-        <a class="featured-visual" href="posts/${escapeHtml(post.slug)}.html" aria-label="阅读文章：${escapeHtml(post.title)}"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
+        <a class="featured-visual" href="posts/${escapeHtml(post.slug)}.html"><span class="sr-only">${escapeHtml(post.coverText)} SECURITY RESEARCH / LATEST，阅读文章：${escapeHtml(post.title)}</span><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="${[...post.coverText].length}" aria-hidden="true">${escapeHtml(post.coverText)}</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
         <div class="featured-copy"><div class="post-meta"><span>${escapeHtml(post.category)}</span><time datetime="${post.date}">${displayDate(post.date)}</time><span>${post.minutes} 分钟</span></div><h3><a href="posts/${escapeHtml(post.slug)}.html">${escapeHtml(post.title)}</a></h3><p>${escapeHtml(post.summary)}</p><a class="read-more" href="posts/${escapeHtml(post.slug)}.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
       </article>
     </section>`;
@@ -549,7 +664,8 @@ function buildSite(root, options = {}) {
     throw new Error('缺少公开目录：assets');
   }
 
-  const assetsVersion = assetVersion(assetsDirectory);
+  const resolvedPostsDirectory = path.resolve(siteRoot, postsDirectory);
+  const assetsVersion = assetVersion(assetsDirectory, siteRoot, resolvedPostsDirectory);
   let indexHtml = versionAssetUrls(readRequiredFile(siteRoot, 'index.html', 'utf8'), assetsVersion);
   let archiveHtml = versionAssetUrls(readRequiredFile(siteRoot, 'archive.html', 'utf8'), assetsVersion);
   const aboutHtml = versionAssetUrls(readRequiredFile(siteRoot, 'about.html', 'utf8'), assetsVersion);
@@ -583,7 +699,8 @@ function buildSite(root, options = {}) {
 
   try {
     fs.mkdirSync(tempDirectory, { recursive: false });
-    fs.cpSync(assetsDirectory, path.join(tempDirectory, 'assets'), { recursive: true });
+    const outputAssetsDirectory = path.join(tempDirectory, 'assets');
+    fs.cpSync(assetsDirectory, outputAssetsDirectory, { recursive: true });
     fs.mkdirSync(path.join(tempDirectory, 'posts'));
     fs.writeFileSync(path.join(tempDirectory, 'index.html'), indexHtml, 'utf8');
     fs.writeFileSync(path.join(tempDirectory, 'archive.html'), archiveHtml, 'utf8');
@@ -598,6 +715,8 @@ function buildSite(root, options = {}) {
     fs.writeFileSync(path.join(tempDirectory, 'feed.xml'), feed, 'utf8');
     fs.writeFileSync(path.join(tempDirectory, 'sitemap.xml'), sitemap, 'utf8');
     fs.writeFileSync(path.join(tempDirectory, 'robots.txt'), robots, 'utf8');
+    const fontCodePoints = collectFontCodePoints(tempDirectory, resolvedPostsDirectory);
+    optimizePublicAssets(outputAssetsDirectory, fontCodePoints);
     replaceDirectory(tempDirectory, outputDirectory);
   } catch (error) {
     if (fs.existsSync(tempDirectory)) {

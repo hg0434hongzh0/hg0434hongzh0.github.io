@@ -3,6 +3,7 @@
 
   const root = document.documentElement;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const preferredDark = window.matchMedia('(prefers-color-scheme: dark)');
   const mobileNavigation = window.matchMedia('(max-width: 800px)');
   const visitStatsEndpoint = 'https://cdn.busuanzi.cc/api.php';
   const boundEvents = new WeakMap();
@@ -50,7 +51,7 @@
     root.style.colorScheme = nextTheme;
     document.querySelector('meta[name="theme-color"]')?.setAttribute(
       'content',
-      nextTheme === 'dark' ? '#1d1f1b' : '#f3f0e9'
+      nextTheme === 'dark' ? '#1b1d19' : '#f5f2eb'
     );
     updateThemeControls(nextTheme);
     if (persist) storageSet('theme', nextTheme);
@@ -86,6 +87,17 @@
     applyTheme(root.dataset.theme, false);
     document.querySelectorAll('.theme-toggle').forEach(button => {
       bindOnce(button, 'theme-toggle', 'click', toggleTheme);
+    });
+    bindOnce(preferredDark, 'system-theme', 'change', event => {
+      let savedTheme = '';
+      try {
+        savedTheme = localStorage.getItem('theme') || '';
+      } catch (_) {
+        // Follow the system preference when storage is unavailable.
+      }
+      if (savedTheme !== 'light' && savedTheme !== 'dark') {
+        applyTheme(event.matches ? 'dark' : 'light', false);
+      }
     });
   }
 

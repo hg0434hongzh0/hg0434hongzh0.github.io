@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="安全研究博客">
+  <meta name="description" content="记录漏洞分析、代码审计、漏洞复现与攻防实践的个人安全研究博客。">
   <meta name="theme-color" content="#f5f2eb">
   <title>hongzh0's Blog — 安全研究</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="canonical" href="https://hongzh0.wiki/">
   <link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="https://hongzh0.wiki/feed.xml">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_CN">
   <meta property="og:site_name" content="hongzh0's Blog">
   <meta property="og:title" content="hongzh0's Blog — 安全研究">
-  <meta property="og:description" content="安全研究博客">
+  <meta property="og:description" content="记录漏洞分析、代码审计、漏洞复现与攻防实践的个人安全研究博客。">
   <meta property="og:url" content="https://hongzh0.wiki/">
   <meta property="og:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg">
   <meta property="og:image:alt" content="hongzh0 的个人照片">
@@ -21,19 +22,19 @@
   <meta property="og:image:height" content="960">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="hongzh0's Blog — 安全研究">
-  <meta name="twitter:description" content="安全研究博客">
+  <meta name="twitter:description" content="记录漏洞分析、代码审计、漏洞复现与攻防实践的个人安全研究博客。">
   <meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg">
   <meta name="twitter:image:alt" content="头像">
   <link rel="stylesheet" href="/assets/fonts/font-face.css">
   <link rel="stylesheet" href="assets/style.css">
-  <script>try{const theme=localStorage.getItem('theme')||'light';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;}catch{document.documentElement.style.colorScheme='light';}</script>
+  <script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "hongzh0's Blog",
       "url": "https://hongzh0.wiki/",
-      "description": "安全研究博客",
+      "description": "记录漏洞分析、代码审计、漏洞复现与攻防实践的个人安全研究博客。",
       "inLanguage": "zh-CN",
       "author": {
         "@type": "Person",
@@ -47,7 +48,7 @@
   <a class="skip-link" href="#main">跳到正文</a>
   <header class="site-header">
     <a class="brand" href="index.html">
-      <img class="brand-avatar" src="/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg" alt="" width="36" height="36">
+      <img class="brand-avatar" src="/assets/avatar-128.webp" alt="" width="36" height="36" decoding="async">
       <span>hongzh0's Blog</span>
     </a>
     <button class="menu-toggle" type="button" aria-label="打开导航" aria-expanded="false" aria-controls="site-navigation">
@@ -70,7 +71,7 @@
 <section id="latest" class="featured wrap section-space">
       <div class="section-head"><h2>最新<em>研究</em></h2><span class="section-no">01 / FEATURED</span></div>
       <article class="featured-card">
-        <a class="featured-visual" href="posts/security-research-workflow.html" aria-label="研SECURITY RESEARCH / LATEST，阅读文章：从代码审计到漏洞复现：我的安全研究工作流"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" aria-hidden="true">研</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
+        <a class="featured-visual" href="posts/security-research-workflow.html"><span class="sr-only">研 SECURITY RESEARCH / LATEST，阅读文章：从代码审计到漏洞复现：我的安全研究工作流</span><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" aria-hidden="true">研</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
         <div class="featured-copy"><div class="post-meta"><span>研究笔记</span><time datetime="2026-07-08">2026.07.08</time><span>2 分钟</span></div><h3><a href="posts/security-research-workflow.html">从代码审计到漏洞复现：我的安全研究工作流</a></h3><p>一次可信的漏洞研究，需要从攻击面梳理、数据流追踪走到真实环境验证。这里记录我目前使用的一套完整工作流。</p><a class="read-more" href="posts/security-research-workflow.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
       </article>
     </section>
@@ -83,7 +84,7 @@
 
   <footer class="site-footer">
     <div class="wrap footer-grid">
-      <div><a class="brand footer-brand" href="index.html"><img class="brand-avatar" src="/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg" alt="" width="36" height="36"><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div>
+      <div><a class="brand footer-brand" href="index.html"><img class="brand-avatar" src="/assets/avatar-128.webp" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、漏洞分析与攻防实践。</p></div>
       <div class="footer-links"><span>探索</span><a href="archive.html">文章归档</a><a href="links.html">友链</a><a href="about.html">关于我</a><a href="feed.xml">RSS 订阅</a></div>
       <div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
       <div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button class="back-top" type="button" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div>
