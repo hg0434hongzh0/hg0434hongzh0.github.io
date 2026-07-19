@@ -30,6 +30,47 @@ function suggestedCoverText(title, category) {
   return titleText || [...String(category)].slice(0, 2).join('');
 }
 function yamlString(value) { return JSON.stringify(String(value)); }
+function isShortCategory(category) { return ['短文', '漏洞短文', '复现短文', '复现记录'].includes(String(category)); }
+function postBodyTemplate(category) {
+  if (isShortCategory(category)) {
+    return `> 这篇只记录复现对象、环境、现象与结论，后续有精力再补完整根因分析。
+
+## 复现对象
+
+- 漏洞编号 / 名称：
+- 产品与影响版本：
+- 修复版本 / 补丁链接：
+
+## 环境
+
+- OS / 容器：
+- 关键组件版本：
+- 复现入口：
+
+## 复现现象
+
+1. 准备环境：
+2. 触发请求 / 样本 / 操作：
+3. 观察结果：
+
+## 结论
+
+- 复现结果：
+- 影响判断：
+- 备注：
+`;
+  }
+  return `在这里开始写作。
+
+## 背景
+
+## 分析
+
+## 验证
+
+## 修复建议
+`;
+}
 function requestJson(urlText, payload) {
   return new Promise((resolve, reject) => {
     const url = new URL(urlText);
@@ -156,7 +197,7 @@ async function newPost() {
   const root = getRoot();
   const title = await vscode.window.showInputBox({ title: '新建博客文章', prompt: '文章标题', validateInput: v => v.trim() ? undefined : '标题不能为空' });
   if (!title) return;
-  const category = await vscode.window.showQuickPick(['漏洞分析', '代码审计', '攻防实践', '工具开发', '研究笔记'], { title: '选择文章分类' });
+  const category = await vscode.window.showQuickPick(['漏洞分析', '漏洞短文', '代码审计', '攻防实践', '工具开发', '研究笔记'], { title: '选择文章分类' });
   if (!category) return;
   const summary = await vscode.window.showInputBox({ title: '文章摘要', prompt: '用于首页、归档和搜索引擎描述', validateInput: v => v.trim() ? undefined : '摘要不能为空' });
   if (!summary) return;
@@ -169,7 +210,18 @@ async function newPost() {
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, `${today()}-${slugify(slug)}.md`);
   if (fs.existsSync(file)) throw new Error(`文章已存在：${path.basename(file)}`);
-  const content = `---\ntitle: ${yamlString(title)}\ndate: ${today()}\ncategory: ${yamlString(category)}\nsummary: ${yamlString(summary)}\nslug: ${slug}\ncoverText: ${yamlString(coverText.trim())}\nencrypted: false\npublished: false\n---\n\n在这里开始写作。\n\n## 背景\n\n## 分析\n\n## 验证\n\n## 修复建议\n`;
+  const content = `---
+title: ${yamlString(title)}
+date: ${today()}
+category: ${yamlString(category)}
+summary: ${yamlString(summary)}
+slug: ${slug}
+coverText: ${yamlString(coverText.trim())}
+encrypted: false
+published: false
+---
+
+${postBodyTemplate(category)}`;
   fs.writeFileSync(file, content, 'utf8');
   const document = await vscode.workspace.openTextDocument(file);
   await vscode.window.showTextDocument(document);
