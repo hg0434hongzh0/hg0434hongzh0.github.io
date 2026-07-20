@@ -1,0 +1,330 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="分析 RabbitMQ Management 多静态目录预探测逻辑如何在 Cowboy 路径校验前解析 Windows UNC 路径，触发出站 SMB 认证并泄露 NetNTLMv2 凭据材料。"><meta name="theme-color" content="#f5f2eb"><title>RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211） — hongzh0's Blog</title>
+<link rel="canonical" href="https://hongzh0.wiki/posts/rabbitmq-management-unc-ssrf.html"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）"><meta property="og:description" content="分析 RabbitMQ Management 多静态目录预探测逻辑如何在 Cowboy 路径校验前解析 Windows UNC 路径，触发出站 SMB 认证并泄露 NetNTLMv2 凭据材料。"><meta property="og:url" content="https://hongzh0.wiki/posts/rabbitmq-management-unc-ssrf.html"><meta property="og:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="960"><meta property="article:published_time" content="2026-07-14T16:54:04.000Z">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）"><meta name="twitter:description" content="分析 RabbitMQ Management 多静态目录预探测逻辑如何在 Cowboy 路径校验前解析 Windows UNC 路径，触发出站 SMB 认证并泄露 NetNTLMv2 凭据材料。"><meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）","description":"分析 RabbitMQ Management 多静态目录预探测逻辑如何在 Cowboy 路径校验前解析 Windows UNC 路径，触发出站 SMB 认证并泄露 NetNTLMv2 凭据材料。","image":"https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg","datePublished":"2026-07-14T16:54:04.000Z","dateModified":"2026-07-14T16:54:04.000Z","inLanguage":"zh-CN","mainEntityOfPage":"https://hongzh0.wiki/posts/rabbitmq-management-unc-ssrf.html","url":"https://hongzh0.wiki/posts/rabbitmq-management-unc-ssrf.html","author":{"@type":"Person","name":"hongzh0","url":"https://hongzh0.wiki/about.html"},"publisher":{"@type":"Person","name":"hongzh0"}}</script><link rel="stylesheet" href="/assets/fonts/font-face.css?v=e669a6bd36ee"><link rel="stylesheet" href="../assets/style.css?v=e669a6bd36ee"><script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
+<div class="reading-progress" aria-hidden="true"><span></span></div><a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="../index.html">首页</a><a href="../archive.html">归档</a><a href="../links.html">友链</a><a href="../about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>
+<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / 漏洞分析</a><div class="post-meta"><span>漏洞分析</span><time datetime="2026-07-14T16:54:04.000Z">2026.07.15</time><span>23 分钟阅读</span><span class="post-badge">定风波Agent复现</span></div><h1>RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）</h1><p class="article-lead">分析 RabbitMQ Management 多静态目录预探测逻辑如何在 Cowboy 路径校验前解析 Windows UNC 路径，触发出站 SMB 认证并泄露 NetNTLMv2 凭据材料。</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>2026.07.15</dd></div><div><dt>READING</dt><dd>23 MIN</dd></div><div><dt>SECTIONS</dt><dd>08</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
+<div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="8" aria-hidden="true">RabbitMQ</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · 2026-07-15</span></div></section>
+<details class="mobile-toc wrap"><summary><span>文章目录</span><small>08 SECTIONS</small></summary><nav aria-label="移动端文章目录"><a href="#section-基本信息-1">基本信息</a><a href="#section-受影响版本-2">受影响版本</a><a href="#section-漏洞描述-3">漏洞描述</a><a href="#section-漏洞复现-4">漏洞复现</a><a href="#section-漏洞分析-5">漏洞分析</a><a class="toc-h3" href="#section-1-从路由入口定位静态文件处理器-6">1. 从路由入口定位静态文件处理器</a><a class="toc-h3" href="#section-2-首页路由和-management-path-prefix-7">2. 首页路由和 management.path_prefix</a><a class="toc-h3" href="#section-3-api-路由-重定向路由和静态资源兜底路由-8">3. API 路由、重定向路由和静态资源兜底路由</a><a class="toc-h3" href="#section-4-多静态目录分支提前访问了用户可控路径-9">4. 多静态目录分支提前访问了用户可控路径</a><a class="toc-h3" href="#section-5-unc-ssrf-与-ntlm-凭据泄露链路-10">5. UNC SSRF 与 NTLM 凭据泄露链路</a><a class="toc-h3" href="#section-6-为什么-localpaths-必须至少包含两个元素-11">6. 为什么 LocalPaths 必须至少包含两个元素</a><a href="#section-修复方案-12">修复方案</a><a class="toc-h3" href="#section-4-2-x-分支-13">4.2.x 分支</a><a class="toc-h3" href="#section-4-1-x-分支-14">4.1.x 分支</a><a href="#section-临时缓解措施-15">临时缓解措施</a><a class="toc-h3" href="#section-使用-nginx-过滤-unc-路径特征-16">使用 Nginx 过滤 UNC 路径特征</a><a href="#section-参考链接-17">参考链接</a></nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>08 SECTIONS</small></div><nav class="article-toc-nav"><a href="#section-基本信息-1">基本信息</a><a href="#section-受影响版本-2">受影响版本</a><a href="#section-漏洞描述-3">漏洞描述</a><a href="#section-漏洞复现-4">漏洞复现</a><a href="#section-漏洞分析-5">漏洞分析</a><a class="toc-h3" href="#section-1-从路由入口定位静态文件处理器-6">1. 从路由入口定位静态文件处理器</a><a class="toc-h3" href="#section-2-首页路由和-management-path-prefix-7">2. 首页路由和 management.path_prefix</a><a class="toc-h3" href="#section-3-api-路由-重定向路由和静态资源兜底路由-8">3. API 路由、重定向路由和静态资源兜底路由</a><a class="toc-h3" href="#section-4-多静态目录分支提前访问了用户可控路径-9">4. 多静态目录分支提前访问了用户可控路径</a><a class="toc-h3" href="#section-5-unc-ssrf-与-ntlm-凭据泄露链路-10">5. UNC SSRF 与 NTLM 凭据泄露链路</a><a class="toc-h3" href="#section-6-为什么-localpaths-必须至少包含两个元素-11">6. 为什么 LocalPaths 必须至少包含两个元素</a><a href="#section-修复方案-12">修复方案</a><a class="toc-h3" href="#section-4-2-x-分支-13">4.2.x 分支</a><a class="toc-h3" href="#section-4-1-x-分支-14">4.1.x 分支</a><a href="#section-临时缓解措施-15">临时缓解措施</a><a class="toc-h3" href="#section-使用-nginx-过滤-unc-路径特征-16">使用 Nginx 过滤 UNC 路径特征</a><a href="#section-参考链接-17">参考链接</a></nav></aside><article class="article-content"><blockquote>
+<p><strong>实验说明：</strong> 本文仅记录授权测试环境中的漏洞复现与代码审计过程。请勿对未授权目标发送测试请求；建议在隔离的 Windows 虚拟机和受控网络中完成验证，并避免将 SMB 服务暴露到非实验网络。</p>
+</blockquote>
+<h2 id="section-基本信息-1">基本信息</h2>
+<ul>
+<li><p><strong>CVE编号:</strong> CVE-2026-57211</p>
+</li>
+<li><p><strong>漏洞命名:</strong> RabbitMQ 管理插件静态文件处理器绝对路径遍历导致UNC SSRF漏洞</p>
+</li>
+<li><p><strong>披露日期:</strong> 2026-06-18</p>
+</li>
+<li><p><strong>更新日期:</strong> 2026-07-10</p>
+</li>
+<li><p><strong>CVSS评分:</strong> 6.5（MEDIUM）</p>
+</li>
+<li><p><strong>漏洞发现者:</strong> nvn1729</p>
+</li>
+</ul>
+<h2 id="section-受影响版本-2">受影响版本</h2>
+<ul>
+<li><p>RabbitMQ Server &gt;= 4.1.0, &lt; 4.1.11（Windows平台）</p>
+</li>
+<li><p>RabbitMQ Server &gt;= 4.2.0, &lt; 4.2.6（Windows平台）</p>
+</li>
+<li><p><strong>不受影响:</strong> RabbitMQ Server &lt; 4.1.0（不含存在漏洞的代码分支）；Linux/macOS平台（UNC路径无意义，操作系统层不解析）</p>
+</li>
+<li><p><strong>修复版本:</strong> 4.1.11、4.2.6</p>
+</li>
+</ul>
+<h2 id="section-漏洞描述-3">漏洞描述</h2>
+<p>RabbitMQ是一个由Broadcom开发和维护的开源消息队列与流处理中间件，支持AMQP、MQTT、STOMP等多种协议。其管理插件（rabbitmq_management）提供基于HTTP的Web管理UI和REST API，默认监听端口15672，用于查看队列状态、管理交换机、监控集群等运维操作。</p>
+<p>该漏洞源于管理插件的静态文件处理器 <code>rabbit_mgmt_wm_static.erl</code> 在处理URL路径时，在Cowboy框架的 <code>cowboy_static</code> 模块执行路径校验（包括保留字符过滤、<code>..</code>序列解析和目录包含检查）之前，先将URL解码后的用户输入拼接到文件路径并传递给Erlang的 <code>erl_prim_loader:read_file_info/1</code> 函数。当 <code>LocalPaths</code> 中存在两个或以上静态目录时（通常是核心 <code>rabbitmq_management</code> 再加至少一个管理扩展插件），代码走多元素分支，URL编码的反斜杠 <code>%5C</code> 被Cowboy路由器解码为 <code>\</code>，通过 <code>filename:join/1</code> 拼接时被Windows文件系统解释为UNC路径（如 <code>\\attacker_host\share</code>），最终通过Erlang NIF <code>prim_file</code> 调用Windows API <code>GetFullPathNameW</code>和 <code>GetFileAttributesW</code>。在域内Windows主机上，此过程导致机器账户自动向攻击者控制的SMB服务器进行NTLM认证，泄露NTLMv2哈希，理论上攻击者可利用泄露的NTLMv2哈希发起NTLM Relay攻击实现横向移动甚至域权限提升。攻击无需认证，攻击复杂度较高。</p>
+<h2 id="section-漏洞复现-4">漏洞复现</h2>
+<p>以下为定风波 Agent 基于 DeepSeek 在隔离测试环境中的自动化复现结果：</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/f084b21a610117d377d8668b030ba4d4.png" alt="Windows 环境漏洞复现与 SMB 回连证据" data-fallback-src="/assets/posts/rabbitmq-management-unc-ssrf/f084b21a610117d377d8668b030ba4d4.png" referrerpolicy="no-referrer">
+
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260714224054583.png" alt="隔离环境中的漏洞复现结果" data-fallback-src="/assets/posts/rabbitmq-management-unc-ssrf/20260714224054583.png" referrerpolicy="no-referrer">
+
+
+
+<h2 id="section-漏洞分析-5">漏洞分析</h2>
+<h3 id="section-1-从路由入口定位静态文件处理器-6">1. 从路由入口定位静态文件处理器</h3>
+<p>先从管理插件的路由入口看起。在 <code>deps/rabbitmq_management/src/rabbit_mgmt_dispatcher.erl</code> 中，<code>build_dispatcher/1</code> 会调用 <code>build_routes/1</code> 生成路由表，再交给 <code>cowboy_router:compile/1</code> 编译：</p>
+<pre><code class="language-erlang">build_dispatcher(Ignore) -&gt;
+    Routes = build_routes(Ignore),
+    cowboy_router:compile(Routes).
+</code></pre>
+<p><code>build_routes/1</code> 中和本漏洞关系最直接的代码如下：</p>
+<pre><code class="language-erlang">build_routes(Ignore) -&gt;
+    ManagementApp = module_app(?MODULE),
+    Prefix = rabbit_mgmt_util:get_path_prefix(),
+    RootIdxRtes = build_root_index_routes(Prefix, ManagementApp),
+    ApiRdrRte = build_redirect_route(&quot;/api&quot;, Prefix ++ &quot;/api/index.html&quot;),
+    CliRdrRte = build_redirect_route(&quot;/cli&quot;, Prefix ++ &quot;/cli/index.html&quot;),
+    StatsRdrRte1 = build_redirect_route(&quot;/stats&quot;, Prefix ++ &quot;/api/index.html&quot;),
+    StatsRdrRte2 = build_redirect_route(&quot;/doc/stats.html&quot;, Prefix ++ &quot;/api/index.html&quot;),
+    MgmtRdrRte = {&quot;/mgmt&quot;, rabbit_mgmt_wm_redirect, &quot;/&quot;},
+    LocalPaths = [{module_app(M), &quot;www&quot;} || M &lt;- modules(Ignore)],
+    LocalStaticRte = {&quot;/[...]&quot;, rabbit_mgmt_wm_static, LocalPaths},
+    OauthBootstrap = build_oauth_bootstrap_route(Prefix),
+    % NB: order is significant in the routing list
+    Routes0 = build_module_routes(Ignore) ++
+        [ApiRdrRte, CliRdrRte, MgmtRdrRte, StatsRdrRte1, StatsRdrRte2, LocalStaticRte],
+    Routes1 = maybe_add_path_prefix(Routes0, Prefix),
+    % NB: ensure the root routes are first
+    Routes2 = RootIdxRtes ++ OauthBootstrap ++
+        maybe_add_path_prefix([{&quot;/login&quot;, rabbit_mgmt_login, []}], Prefix) ++ Routes1,
+    [{&#39;_&#39;, Routes2}].
+</code></pre>
+<p>Cowboy 的单条路由是 <code>{Path, Handler, HandlerArgs}</code> 三元组，最外层的 <code>{&#39;_&#39;, Routes2}</code> 表示这些路径规则适用于任意 Host。路由按照列表顺序匹配，因此具体的 API、登录和 OAuth 路由必须排在 <code>&quot;/[...]&quot;</code> 这种兜底路由之前。</p>
+<h3 id="section-2-首页路由和-management-path-prefix-7">2. 首页路由和 <code>management.path_prefix</code></h3>
+<pre><code class="language-erlang">ManagementApp = module_app(?MODULE),
+Prefix = rabbit_mgmt_util:get_path_prefix(),
+RootIdxRtes = build_root_index_routes(Prefix, ManagementApp),
+</code></pre>
+<p><code>module_app(?MODULE)</code> 用于确定当前模块所属的 OTP Application，正常情况下得到 <code>rabbitmq_management</code>。<code>Prefix</code> 则根据下图判定来自 <code>management.path_prefix</code> 配置，用于把管理界面挂载到指定的 URL 前缀下。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260715000506783.png" alt="RabbitMQ Management 路由构建逻辑" data-fallback-src="/assets/posts/rabbitmq-management-unc-ssrf/20260715000506783.png" referrerpolicy="no-referrer">
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260715000928099.png" alt="management.path_prefix 配置读取逻辑" data-fallback-src="/assets/posts/rabbitmq-management-unc-ssrf/20260715000928099.png" referrerpolicy="no-referrer">
+
+<p>这里需要注意，下面第一个函数子句中的空字符串表示“没有配置路径前缀”，并不是“请求路径为空”：</p>
+<pre><code class="language-erlang">build_root_index_routes(&quot;&quot;, ManagementApp) -&gt;
+    [{&quot;/&quot;, rabbit_mgmt_wm_static, root_idx_file(ManagementApp)}];
+build_root_index_routes(Prefix, ManagementApp) -&gt;
+    [{&quot;/&quot;, rabbit_mgmt_wm_redirect, Prefix ++ &quot;/&quot;},
+     {Prefix, rabbit_mgmt_wm_static, root_idx_file(ManagementApp)}].
+
+root_idx_file(ManagementApp) -&gt;
+    {priv_file, ManagementApp, &quot;www/index.html&quot;}.
+</code></pre>
+<p>未配置 Prefix 时，访问 <code>/</code> 会由 <code>rabbit_mgmt_wm_static</code> 返回 <code>rabbitmq_management</code> Application 的 <code>priv/www/index.html</code>。假设配置：</p>
+<pre><code class="language-ini">management.path_prefix = /rabbitmq
+</code></pre>
+<p>则 <code>/</code> 会先重定向到 <code>/rabbitmq/</code>，再由静态文件处理器返回同一个首页文件。<code>rabbit_mgmt_util:get_path_prefix()</code> 读取的是经过 RabbitMQ 配置 Schema 映射后的 Application 环境变量，因此配置文件中的字段名和代码里最终读取的环境变量名不完全一致属于正常现象，对本漏洞没有影响。</p>
+<h3 id="section-3-api-路由-重定向路由和静态资源兜底路由-8">3. API 路由、重定向路由和静态资源兜底路由</h3>
+<p><code>build_module_routes/1</code> 会收集所有实现 <code>rabbit_mgmt_extension</code> behaviour 的管理扩展模块，调用各模块的 <code>dispatcher/0</code>，然后统一在相对路径前增加 <code>/api</code>：</p>
+<pre><code class="language-erlang">build_module_routes(Ignore) -&gt;
+    Routes = [Module:dispatcher() || Module &lt;- modules(Ignore)],
+    [{&quot;/api&quot; ++ Path, Mod, Args} ||
+        {Path, Mod, Args} &lt;- lists:append(Routes)].
+</code></pre>
+<p>例如扩展模块声明：</p>
+<pre><code class="language-erlang">{&quot;/overview&quot;, rabbit_mgmt_wm_overview, []}
+</code></pre>
+<p>最终会变成：</p>
+<pre><code class="language-text">/api/overview -&gt; rabbit_mgmt_wm_overview
+</code></pre>
+<p><code>maybe_add_path_prefix/2</code> 随后再给这些路由增加可选的管理路径前缀：</p>
+<pre><code class="language-erlang">maybe_add_path_prefix(Routes, &quot;&quot;) -&gt;
+    Routes;
+maybe_add_path_prefix(Routes, Prefix) -&gt;
+    [{Prefix ++ Path, Mod, Args} || {Path, Mod, Args} &lt;- Routes].
+</code></pre>
+<p>所以配置 <code>/rabbitmq</code> 后，上面的 API 路由会变成 <code>/rabbitmq/api/overview</code>。<code>/api</code>、<code>/cli</code>、<code>/stats</code> 等兼容路径也只是通过 <code>rabbit_mgmt_wm_redirect</code> 跳转到对应的 HTML 页面。</p>
+<p>真正和漏洞入口直接相关的是下面两行：</p>
+<pre><code class="language-erlang">LocalPaths = [{module_app(M), &quot;www&quot;} || M &lt;- modules(Ignore)],
+LocalStaticRte = {&quot;/[...]&quot;, rabbit_mgmt_wm_static, LocalPaths},
+</code></pre>
+<p><code>LocalPaths</code> 收集每个已启用管理扩展所属 Application 的 <code>priv/www</code> 静态资源目录。例如同时启用 Management、Shovel Management 和 Federation Management 时，逻辑上会形成类似列表：</p>
+<pre><code class="language-erlang">[
+    {rabbitmq_management, &quot;www&quot;},
+    {rabbitmq_shovel_management, &quot;www&quot;},
+    {rabbitmq_federation_management, &quot;www&quot;}
+]
+</code></pre>
+<p><code>&quot;/[...]&quot;</code> 是 Cowboy 的剩余路径通配路由。前面没有被 API、登录、OAuth 或重定向规则匹配的请求，都会落到：</p>
+<pre><code class="language-erlang">rabbit_mgmt_wm_static:init(Req, LocalPaths)
+</code></pre>
+<p>例如 <code>/js/dispatcher.js</code>、<code>/css/main.css</code> 会通过这条路由在各扩展的 <code>priv/www</code> 目录中查找。由于该规则能够接收任意剩余路径，它也成为了未认证攻击请求进入静态文件处理器的入口。</p>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260714231612111.png" alt="静态资源通配路由与处理器定位" data-fallback-src="/assets/posts/rabbitmq-management-unc-ssrf/20260714231612111.png" referrerpolicy="no-referrer">
+
+<p>如果未配置 Prefix，和本漏洞有关的最终路由可简化为：</p>
+<pre><code class="language-erlang">[
+    {&#39;_&#39;, [
+        {&quot;/&quot;, rabbit_mgmt_wm_static,
+              {priv_file, rabbitmq_management, &quot;www/index.html&quot;}},
+        {&quot;/login&quot;, rabbit_mgmt_login, []},
+        {&quot;/api/overview&quot;, rabbit_mgmt_wm_overview, []},
+        {&quot;/[...]&quot;, rabbit_mgmt_wm_static, LocalPaths}
+    ]}
+].
+</code></pre>
+<p>如果 Prefix 为 <code>/rabbitmq</code>，静态兜底路由则变成：</p>
+<pre><code class="language-erlang">{&quot;/rabbitmq/[...]&quot;, rabbit_mgmt_wm_static, LocalPaths}
+</code></pre>
+<p>因此攻击请求需要相应地发送到 Prefix 下。路径前缀只改变路由入口，不会消除后续静态文件探测逻辑中的漏洞。</p>
+<h3 id="section-4-多静态目录分支提前访问了用户可控路径-9">4. 多静态目录分支提前访问了用户可控路径</h3>
+<p>继续跟进 <code>deps/rabbitmq_management/src/rabbit_mgmt_wm_static.erl</code>：</p>
+<pre><code class="language-erlang">init(Req0, {priv_file, _App, _Path}=Opts) -&gt;
+    Req1 = rabbit_mgmt_headers:set_common_permission_headers(Req0, ?MODULE),
+    cowboy_static:init(Req1, Opts);
+init(Req0, [{App, Path}]) -&gt;
+    Req1 = rabbit_mgmt_headers:set_common_permission_headers(Req0, ?MODULE),
+    do_init(Req1, App, Path);
+init(Req0, [{App, Path}|Tail]) -&gt;
+    Req1 = rabbit_mgmt_headers:set_common_permission_headers(Req0, ?MODULE),
+    PathInfo = cowboy_req:path_info(Req1),
+    Filepath = filename:join([code:priv_dir(App), Path|PathInfo]),
+    %% We use erl_prim_loader because the file may be inside an .ez archive.
+    FileInfo = erl_prim_loader:read_file_info(binary_to_list(Filepath)),
+    case FileInfo of
+        {ok, #file_info{type = regular}} -&gt; do_init(Req1, App, Path);
+        {ok, #file_info{type = symlink}} -&gt; do_init(Req1, App, Path);
+        _                                -&gt; init(Req0, Tail)
+    end.
+
+do_init(Req, App, Path) -&gt;
+    cowboy_static:init(Req, {priv_dir, App, Path}).
+</code></pre>
+<img loading="lazy" decoding="async" src="https://gitee.com/hongzh0/picrrrrasaasaszxxzxz/raw/master/20260714225723596.png" alt="rabbit_mgmt_wm_static 多目录文件探测分支" data-fallback-src="/assets/posts/rabbitmq-management-unc-ssrf/20260714225723596.png" referrerpolicy="no-referrer">
+
+<p>这里有三条分支：</p>
+<ol>
+<li><strong>首页的 <code>{priv_file, App, Path}</code> 分支</strong>：直接交给 <code>cowboy_static:init/2</code> 处理。</li>
+<li><strong><code>LocalPaths</code> 只有一个元素的分支</strong>：同样直接调用 <code>do_init/3</code>，再进入 <code>cowboy_static:init/2</code>。</li>
+<li><strong><code>LocalPaths</code> 至少有两个元素的分支</strong>：为了判断请求的静态文件属于哪个扩展目录，代码会先自行拼接文件路径并调用 <code>erl_prim_loader:read_file_info/1</code> 检查文件是否存在；找不到时再递归检查下一个 Application。</li>
+</ol>
+<p>漏洞恰好位于第三条分支。只启用一个静态资源目录时，请求会直接进入 Cowboy 的静态文件处理流程；<code>LocalPaths</code> 至少包含两个元素后，<code>[{App, Path}|Tail]</code> 会匹配成功，RabbitMQ 会在调用 <code>cowboy_static:init/2</code> 之前执行：</p>
+<pre><code class="language-erlang">PathInfo = cowboy_req:path_info(Req1),
+Filepath = filename:join([code:priv_dir(App), Path|PathInfo]),
+erl_prim_loader:read_file_info(binary_to_list(Filepath)).
+</code></pre>
+<p>其中 <code>PathInfo</code> 来自请求 URL，攻击者可以控制。经 Cowboy 路由解析和 URL 解码后，编码的反斜杠能够进入路径片段；在 Windows 上，形如 <code>\\attacker\share</code> 的路径会被解释为 UNC 网络路径。危险点不是最终是否成功读取到静态文件，而是 <code>read_file_info/1</code> 为了查询文件属性，已经把该路径交给底层文件系统处理。</p>
+<p>换句话说，正常的安全边界应当是：</p>
+<pre><code class="language-text">用户路径 -&gt; Cowboy 校验/规范化 -&gt; 访问文件系统
+</code></pre>
+<p>实际的多目录分支却变成：</p>
+<pre><code class="language-text">用户路径
+  -&gt; cowboy_req:path_info/1
+  -&gt; filename:join/1
+  -&gt; erl_prim_loader:read_file_info/1
+  -&gt; Cowboy 静态文件校验
+</code></pre>
+<p>在 Cowboy 对保留字符、路径规范化和目录边界完成检查之前，RabbitMQ 已经对攻击者构造的路径执行了一次真实的文件系统探测，这就是漏洞的核心。</p>
+<h3 id="section-5-unc-ssrf-与-ntlm-凭据泄露链路-10">5. UNC SSRF 与 NTLM 凭据泄露链路</h3>
+<p>在 Windows 上，当待探测路径被解析为 UNC 路径时，文件属性查询可能触发到远程 SMB 服务的网络访问。完整调用链可以概括为：</p>
+<pre><code class="language-text">未认证 HTTP 请求
+  -&gt; Cowboy &quot;/[...]&quot; 通配路由
+  -&gt; rabbit_mgmt_wm_static:init/2 多目录分支
+  -&gt; cowboy_req:path_info/1 取得已解码路径片段
+  -&gt; filename:join/1 拼接路径
+  -&gt; erl_prim_loader:read_file_info/1
+  -&gt; prim_file / Windows 文件 API
+  -&gt; 访问攻击者控制的 UNC/SMB 地址
+  -&gt; 触发 NTLM 认证
+</code></pre>
+<p>因此它虽然从“静态文件查找”出发，实际造成的不是传统意义上把任意本地文件内容返回给攻击者，而是利用 Windows 对 UNC 路径的自动网络访问行为形成 SSRF，并可能泄露 RabbitMQ 服务进程身份对应的 NetNTLMv2 认证材料。在域环境中，如果 RabbitMQ 服务以域账户或机器账户权限运行，泄露材料还可能被用于离线破解或在满足条件时进行 NTLM Relay。</p>
+<h3 id="section-6-为什么-localpaths-必须至少包含两个元素-11">6. 为什么 <code>LocalPaths</code> 必须至少包含两个元素</h3>
+<p>漏洞触发条件中的“至少两个静态资源目录”直接来自 Erlang 的模式匹配。这里的数量包含核心 <code>rabbitmq_management</code> 本身，因此常见场景是启用 Management 插件后，再启用任意一个会贡献 Web 静态资源的管理扩展：</p>
+<pre><code class="language-erlang">init(Req0, [{App, Path}]) -&gt;
+    %% 列表只有一个元素，不执行 read_file_info/1
+    do_init(Req1, App, Path);
+
+init(Req0, [{App, Path}|Tail]) -&gt;
+    %% Tail 非空，即至少两个元素，提前探测拼接后的路径
+    FileInfo = erl_prim_loader:read_file_info(...).
+</code></pre>
+<p>因此应当区分：</p>
+<ul>
+<li>“管理插件已启用”负责暴露静态文件路由；</li>
+<li>“至少存在两个静态资源目录”负责进入存在缺陷的手工文件探测分支；</li>
+<li>“运行于 Windows”负责把构造路径解释为 UNC 地址并产生 SMB 网络访问。</li>
+</ul>
+<p>三者共同构成该漏洞的关键触发条件。</p>
+<h2 id="section-修复方案-12">修复方案</h2>
+<p>升级到官方修复版本，并根据当前使用的版本分支选择对应版本：</p>
+<h3 id="section-4-2-x-分支-13"><code>4.2.x</code> 分支</h3>
+<pre><code class="language-powershell"># Chocolatey
+choco upgrade rabbitmq --version=4.2.6
+</code></pre>
+<pre><code class="language-bash"># Docker
+docker pull rabbitmq:4.2.6-management
+</code></pre>
+<h3 id="section-4-1-x-分支-14"><code>4.1.x</code> 分支</h3>
+<pre><code class="language-powershell"># Chocolatey
+choco upgrade rabbitmq --version=4.1.11
+</code></pre>
+<pre><code class="language-bash"># Docker
+docker pull rabbitmq:4.1.11-management
+</code></pre>
+<p>使用 Windows 安装包部署时，可以从 RabbitMQ Release 页面下载 <code>4.2.6</code> 或 <code>4.1.11</code>。Docker 用户拉取镜像后，应按照原有部署配置重新创建容器。</p>
+<h2 id="section-临时缓解措施-15">临时缓解措施</h2>
+<p>以下仅保留补充文档中已经发送真实测试请求并取得明确 HTTP 响应的临时缓解措施。临时缓解不能替代升级。</p>
+<h3 id="section-使用-nginx-过滤-unc-路径特征-16">使用 Nginx 过滤 UNC 路径特征</h3>
+<p>在 RabbitMQ Management UI 前部署 Nginx 反向代理，过滤包含编码反斜杠和原始反斜杠的 URL：</p>
+<pre><code class="language-nginx">server {
+    listen 443 ssl;
+    server_name rabbitmq-admin.example.com;
+
+    # 拦截 %5C 编码，~* 表示大小写不敏感
+    if ($request_uri ~* &quot;%5[cC]&quot;) {
+        return 403;
+    }
+
+    # 拦截原始反斜杠
+    if ($request_uri ~ &quot;\\\\&quot;) {
+        return 403;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:15672;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+</code></pre>
+<p>补充文档在 Kali Linux、Nginx <code>1.30.1</code> 和 Docker RabbitMQ <code>4.1.8</code> 环境中进行了真实请求验证：</p>
+<table>
+<thead>
+<tr>
+<th>测试</th>
+<th>Payload</th>
+<th align="right">HTTP 响应</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基线请求</td>
+<td><code>GET /</code></td>
+<td align="right"><code>200</code></td>
+<td>Nginx 代理正常</td>
+</tr>
+<tr>
+<td>标准攻击</td>
+<td><code>GET /%5C%5C127.0.0.1%5Cshare</code></td>
+<td align="right"><code>403</code></td>
+<td>被拦截</td>
+</tr>
+<tr>
+<td>大小写变体</td>
+<td><code>GET /%5c%5c127.0.0.1%5cshare</code></td>
+<td align="right"><code>403</code></td>
+<td>被拦截</td>
+</tr>
+<tr>
+<td>双编码变体</td>
+<td><code>GET /%255C%255C127.0.0.1%255Cshare</code></td>
+<td align="right"><code>404</code></td>
+<td>绕过 <code>%5C</code> 过滤，但 Cowboy 单次解码后不足以触发漏洞</td>
+</tr>
+<tr>
+<td>单 <code>%5C</code></td>
+<td><code>GET /%5Ctest</code></td>
+<td align="right"><code>403</code></td>
+<td>被拦截</td>
+</tr>
+</tbody></table>
+<p>测试结果表明，Nginx <code>%5C</code> 过滤规则能够拦截标准攻击、大小写变体和单反斜杠编码。该方案生效的前提是攻击者无法绕过代理直接访问 RabbitMQ 的 <code>15672</code> 端口。</p>
+<h2 id="section-参考链接-17">参考链接</h2>
+<ol>
+<li><a href="https://github.com/rabbitmq/rabbitmq-server/security/advisories/GHSA-7v84-m3g5-vxq6">RabbitMQ 官方安全公告：漏洞影响、触发条件与修复版本</a></li>
+<li><a href="https://github.com/rabbitmq/rabbitmq-server/commit/39c3a8e9c71da0403d8dfc13f700e60c936e3682">RabbitMQ 主分支修复提交：增加路径片段校验</a></li>
+<li><a href="https://github.com/rabbitmq/rabbitmq-server/commit/6730797f6a34b4e8308cea60adf1243857e70204">RabbitMQ 维护分支修复提交：反向移植路径校验</a></li>
+<li><a href="https://github.com/rabbitmq/rabbitmq-server/pull/15803">RabbitMQ 修复 PR #15803：修复方案与代码审查</a></li>
+<li><a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v4.2.6">RabbitMQ 4.2.6 Release：4.2.x 分支修复版本</a></li>
+<li><a href="https://github.com/rabbitmq/rabbitmq-server/blob/v4.1.8/deps/rabbitmq_management/src/rabbit_mgmt_dispatcher.erl">RabbitMQ v4.1.8 路由源码：<code>rabbit_mgmt_dispatcher.erl</code></a></li>
+<li><a href="https://github.com/rabbitmq/rabbitmq-server/blob/v4.1.8/deps/rabbitmq_management/src/rabbit_mgmt_wm_static.erl">RabbitMQ v4.1.8 静态文件处理源码：<code>rabbit_mgmt_wm_static.erl</code></a></li>
+<li><a href="https://www.cve.org/CVERecord?id=CVE-2026-57211">CVE.org：CVE-2026-57211 官方记录</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-57211">NVD：CVE-2026-57211 漏洞条目</a></li>
+</ol>
+<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 2026.07.15 · hongzh0's Blog</p></footer><nav class="article-nav" aria-label="文章导航"><a class="article-nav-prev" rel="prev" href="gogs-organization-name-path-traversal-rce.html" aria-label="上一篇：Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）"><span>上一篇</span><strong>Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）</strong></a><a class="article-nav-next" rel="next" href="7zip-xz-cve-2026-14266.html" aria-label="下一篇：7-Zip XZ 分块解码堆缓冲区溢出漏洞（CVE-2026-14266）"><span>下一篇</span><strong>7-Zip XZ 分块解码堆缓冲区溢出漏洞（CVE-2026-14266）</strong></a></nav></article></div></main>
+<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、Agent应用、工具开发。</p></div><div class="footer-links"><span>探索</span><a href="../archive.html">文章归档</a><a href="../links.html">友链</a><a href="../about.html">关于我</a><a href="../feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer><script src="../assets/main.js?v=e669a6bd36ee"></script></body></html>

@@ -30,16 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: tools/hongzh0-blog-publisher/package-lock.json
-      - run: npm --prefix tools/hongzh0-blog-publisher ci
-      - run: npm --prefix tools/hongzh0-blog-publisher run build:site
-        env:
-          BLOG_POST_PASSWORDS_JSON: ${{ secrets.BLOG_POST_PASSWORDS_JSON }}
-          PROMO_REWARD_POST_PASSWORD: ${{ secrets.PROMO_REWARD_POST_PASSWORD }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
