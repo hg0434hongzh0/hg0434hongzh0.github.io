@@ -25,8 +25,8 @@
   <meta name="twitter:description" content="按时间浏览 hongzh0 发布的安全研究、Agent应用与工具开发文章。">
   <meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg">
   <meta name="twitter:image:alt" content="hongzh0 的个人照片">
-  <link rel="stylesheet" href="/assets/fonts/font-face.css?v=e669a6bd36ee">
-  <link rel="stylesheet" href="assets/style.css?v=e669a6bd36ee">
+  <link rel="stylesheet" href="/assets/fonts/font-face.css?v=3f771b7a94be">
+  <link rel="stylesheet" href="assets/style.css?v=3f771b7a94be">
   <script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script>
 </head>
 <body>
@@ -50,7 +50,7 @@
       <p>这里归档安全研究、Agent应用与工具开发文章。</p>
     </section>
     <!-- BLOG_ARCHIVE_START -->
-<section class="notes post-catalog archive-catalog wrap section-space" aria-labelledby="archive-catalog-title" data-post-catalog data-page-size="3"><div class="section-head"><h2 id="archive-catalog-title">文章<em>目录</em></h2><span class="section-no">06 / POSTS</span></div><div class="post-list" id="archive-post-list"><article class="post-row" data-catalog-item><div class="post-index">01</div><div class="post-body"><div class="post-meta"><span>漏洞分析</span><time datetime="2026-07-20">2026.07.20</time><span>12 分钟</span><span class="post-badge">定风波Agent整理</span></div><h3><a href="posts/promotion-reward-bypass-record.html">推广奖励场景中的账号生命周期绕过：通杀型漏洞挖掘记录</a></h3><p>复盘 360 安全中心、潮汐 App、长亭相关产品中的账号生命周期绕过，并补充 new-api 的验证结论：其已对用户名和邮箱做重复性校验，未形成可稳定利用的 0day。</p></div><a class="round-arrow" href="posts/promotion-reward-bypass-record.html" aria-label="阅读文章：推广奖励场景中的账号生命周期绕过：通杀型漏洞挖掘记录"><span aria-hidden="true">↗</span></a></article>
+<section class="notes post-catalog archive-catalog wrap section-space" aria-labelledby="archive-catalog-title" data-post-catalog data-page-size="3"><div class="section-head"><h2 id="archive-catalog-title">文章<em>目录</em></h2><span class="section-no">06 / POSTS</span></div><div class="post-list" id="archive-post-list"><article class="post-row" data-catalog-item><div class="post-index">01</div><div class="post-body"><div class="post-meta"><span>漏洞分析</span><time datetime="2026-07-20">2026.07.20</time><span>12 分钟</span></div><h3><a href="posts/promotion-reward-bypass-record.html">推广奖励场景中的账号生命周期绕过：通杀型漏洞挖掘记录</a></h3><p>整理账号生命周期与推广奖励绑定错位带来的重复领取问题，并记录一组横向验证结论。</p></div><a class="round-arrow" href="posts/promotion-reward-bypass-record.html" aria-label="阅读文章：推广奖励场景中的账号生命周期绕过：通杀型漏洞挖掘记录"><span aria-hidden="true">↗</span></a></article>
         <article class="post-row" data-catalog-item><div class="post-index">02</div><div class="post-body"><div class="post-meta"><span>漏洞短文</span><time datetime="2026-07-17">2026.07.17</time><span>7 分钟</span><span class="post-badge">定风波Agent复现</span></div><h3><a href="posts/7zip-xz-cve-2026-14266.html">7-Zip XZ 分块解码堆缓冲区溢出漏洞（CVE-2026-14266）</a></h3><p>分析 7-Zip 26.01 在 XZ 多 filter 分块解码中未扣减 outWritten 导致的堆越界写，并基于 26.02 diff、IDA 反编译和 PoC 对照验证修复效果。</p></div><a class="round-arrow" href="posts/7zip-xz-cve-2026-14266.html" aria-label="阅读文章：7-Zip XZ 分块解码堆缓冲区溢出漏洞（CVE-2026-14266）"><span aria-hidden="true">↗</span></a></article>
         <article class="post-row" data-catalog-item><div class="post-index">03</div><div class="post-body"><div class="post-meta"><span>漏洞分析</span><time datetime="2026-07-15">2026.07.15</time><span>23 分钟</span><span class="post-badge">定风波Agent复现</span></div><h3><a href="posts/rabbitmq-management-unc-ssrf.html">RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）</a></h3><p>分析 RabbitMQ Management 多静态目录预探测逻辑如何在 Cowboy 路径校验前解析 Windows UNC 路径，触发出站 SMB 认证并泄露 NetNTLMv2 凭据材料。</p></div><a class="round-arrow" href="posts/rabbitmq-management-unc-ssrf.html" aria-label="阅读文章：RabbitMQ 管理插件绝对路径遍历导致 UNC SSRF（CVE-2026-57211）"><span aria-hidden="true">↗</span></a></article>
         <article class="post-row" data-catalog-item><div class="post-index">04</div><div class="post-body"><div class="post-meta"><span>漏洞分析</span><time datetime="2026-07-04">2026.07.04</time><span>25 分钟</span><span class="post-badge">定风波Agent复现</span></div><h3><a href="posts/gogs-organization-name-path-traversal-rce.html">Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）</a></h3><p>从组织创建 API 的名称校验缺陷出发，分析路径遍历如何将仓库写入 local-r 工作树，并通过覆盖 Git hooks/update 构造远程代码执行链。</p></div><a class="round-arrow" href="posts/gogs-organization-name-path-traversal-rce.html" aria-label="阅读文章：Gogs 组织名称路径遍历导致远程代码执行（CVE-2026-52813）"><span aria-hidden="true">↗</span></a></article>
@@ -67,6 +67,6 @@
       <div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button class="back-top" type="button" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div>
     </div>
   </footer>
-  <script src="assets/main.js?v=e669a6bd36ee"></script>
+  <script src="assets/main.js?v=3f771b7a94be"></script>
 </body>
 </html>
