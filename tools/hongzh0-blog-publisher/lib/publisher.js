@@ -11,7 +11,7 @@ const OG_IMAGE = 'https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435c
 const VERSIONED_ASSETS = ['style.css', 'main.js', 'article-crypto.js', 'fonts/font-face.css'];
 const CATALOG_PAGE_SIZE = 3;
 const SHORTS_HOME_LIMIT = 5;
-const SHORT_CATEGORIES = new Set(['短文', '漏洞短文', '复现短文', '复现记录']);
+const SHORT_CATEGORIES = new Set(['短文', '漏洞短文', '漏洞速报', '复现短文', '复现记录']);
 const REQUIRED_FIELDS = ['title', 'date', 'category', 'summary', 'slug', 'coverText', 'published'];
 const START = {
   featured: '<!-- BLOG_FEATURED_START -->',
@@ -586,8 +586,8 @@ function shortNotesSection(posts) {
   const rows = shorts.map((post, index) => postListRow(post, index, { short: true })).join('\n        ');
   const body = rows
     ? `<div class="post-list short-note-list">${rows}</div>`
-    : `<div class="short-empty"><strong>短文池已就绪</strong><p>后续把 category 写成「漏洞短文」或「短文」，这里会自动收录最近 ${SHORTS_HOME_LIMIT} 篇复现速记。</p></div>`;
-  return `<section id="shorts" class="short-notes notes wrap section-space" aria-labelledby="shorts-title"><div class="section-head"><div><span class="eyebrow">Short Notes · Reproduction</span><h2 id="shorts-title">漏洞<em>短文</em></h2></div><a class="section-no featured-more-link" href="archive.html">全部文章 <span aria-hidden="true">↗</span></a></div><div class="short-note-panel"><p class="short-note-intro">给“已经复现，但暂时不做长篇根因分析”的漏洞留一个轻量入口：记清对象、环境、现象、结论和修复链接即可。</p><ul class="short-note-guide" aria-label="短文建议字段"><li><span>01</span>漏洞与版本</li><li><span>02</span>复现环境 / 现象</li><li><span>03</span>修复入口 / 备注</li></ul></div>${body}</section>`;
+    : `<p class="short-note-intro">暂无速报。</p>`;
+  return `<section id="shorts" class="short-notes notes wrap section-space" aria-labelledby="shorts-title"><div class="section-head"><div><span class="eyebrow">Short Notes · Reproduction</span><h2 id="shorts-title">漏洞<em>速报</em></h2></div><a class="section-no featured-more-link" href="archive.html">全部文章 <span aria-hidden="true">↗</span></a></div>${body}</section>`;
 }
 
 function archiveSection(posts) {
