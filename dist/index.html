@@ -25,8 +25,8 @@
   <meta name="twitter:description" content="记录安全研究、Agent应用与工具开发的个人博客。">
   <meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg">
   <meta name="twitter:image:alt" content="头像">
-  <link rel="stylesheet" href="/assets/fonts/font-face.css?v=cf0c77dc5634">
-  <link rel="stylesheet" href="assets/style.css?v=cf0c77dc5634">
+  <link rel="stylesheet" href="/assets/fonts/font-face.css?v=7540f2c171e5">
+  <link rel="stylesheet" href="assets/style.css?v=7540f2c171e5">
   <script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script>
   <script type="application/ld+json">
     {
@@ -71,8 +71,8 @@
 <section id="latest" class="featured wrap section-space">
       <div class="section-head"><h2>最新<em>研究</em></h2><a class="section-no featured-more-link" href="archive.html">查看更多 <span aria-hidden="true">↗</span></a></div>
       <article class="featured-card">
-        <a class="featured-visual" href="posts/removed-post.html"><span class="sr-only">推广 SECURITY RESEARCH / LATEST，阅读文章：[已移除的文章]</span><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="2" aria-hidden="true">推广</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
-        <div class="featured-copy"><div class="post-meta"><span>漏洞分析</span><time datetime="2026-07-20">2026.07.20</time><span>12 分钟</span></div><h3><a href="posts/removed-post.html">[已移除的文章]</a></h3><p></p><a class="read-more" href="posts/removed-post.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
+        <a class="featured-visual" href="posts/jenkins-persistenceroot-deserialization-rce.html"><span class="sr-only">Jenkins SECURITY RESEARCH / LATEST，阅读文章：Jenkins 嵌套 PersistenceRoot 反序列化远程代码执行漏洞（CVE-2026-84645）</span><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="7" aria-hidden="true">Jenkins</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH / LATEST</span></a>
+        <div class="featured-copy"><div class="post-meta"><span>漏洞分析</span><time datetime="2026-09-06">2026.09.06</time><span>24 分钟</span><span class="post-badge">定风波Agent复现</span></div><h3><a href="posts/jenkins-persistenceroot-deserialization-rce.html">Jenkins 嵌套 PersistenceRoot 反序列化远程代码执行漏洞（CVE-2026-84645）</a></h3><p>分析 Jenkins core XStream 反序列化器未阻止 PersistenceRoot 对象作为嵌套字段注入的根因，实测提交作业 config.xml 构造 FingerprintAction→FreeStyleBuild→FreeStyleProject→Hudson 注入链，经 Stapler 路由到达未受保护的 Script Console 以 root 执行任意 Groovy，并验证 2.580 守卫修复与 Nginx 拦截缓解。</p><a class="read-more" href="posts/jenkins-persistenceroot-deserialization-rce.html"><span>阅读全文</span><i aria-hidden="true">↗</i></a></div>
       </article>
     </section>
     <!-- BLOG_FEATURED_END -->
@@ -93,6 +93,6 @@
       <div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button class="back-top" type="button" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div>
     </div>
   </footer>
-  <script src="assets/main.js?v=cf0c77dc5634"></script>
+  <script src="assets/main.js?v=7540f2c171e5"></script>
 </body>
 </html>

