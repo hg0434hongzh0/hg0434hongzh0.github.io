@@ -64,7 +64,7 @@ Jenkins 是使用最广泛的开源自动化服务器，用于构建、测试和
 ## 环境搭建
 
 - 目标：Jenkins **2.579**（受影响版）+ 对照组 Jenkins **2.580**（修复版）
-- 环境：CentOS 7 Docker 宿主机（10.10.10.10），`maven:3.9.6-eclipse-temurin-17` 镜像 + 外挂 JDK21 运行官方 war（war 来自 get.jenkins.io 官方直链经清华镜像，字节数 53,725,839 / 53,729,873 与官方 HEAD 一致）
+- 环境：CentOS 7 Docker 宿主机（内网隔离靶场），`maven:3.9.6-eclipse-temurin-17` 镜像 + 外挂 JDK21 运行官方 war（war 来自 get.jenkins.io 官方直链经清华镜像，字节数 53,725,839 / 53,729,873 与官方 HEAD 一致）
 - 靶场配置：Jenkins 自建用户数据库，attacker 为普通登录用户（提交 config.xml 的权限与官方 CVSS PR:L 语义对应）；2.579 与 2.580 配置完全相同
 - 攻击者账户：`attacker / attacker123`（非管理员）
 
@@ -279,4 +279,4 @@ wget https://get.jenkins.io/war-stable/2.568.3/jenkins.war -O jenkins.war
 
 ---
 
-*文档生成：pi agent · /hunt → /cve 流水线 · Phase 0-4（2026-09-04）· 实测靶场保留于 10.10.10.10（j579:8057 / j580:8058）*
+*文档生成：pi agent · /hunt → /cve 流水线 · Phase 0-4（2026-09-04）· 实测靶场为内网隔离环境，已按发布规范隐去拓扑细节*
